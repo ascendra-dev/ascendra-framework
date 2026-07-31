@@ -1,0 +1,94 @@
+Harborview Consulting Ltd — Invoice Management System, v1.0 (Sprint 01). This example demonstrates: client-facing language with no story IDs, table names, or API routes anywhere in Sections 1–3; a Known Limitations entry naming what carried forward instead of silently omitting it; and a fully completed Deployment Notes section with a real environment variable change.
+
+---
+
+# Release Notes — Invoice Management System v1.0
+
+## Document Control
+
+| Field | Value |
+|-------|-------|
+| Project | Invoice Management System |
+| Version | v1.0 |
+| Release Date | 2026-07-14 |
+| Sprint | Sprint 01 |
+| Produced by | Ascendra AI |
+| Approved by | |
+| Status | Draft |
+
+---
+
+## 1. What's New
+
+### Client Management
+
+- **Client records:** You can now create and maintain a record for every client you invoice — company name, billing contact, and payment terms are stored once and reused on every invoice.
+
+### Invoice Creation
+
+- **Draft and send invoices:** You can now create an invoice against an existing client, add line items with quantity and unit price, and send it directly from the system. The invoice total and tax are calculated automatically as you add items.
+- **Saved drafts:** Invoices you start but don't finish are saved as drafts, so you can pick them up later without losing your work.
+
+---
+
+## 2. Improvements
+
+None in this release — this is the initial release.
+
+---
+
+## 3. Bug Fixes
+
+No bug fixes in this release.
+
+---
+
+## 4. Known Limitations
+
+- **Dunning reminders not yet available:** Overdue invoices do not yet trigger automatic reminder emails. This is planned for a future sprint (Dunning, EPIC-004). Until then, following up on overdue invoices is a manual process.
+- **Payment collection not yet available:** Recording a payment against an invoice is not yet supported in this release. Invoices can be created and sent, but marking one as paid will ship in a future sprint (Payment Collection, EPIC-005).
+
+---
+
+## 5. Deployment Notes
+
+### Pre-Deployment
+
+- [ ] Take a database backup
+
+### Post-Deployment
+
+- [ ] Run database migrations: `npm run db:migrate`
+- [ ] Verify smoke test endpoint responds with 200
+
+### Environment Variable Changes
+
+| Variable | Change | Required Action |
+|---------|--------|----------------|
+| `INVOICE_NUMBER_PREFIX` | New | Set to the client's preferred invoice numbering prefix (e.g. `INV-`) before first invoice is created |
+
+---
+
+## 6. Change Summary
+
+| Category | Count |
+|---------|-------|
+| New features / capabilities | 2 |
+| Improvements | 0 |
+| Bug fixes | 0 |
+| Stories delivered | 6 |
+| Epics completed | 0 (EPIC-002 and EPIC-003 partially delivered — see Known Limitations) |
+
+---
+
+## Part 2 — Pre-Release Verification
+
+- [x] Every item in Section 1 corresponds to a Merged story in this sprint (no invented features)
+- [x] No story IDs, table names, API routes, or technical internals appear in Sections 1–3
+- [x] Section 4 (Known Limitations) accurately reflects what was NOT implemented (checked against sprint carry-forward items)
+- [x] Section 5 Deployment Notes lists every migration, env var change, and seed data change introduced in this sprint
+- [x] Version number in Document Control matches the version passed to the command
+- [x] Release Date is the actual or target go-live date (not today's generation date unless they are the same)
+- [x] Approved by field is blank — Product Owner fills this on approval
+
+**Verification failures:** None — all checks passed

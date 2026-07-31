@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+.langsmith/
+
+# Private workspace — client projects are not part of the public framework
+# TEMPLATE and EXAMPLE are framework-native and committed
+projects/*
+!projects/TEMPLATE
+!projects/TEMPLATE/**
+roadmap/
