@@ -6,7 +6,7 @@ The Ascendra Framework's own docs — [`CLAUDE.md`](../CLAUDE.md), [`SDLC.md`](.
 
 ## Status
 
-This guide is being built phase by phase, checkpointed against real feedback rather than delivered all at once. Chapters below are either **live** or **planned** — planned chapters aren't linked yet, so you won't hit a dead link.
+This guide's first full pass across all twelve SDLC stages is now complete — every chapter below is live. It stays checkpointed against real feedback rather than treated as finished: the phase chapters get corrected as real projects run against them, and [`case-studies/harder-cases.md`](case-studies/harder-cases.md) keeps building out the scenarios Harborview doesn't cover.
 
 | # | Chapter | Covers | Status |
 |---|---------|--------|--------|
@@ -19,13 +19,13 @@ This guide is being built phase by phase, checkpointed against real feedback rat
 | 6 | [`06-architecture.md`](06-architecture.md) | Stage 6 — `/gen-architecture`, the 35-check review | ✅ Live |
 | 7 | [`07-sprint-planning.md`](07-sprint-planning.md) | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ✅ Live |
 | 8 | [`08-development.md`](08-development.md) | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ✅ Live |
-| 9 | `09-qa-uat.md` | Stage 9–10 — QA, UAT | ⏳ Planned |
-| 10 | `10-release-support-hotfix.md` | Stage 11–12 — release, support, hotfix | ⏳ Planned |
-| 11 | `11-cross-cutting.md` | `/assess-change`, `/update-status`, `/project-status` | ⏳ Planned |
+| 9 | [`09-qa-uat.md`](09-qa-uat.md) | Stage 9–10 — QA, UAT | ✅ Live |
+| 10 | [`10-release-support-hotfix.md`](10-release-support-hotfix.md) | Stage 11–12 — release, support, hotfix | ✅ Live |
+| 11 | [`11-cross-cutting.md`](11-cross-cutting.md) | `/assess-change`, `/update-status`, `/project-status` | ✅ Live |
 
 ## Case studies
 
-- [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the judgment calls the framework's own running example (Harborview) never exercises: a regulated/niche domain, an extension project, multi-portal RBAC. Built out alongside the phase chapters — check back as later phases add a complex architecture review and other harder scenarios.
+- [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the judgment calls the framework's own running example (Harborview) never exercises: a regulated/niche domain, an extension project, multi-portal RBAC. Not closed off — more cases (a complex architecture review, a genuinely contentious `/review-brd` session) get added here as they're found worth writing up.
 
 ## How each chapter is structured
 

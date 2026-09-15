@@ -301,7 +301,7 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 5. Full test suite is run on the hotfix branch; targeted regression tests cover the affected module and any integration points touched by the change. Full E2E suite is not required.
 6. Product Owner approves production deployment (same gate as Stage 11 deployment — rollback plan required)
 7. Production deployment executes; post-deployment smoke tests run automatically
-8. Hotfix branch is merged back into the current sprint's working branch (to prevent the fix being lost in the next sprint)
+8. The fix is confirmed preserved going forward: story branches are cut from and merged directly into `main` (no persistent sprint-integration branch exists in this framework's git model), so the hotfix merging into `main` in step 4 already reaches every branch cut afterward. The one manual check: any current-sprint story branch already cut from `main` *before* the hotfix merged needs `main` merged or rebased into it before its own PR, so an older branch's diff doesn't silently revert the hotfix on merge.
 
 **What is skipped:** Sprint planning, UAT, full regression suite.
 
