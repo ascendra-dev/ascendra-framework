@@ -17,8 +17,8 @@ This guide is being built phase by phase, checkpointed against real feedback rat
 | 4 | [`04-product-structuring-epics.md`](04-product-structuring-epics.md) | Stage 4 — `/gen-epics`, epic boundaries and sizing | ✅ Live |
 | 5 | [`05-screen-design.md`](05-screen-design.md) | Stage 5 — `/gen-screen-design`, `/gen-ui-mocks` | ✅ Live |
 | 6 | [`06-architecture.md`](06-architecture.md) | Stage 6 — `/gen-architecture`, the 35-check review | ✅ Live |
-| 7 | `07-sprint-planning.md` | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ⏳ Planned |
-| 8 | `08-development.md` | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ⏳ Planned |
+| 7 | [`07-sprint-planning.md`](07-sprint-planning.md) | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ✅ Live |
+| 8 | [`08-development.md`](08-development.md) | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ✅ Live |
 | 9 | `09-qa-uat.md` | Stage 9–10 — QA, UAT | ⏳ Planned |
 | 10 | `10-release-support-hotfix.md` | Stage 11–12 — release, support, hotfix | ⏳ Planned |
 | 11 | `11-cross-cutting.md` | `/assess-change`, `/update-status`, `/project-status` | ⏳ Planned |
