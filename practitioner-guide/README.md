@@ -14,8 +14,8 @@ This guide is being built phase by phase, checkpointed against real feedback rat
 | 1 | [`01-intake.md`](01-intake.md) | Stage 1 — `/init-project`, `/run-intake`, the brief | ✅ Live |
 | 2 | [`02-domain-discovery.md`](02-domain-discovery.md) | Stage 2 (domain half) — `/gen-domain-knowledge` and the optional discovery sub-flow | ✅ Live |
 | 3 | [`03-brd-discovery-and-scope-lock.md`](03-brd-discovery-and-scope-lock.md) | Stage 2 (BRD half) + Stage 3 — BRD discovery, scope lock | ✅ Live |
-| 4 | `04-product-structuring-epics.md` | Stage 4 — `/gen-epics`, epic boundaries and sizing | ⏳ Planned |
-| 5 | `05-screen-design.md` | Stage 5 — `/gen-screen-design`, `/gen-ui-mocks` | ⏳ Planned |
+| 4 | [`04-product-structuring-epics.md`](04-product-structuring-epics.md) | Stage 4 — `/gen-epics`, epic boundaries and sizing | ✅ Live |
+| 5 | [`05-screen-design.md`](05-screen-design.md) | Stage 5 — `/gen-screen-design`, `/gen-ui-mocks` | ✅ Live |
 | 6 | `06-architecture.md` | Stage 6 — `/gen-architecture`, the 35-check review | ⏳ Planned |
 | 7 | `07-sprint-planning.md` | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ⏳ Planned |
 | 8 | `08-development.md` | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ⏳ Planned |
@@ -25,7 +25,7 @@ This guide is being built phase by phase, checkpointed against real feedback rat
 
 ## Case studies
 
-- [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the judgment calls the framework's own running example (Harborview) never exercises: a regulated/niche domain, an extension project. Built out alongside the phase chapters — check back as later phases add multi-portal RBAC, a complex architecture review, and other harder scenarios.
+- [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the judgment calls the framework's own running example (Harborview) never exercises: a regulated/niche domain, an extension project, multi-portal RBAC. Built out alongside the phase chapters — check back as later phases add a complex architecture review and other harder scenarios.
 
 ## How each chapter is structured
 
