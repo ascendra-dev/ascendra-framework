@@ -67,6 +67,10 @@ Applied immediately during this session:
 - `.claude/commands/assess-change.md` — added Parking Lot entry handling and the discovery-gated promotion rule
 - Applied retroactively to ASCENDRA-PAY-001's BRD (v1.9): added Section 15 with PL-001 (Ascendra-staff-assisted Issuer onboarding), cited from EPIC-002 Section 3.2
 
+**Follow-up (2026-09-15):** Section 5.21 (Future Capabilities), referenced throughout this decision and by `/gen-brd`, was never actually added to `brd.template.md` — see "Section 5.21 itself was also never in the BRD template" above, under "The Problem That Triggered This Decision." That gap was named at the time but left unfixed: this decision applied Section 15 to the template but did not backfill 5.21, so every project since ran on the same ad hoc, improvised Section 5.21 the problem statement describes. Added retroactively:
+- `projects/TEMPLATE/brds/brd.template.md` — added Section 5.21 (Future Capabilities), structured to the same rigor as Section 15; added one matching check to 13.1 (Content Integrity)
+- `projects/TEMPLATE/brds/brd.example.md` — added REQ-022 (Accounting System Export — Xero) as a worked Section 5.21 example
+
 ---
 
 ## Relationship to Other Decisions

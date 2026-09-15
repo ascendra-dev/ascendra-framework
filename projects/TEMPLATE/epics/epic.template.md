@@ -10,6 +10,8 @@
 >
 > **One epic, one layer.** Never mix Core and extension-layer (Ext:[extension-name]) requirements in the same epic. Extensions build on Core — each layer's epics are planned and implemented separately.
 >
+> **Epic size, as a rule of thumb:** an epic typically decomposes into roughly 4–10 stories. If a draft epic would clearly produce many more, propose a split at the `/gen-epics` Step 4 planning table rather than generating an oversized epic and splitting it later.
+>
 > **Section 7 (Stories) is always blank during epic authoring.** `/gen-stories` populates it after all stories for this epic are written. Do not pre-populate it.
 >
 > **Before generating stories from this epic:** run the Part 2 Verification checklist. An epic that fails any check produces incorrect or incomplete stories.

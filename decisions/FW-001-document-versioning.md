@@ -13,7 +13,7 @@
 
 File versioning (`-v1`, `-v2` suffix in the filename) is used **only** when another artifact holds a stable cross-reference to a specific version that must remain readable after the original evolves.
 
-All other artifacts use a **single file** with an internal Document History table to track changes over time.
+All other artifacts use a **single file** with an internal Document Control table (called Change History specifically on the architecture document) to track changes over time.
 
 ---
 
@@ -36,7 +36,7 @@ The latest version of a versioned document is always the complete, current docum
 
 ## Artifacts that do NOT use file versioning
 
-All other artifact types use a single file with a Document History table:
+All other artifact types use a single file with a Document Control table (named Change History specifically on the architecture document — see `arch.template.md`):
 
 | Artifact | Naming scheme | Reason versioning is not needed |
 |----------|--------------|----------------------------------|

@@ -88,7 +88,8 @@ Before writing any epic file, produce a **planning table** and wait for confirma
 2. Apply the Layer filter — only include requirements matching the requested Layer.
 3. Identify cross-cutting dependencies (e.g. a foundation/infrastructure epic that all others depend on).
 4. Draft a dependency ordering (which epics must be built before which).
-5. Present this as a table:
+5. Check candidate epic size against the rule of thumb in `epic.template.md`'s Document Level AI Guide (roughly 4–10 stories per epic). If a candidate would clearly produce many more, propose a split into two epics at this table — before any file is generated, not after.
+6. Present this as a table:
 
 | Epic ID | Proposed Title | REQ IDs included | Dependencies | Notes |
 |---------|---------------|-----------------|--------------|-------|
@@ -145,7 +146,18 @@ After all epic files are written, create `projects/{PROJECT_CODE}/epics/index.md
 
 1. **Epic Registry table** — Epic ID (linked to file), Title, Priority, Status (Draft), REQ Count, Dependencies
 2. **REQ Coverage Map** — one row per epic, listing all REQ IDs assigned to it. Every REQ-ID from the BRD's selected Layer must appear exactly once across all epics. No REQ missing. No REQ in two epics.
-3. **Dependency Graph notes** — the build order (ordered list of epics by dependency layer, with explanation of why)
+3. **Dependency Graph notes** — the build order (ordered list of epics by dependency layer, with explanation of why), followed by a **Story-Level Interleaving** check.
+
+For every epic pair connected by a Section 5 dependency, apply this trigger test: can you name one *specific* story in the depended-on epic — not the whole epic — that must land before a specific story in the dependent epic can be built or meaningfully demoed? If yes, and the dependent epic does not need the rest of the depended-on epic's Definition of Done to be met first, the pair's true build order is finer-grained than a simple epic-before-epic dependency. If the dependent epic can simply wait for the other epic's Definition of Done (Section 6) in full, this is an ordinary epic-level dependency — no note is needed.
+
+When the trigger applies, add this subsection directly beneath the build order list:
+
+```
+**Story-Level Interleaving:**
+- EPIC-XXX ⇄ EPIC-YYY — [one sentence: which specific story-level capability in EPIC-YYY must land before which specific capability in EPIC-XXX can be built or demoed]
+```
+
+If no epic pair meets the trigger, write the subsection anyway with "None — every dependency in this set resolves at the epic level" rather than omitting it. `/gen-stories` and `/review-stories` both read this subsection to decide whether a wave spans one epic or an interleaved pair.
 
 After writing the index, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) — add a row: `| Epic | projects/{PROJECT_CODE}/epics/index.md | Draft |`. If an Epic row already exists from a prior run, update its status instead of adding a duplicate.
 

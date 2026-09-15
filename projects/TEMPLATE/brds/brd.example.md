@@ -170,6 +170,12 @@ Harborview Consulting Ltd manages all client invoicing through a shared Excel sp
 | REQ-020 | The Finance Manager dashboard must display: total outstanding balance, total overdue balance, invoices due within the next 7 days, and recently paid invoices. All figures update in real time. | Must Have | Client-Stated | Core |
 | REQ-021 | Directors must have a dedicated approval queue view listing all invoices pending their approval, with the ability to view full invoice details before acting. | Must Have | Client-Stated | Core |
 
+### 5.21 Future Capabilities
+
+| ID | Title | Description | Priority | Source | Layer |
+|----|-------|-------------|----------|--------|-------|
+| REQ-022 | Accounting System Export (Xero) | The system must export invoice and payment records to Xero via its accounting API on a schedule the Finance Manager configures — the domain knowledge document already models Accounting System as a Typical Integration Point, and James Okafor confirmed Xero as Harborview's Phase 2 accounting system during discovery. | Should Have | Client-Stated | Core |
+
 ---
 
 ## 6. Business Rules

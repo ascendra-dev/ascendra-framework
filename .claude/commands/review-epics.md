@@ -134,7 +134,7 @@ Read this epic's file only. Do not load other epic files. The shared context (BR
 
 ### B — Run structural checks
 
-Run all 11 checks against this epic using the shared context. Apply key decisions from Step 3 — do not flag items that were explicitly decided during generation.
+Run all 13 checks against this epic using the shared context. Apply key decisions from Step 3 — do not flag items that were explicitly decided during generation.
 
 1. **REQ Coverage** — Section 2 contains exactly the REQs assigned to this epic in the index coverage map — no more, no fewer. Missing REQ = gap. Extra REQ = misassignment.
 2. **Verbatim Accuracy** — Each REQ description in Section 2 matches the BRD word for word. No paraphrasing, truncation, or rewording.
@@ -147,6 +147,8 @@ Run all 11 checks against this epic using the shared context. Apply key decision
 9. **Definition of Done** — The PO walkthrough scenario in Section 6 exercises all significant In Scope capabilities. No major In Scope capability is untested by the scenario.
 10. **Template Compliance** — Section 7 Stories is blank. Verification checklist present. No implementation detail in Sections 1–6 (no field names, API routes, table names, technology choices, UI layout decisions). Layer field matches the layer under review. Priority matches BRD priority for each REQ in Section 2.
 11. **Layer Boundary** — No capability belonging to a different layer appears as an In Scope item. Any interface defined in this layer that an extension will implement is identified as interface-only, with the extension epic named in Section 3.2.
+12. **Epic Size** — This epic's REQ count (Section 2) is not a clear outlier against the REQ Count column for every other epic in `epics/index.md`'s Epic Registry table, and its In Scope bullet count (Section 3.1) is proportionate. Rule of thumb (`epic.template.md`'s Document Level AI Guide): an epic typically decomposes into roughly 4–10 stories. An epic clearly beyond that relative to its siblings should have been split at `/gen-epics` Step 4 — flag it for a split now.
+13. **No Gold-Plating** — Every In Scope item (3.1) and every Section 8 Notes entry traces back to a REQ actually listed in Section 2 or an explicitly-approved domain rule (UBR/VAL/BR/SEC) from the domain knowledge document. No invented scope beyond what the BRD or an approved domain rule calls for.
 
 ---
 
@@ -186,6 +188,7 @@ FLAGS — EPIC-{NNN}: {Title}
 - Persona list addition or removal
 - Section 8 Notes addition for a domain rule identified during the check
 - Section 6 Definition of Done walkthrough revision to cover a missing capability
+- In Scope bullet or Section 8 Notes entry removed because it does not trace to a REQ in Section 2 or an approved domain rule (gold-plating)
 
 **Tier 3 — PO decides before executing:**
 - REQ reassignment between epics (moves coverage from one epic to another)
@@ -196,6 +199,7 @@ FLAGS — EPIC-{NNN}: {Title}
 - Multiple REQs missing from coverage (epic is structurally incomplete)
 - Scope fundamentally misaligned with BRD (epic covers the wrong capability area)
 - Layer boundary violated across multiple In Scope items (epic needs to be regenerated)
+- Epic Size is a clear outlier against the rest of the epic set (rule of thumb: ~4–10 stories) — epic needs to be split into two and regenerated
 
 ---
 

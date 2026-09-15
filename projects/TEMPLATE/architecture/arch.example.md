@@ -1,4 +1,4 @@
-Harborview Consulting Ltd — Invoice Management System, Sprint 1, BRD v1.1. This example demonstrates: a correct `invoice_status` enum covering all lifecycle states defined in the domain knowledge document (including approval states); the `invoice_approvals` table for the Director approval workflow; the `clients` table with `phoneNumber` and `dedupKeyType` fields required by BRD REQ-001 and REQ-002; the RBAC state machine covering every transition including `pending_approval` → `approved` → `sent`; the extension point for accounting integration identified in BRD Section 1.6; and a completed Verification section.
+Harborview Consulting Ltd — Invoice Management System, Sprint 1, BRD v1.1. This example demonstrates: a correct `invoice_status` enum covering all lifecycle states defined in the domain knowledge document (including approval states); the `invoice_approvals` table for the Director approval workflow; the `payers` table with `phoneNumber` and `dedupKeyType` fields required by BRD REQ-001 and REQ-002; the RBAC state machine covering every transition including `pending_approval` → `approved` → `sent`; the extension point for accounting integration identified in BRD Section 1.6; Section 3.1.3's Screen & Navigation Map carried over verbatim from `screen-design.md`; `varchar` actor-label audit columns on every Master table (`FW-037`/`FW-039`, not a `uuid` foreign key); `If-Match` optimistic-concurrency headers on every mutating endpoint against a `version`-tracked table (`FW-045`); Section 6.5's Logging & Exception Handling summary (`FW-041`); and a completed Verification section.
 
 ---
 
@@ -43,6 +43,8 @@ Harborview Consulting Ltd manages approximately 40–60 invoices per month throu
 | Cache / Queues | Redis | 7 | — |
 | Email | Resend | — | — |
 | Payments | Stripe | — | — |
+| Logging | Pino (structured JSON, shipped to Axiom) | Latest | — |
+| Error Tracking | Sentry | Latest | — |
 | Containerisation | Docker + Docker Compose | — | — |
 | CI/CD | GitHub Actions | — | — |
 
@@ -151,6 +153,51 @@ harborview-inv-001-web/
 
 ---
 
+### 3.1.3 Screen & Navigation Map
+
+#### 3.1.3.1 Portals
+
+| Portal | Personas | Access model | Base route |
+|---|---|---|---|
+| Staff App | Finance Manager, Account Owner | Standing session | `/app` |
+
+#### 3.1.3.2 Navigation Map
+
+**Staff App** — flat (no distinct feature-area grouping yet at this scale):
+
+| Nav item | Portal | Visibility condition | Grouping |
+|---|---|---|---|
+| Dashboard | Staff App | baseline — always visible | flat |
+| Payers | Staff App | baseline — always visible | flat |
+| Invoices | Staff App | baseline — always visible | flat |
+
+#### 3.1.3.3 Screen Inventory
+
+| Screen ID | Portal | Route | Reachable by | Purpose | Source | Surface | UI Pattern | Matched Reference | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| SCR-001 | Staff App | `/app/payers` | baseline | Browse all Payer records | Journey 4.1, step 1, REQ-010 | Page | Table-List | Data Table + Empty State | Empty State candidate — new account |
+| SCR-002 | Staff App | overlay on SCR-001 | baseline | Create or edit a Payer record | Journey 4.1, step 1 (Payer must exist before selection), REQ-011 | Sheet | Form | closest: Customer Profile | |
+| SCR-003 | Staff App | `/app/invoices` | baseline | Browse all invoices | Journey 4.1, step 4 (post-save landing), REQ-020 | Page | Table-List | Data Table + Page Bar | Empty State candidate — new account |
+| SCR-004 | Staff App | `/app/invoices/new` | baseline | Draft and send a new invoice against an existing Payer | Journey 4.1, steps 1–5, REQ-021/022 | Page | Form (Complex) | closest: Create Product Listing (multi-section, mixed grid) | Line-item totals computed inline |
+| SCR-005 | Staff App | `/app/invoices/{id}` | baseline | Invoice detail — line items, status, totals | Journey 4.1, step 7; Journey 4.2, steps 6–9 (approval status visible here too), REQ-023 | Page | Detail | Item + Card | |
+
+*(Sections 3.1.3.1–3.1.3.3 carried over verbatim from `projects/HARBORVIEW-INV-001/screens/screen-design.md`, Approved — not re-derived here, per `/gen-architecture`'s Section 3.1.3 guidance.)*
+
+#### 3.1.3.4 Action Gating
+
+Every screen above is reachable by all three roles (`admin`, `finance`, `director` — baseline), but Section 6.2 restricts which of them may act on an invoice. The `director` role opens SCR-004/SCR-005 read-only; it holds no capability that grants any action on either screen.
+
+| Screen ID | Action | Requires |
+|---|---|---|
+| SCR-004 | Save draft / Send | admin, finance |
+| SCR-005 | Edit (Draft only), Send, Void, Mark Paid | admin, finance |
+
+#### 3.1.3.5 Cross-Cutting UI Rules
+
+None — no cross-cutting UI rules beyond standard page-level and action-level gating. Section 6.1 declares no `viewOnly` role, and Section 6.3 (Delegated Access) does not apply to this project.
+
+---
+
 ### 3.2 Extension Points
 
 | Extension Point | Mechanism | Owning Module | Extension Projects |
@@ -175,7 +222,7 @@ An Org has many Users and many Payers. A Payer belongs to one Org and has many I
 
 **Type:** Master
 **Module:** PayerModule
-**Purpose:** Stores Harborview's billing clients — the companies that receive invoices.
+**Purpose:** Stores Harborview's Payers — the companies that receive invoices.
 
 ```typescript
 export const payers = pgTable(
@@ -191,7 +238,9 @@ export const payers = pgTable(
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    createdBy: uuid('created_by').references(() => users.id),
+    createdBy: varchar('created_by', { length: 200 }),  // actor label, e.g. "James Okafor"; null = system action
+    updatedBy: varchar('updated_by', { length: 200 }),
+    deletedBy: varchar('deleted_by', { length: 200 }),
   },
   (table) => ({
     orgIdx: index('payers_org_idx').on(table.orgId),
@@ -237,7 +286,9 @@ export const invoices = pgTable(
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    createdBy: uuid('created_by').references(() => users.id),
+    createdBy: varchar('created_by', { length: 200 }),  // actor label, e.g. "James Okafor"; null = system action
+    updatedBy: varchar('updated_by', { length: 200 }),
+    deletedBy: varchar('deleted_by', { length: 200 }),
   },
   (table) => ({
     orgIdx: index('invoices_org_idx').on(table.orgId),
@@ -434,16 +485,18 @@ No seed data required — all lookup values are PostgreSQL enums declared in Sec
 
 ### 5. API Contracts
 
+**Optimistic concurrency (`FW-045`):** `payers` and `invoices` both carry a `version` column (Section 4.2). Every mutating request against either resource — `PATCH`, `DELETE`, or a state-transition `POST` action — requires an `If-Match` request header set to the `version` last read for that row (from the single-resource `GET`'s `ETag` response header, or a list row's `version` field); a stale value is rejected with `409 Conflict`, `code: "STALE_VERSION"`. Wire shape is fixed by `reference/api-contract/contract.md` Rule 8 — not restated per endpoint below.
+
 #### PayerModule Endpoints
 
 | Method | Path | Auth | Request Body | Response | Notes |
 |--------|------|------|-------------|----------|-------|
 | GET | `/api/v1/payers` | JWT | — | `{ data: [...], meta: { total, page, perPage } }` | Filtered to org from JWT |
 | POST | `/api/v1/payers` | JWT | `CreatePayerDto` | Payer object | 201 on success; runs deduplication before saving |
-| GET | `/api/v1/payers/:id` | JWT | — | Payer object | 404 if cross-tenant |
-| PATCH | `/api/v1/payers/:id` | JWT | `UpdatePayerDto` | Payer object | |
-| DELETE | `/api/v1/payers/:id` | JWT | — | 204 No Content | Soft delete — sets `deleted_at` |
-| POST | `/api/v1/payers/import` | JWT | `multipart/form-data` (CSV file) | Import result: `{ imported, failed, log: [...] }` | Per-row import log |
+| GET | `/api/v1/payers/:id` | JWT | — | Payer object | 404 if cross-tenant; returns current `version` in `ETag` |
+| PATCH | `/api/v1/payers/:id` | JWT | `UpdatePayerDto` | Payer object | Requires `If-Match` header (`FW-045`) |
+| DELETE | `/api/v1/payers/:id` | JWT | — | 204 No Content | Soft delete — sets `deleted_at`. Requires `If-Match` header (`FW-045`) |
+| POST | `/api/v1/payers/import` | JWT | `multipart/form-data` (CSV file) | Import result: `{ imported, failed, log: [...] }` | Per-row import log; creates new Payer rows only, no `If-Match` needed |
 
 ```typescript
 export class CreatePayerDto {
@@ -470,12 +523,12 @@ export class UpdatePayerDto extends PartialType(CreatePayerDto) {}
 |--------|------|------|-------------|----------|-------|
 | GET | `/api/v1/invoices` | JWT | — | `{ data: [...], meta: { total, page, perPage } }` | Supports `?status=` and `?payerId=` filters |
 | POST | `/api/v1/invoices` | JWT | `CreateInvoiceDto` | Invoice object | Assigns reference number on creation |
-| GET | `/api/v1/invoices/:id` | JWT | — | Invoice object with line items | 404 if cross-tenant |
-| PATCH | `/api/v1/invoices/:id` | JWT | `UpdateInvoiceDto` | Invoice object | Draft only — Sent invoices cannot be edited |
-| POST | `/api/v1/invoices/:id/send` | JWT | — | Invoice object | Transitions Draft → Sent (below threshold) or Draft → Pending Approval (at/above threshold) |
-| POST | `/api/v1/invoices/:id/void` | JWT | `VoidInvoiceDto` | Invoice object | Sent or Approved → Void; requires void reason |
-| POST | `/api/v1/invoices/:id/mark-paid` | JWT | — | Invoice object | Sent/Overdue → Paid for bank transfer payments |
-| DELETE | `/api/v1/invoices/:id` | JWT | — | 204 No Content | Draft only |
+| GET | `/api/v1/invoices/:id` | JWT | — | Invoice object with line items | 404 if cross-tenant; returns current `version` in `ETag` |
+| PATCH | `/api/v1/invoices/:id` | JWT | `UpdateInvoiceDto` | Invoice object | Draft only — Sent invoices cannot be edited. Requires `If-Match` header (`FW-045`) |
+| POST | `/api/v1/invoices/:id/send` | JWT | — | Invoice object | Transitions Draft → Sent (below threshold) or Draft → Pending Approval (at/above threshold). Requires `If-Match` header (`FW-045`) |
+| POST | `/api/v1/invoices/:id/void` | JWT | `VoidInvoiceDto` | Invoice object | Sent or Approved → Void; requires void reason. Requires `If-Match` header (`FW-045`) |
+| POST | `/api/v1/invoices/:id/mark-paid` | JWT | — | Invoice object | Sent/Overdue → Paid for bank transfer payments. Requires `If-Match` header (`FW-045`) |
+| DELETE | `/api/v1/invoices/:id` | JWT | — | 204 No Content | Draft only. Requires `If-Match` header (`FW-045`) |
 
 ```typescript
 export class CreateInvoiceLineItemDto {
@@ -522,8 +575,8 @@ export class VoidInvoiceDto {
 | Method | Path | Auth | Request Body | Response | Notes |
 |--------|------|------|-------------|----------|-------|
 | GET | `/api/v1/approvals` | JWT (director, admin) | — | `{ data: [...], meta: { total, page, perPage } }` | Pending approvals queue — invoices in `pending_approval` status for this org |
-| POST | `/api/v1/invoices/:id/approve` | JWT (director, admin) | — | Invoice object | Pending Approval → Approved; triggers Finance Manager notification |
-| POST | `/api/v1/invoices/:id/reject` | JWT (director, admin) | `RejectInvoiceDto` | Invoice object | Pending Approval → Draft (editable); records rejection reason |
+| POST | `/api/v1/invoices/:id/approve` | JWT (director, admin) | — | Invoice object | Pending Approval → Approved; triggers Finance Manager notification. Requires `If-Match` header (`FW-045`) |
+| POST | `/api/v1/invoices/:id/reject` | JWT (director, admin) | `RejectInvoiceDto` | Invoice object | Pending Approval → Draft (editable); records rejection reason. Requires `If-Match` header (`FW-045`) |
 
 ```typescript
 export class RejectInvoiceDto {
@@ -604,7 +657,13 @@ export class RejectInvoiceDto {
 
 ---
 
-#### 6.3 Sensitive Fields
+#### 6.3 Delegated Access
+
+Not applicable — no delegated access pattern in this project. No BRD role temporarily assumes another user's or Payer's permissions; the Finance Manager, Director, and admin roles each act only under their own standing session.
+
+---
+
+#### 6.4 Sensitive Fields
 
 | Field | Table | Sensitivity | Protection Mechanism |
 |-------|-------|-------------|---------------------|
@@ -612,6 +671,12 @@ export class RejectInvoiceDto {
 | `phone_number` | `payers` | PII (UK GDPR Art. 6) | `@Exclude()` from list responses; included only in single-Payer GET; not visible to `director` role |
 | `password_hash` | `users` | Credential | `@Exclude()` from all responses; never serialised |
 | `stripe_payment_intent_id` | `invoices` | Financial identifier | `@Exclude()` from list responses; included only in single-invoice GET for admin and finance roles |
+
+---
+
+#### 6.5 Logging & Exception Handling
+
+Every request carries an `X-Request-Id` — reused if the caller supplies one on the way in, generated otherwise — attached to every log line produced while handling that request and echoed back on the response, so a reported failure is traceable to its exact log lines without asking when it happened. A global `AllExceptionsFilter` catches every unhandled error: an expected business-rule rejection (e.g. sending a Draft invoice below the threshold that has no line items, approving an invoice not currently `pending_approval`) throws a typed `BusinessRuleViolationException` mapped to `422`; a stale `If-Match` (Section 5, `FW-045`) is its own typed exception mapped to `409`, `code: "STALE_VERSION"`; anything unexpected returns a generic `500` with no internal message or stack trace exposed to the caller. Redaction: every field in Section 6.4's sensitive-field table (`email`, `phone_number`, `password_hash`, `stripe_payment_intent_id`) is excluded from log output via a fixed redact-path list configured once at the logger level — a field added to Section 6.4 is added to that list in the same change. Confirmed tools (Section 2): Pino, structured JSON to stdout, shipped to Axiom; Sentry for error tracking, wired into both `harborview-inv-001-api` and `harborview-inv-001-web`. Full contract: `standards/logging-standards.md`.
 
 ---
 
@@ -686,7 +751,7 @@ None — this project uses the Ascendra standard stack in full.
 - [x] Every module in Section 3 has a single, bounded responsibility — PayerModule owns payer data; InvoiceModule owns invoice data; ApprovalModule owns approval workflow; no two modules cover the same domain
 - [x] Section 3.2 is present — lists one extension point (AccountingExportStrategy) derived from BRD Section 1.6
 - [x] Every table in Section 4.2 is owned by exactly one module listed in Section 3: payers → PayerModule; invoices and invoice_line_items → InvoiceModule; invoice_approvals → ApprovalModule; dunning_logs → DunningModule; stripe_events → PaymentModule
-- [x] Every Master table in Section 4.2 includes all mandatory Master columns — payers and invoices both have id, orgId, version, createdAt, updatedAt, createdBy
+- [x] Every Master table in Section 4.2 includes all mandatory Master columns — payers and invoices both have id, orgId, version, createdAt, updatedAt, createdBy/updatedBy/deletedBy as `varchar` actor-label columns, not a `uuid` foreign key (`FW-037`/`FW-039`)
 - [x] Every Detail table in Section 4.2 includes all mandatory Detail columns — invoice_line_items, invoice_approvals, dunning_logs, stripe_events all have id, orgId, createdAt, updatedAt
 - [x] Every table with an updatedAt column has a trigger declaration — all five tables have a CREATE TRIGGER block
 - [x] No money column uses decimal or float — subtotalPence, vatPence, totalPence, unitPricePence, lineTotalPence are all integer
@@ -702,3 +767,10 @@ None — this project uses the Ascendra standard stack in full.
 - [x] Every Lookup and Reference table in Section 4.2: none present — all lookup values are enums in Section 4.3
 - [x] Section 8 (Open Decisions) is empty — replaced with "None" statement
 - [x] Section 9 (Deviation Declarations) explicitly states no deviations
+- [x] Section 6.1 declares a standard single `role` claim, not a composable capability model — the Capability Permissions table is correctly omitted from Section 6.2; the flat Role Permissions table alone applies
+- [x] Section 3.1.3 (Screen & Navigation Map) is present — Staff App portal, flat navigation map, and Screen Inventory (SCR-001–SCR-005) carried over verbatim from `screen-design.md` (Approved), per `/gen-architecture`'s Section 3.1.3 guidance
+- [x] Every journey in BRD Section 4 maps to at least one Screen ID in 3.1.3.3 — 4.1 and 4.2 both covered; 4.3 (Payer payment via email link) is Payer-facing and has no Staff App screen
+- [x] Section 6.3 (Delegated Access) is present — states "Not applicable", no delegated or impersonated access pattern exists in the BRD
+- [x] Section 6.5 (Logging & Exception Handling) is present, names actual confirmed tools (Pino/Axiom, Sentry — Section 2) and mechanisms (`X-Request-Id` correlation, `AllExceptionsFilter`, `BusinessRuleViolationException`), and covers every field in Section 6.4's sensitive-field table under its redaction policy (`FW-041`)
+- [x] Tech Stack table (Section 2) includes a Logging row (Pino) and an Error Tracking row (Sentry) — neither omitted nor left "TBD" (`FW-041`)
+- [x] `standards/logging-standards.md` exists and matches what Section 6.5 summarizes

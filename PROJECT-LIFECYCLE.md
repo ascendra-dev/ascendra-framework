@@ -403,9 +403,9 @@ Read this document when: starting a new project, resuming a project mid-delivery
 
 **Output:** Updated `arch-v1.md` with fixes applied and Status set to `Locked` (on PO approval)
 
-**Gate:** ✅ PO manual decision. **As the command actually works today, no rationale is captured** — the lock confirmation is exactly `lock` (sets Status to `Locked` immediately) or `not yet` (leaves it `Under Review`), nothing more. `update-status projects/{PROJECT_CODE}/architecture/arch-v1.md Locked` remains available as a manual fallback. Required before `/implement-story` can run for any story; also required (soft check) for `/gen-stories`.
-
-> **Open decision, not yet resolved:** an earlier version of this document described a lock-rationale prompt with worked examples ("state what was verified, not just the outcome") that does not exist anywhere in the current `review-architecture.md` — zero matches for "rationale" in that file. Either that feature was deliberately cut during the `FW-026` rewrite (in which case the old description was simply stale, now corrected above) or it was lost by accident and should be added back. Not decided yet — flag to the PO before treating either direction as settled.
+**Gate:** ✅ PO manual decision. The lock confirmation invites an optional one-line rationale (`lock: {what you specifically verified}`) and asks once if the PO declines to give one with a bare `lock` — either way, `lock` alone is always sufficient and never blocked on a rationale being supplied. A given rationale is recorded in Section 10 (Approval) as `**Locked because:**`; a bare `lock` simply omits that line rather than writing a placeholder. `update-status projects/{PROJECT_CODE}/architecture/arch-v1.md Locked` remains available as a manual fallback (it never prompts for a rationale). Required before `/implement-story` can run for any story; also required (soft check) for `/gen-stories`.
+>
+> **Resolved 2026-09-15:** an earlier version of this document described a lock-rationale prompt that had gone missing from `review-architecture.md`, and this section previously flagged the discrepancy as an open, undecided question. It's been restored — see above — as a lightweight, optional capture (never a hard requirement) so the framework retains a "why," not just the "what," on the single most consequential PO decision in the pipeline.
 
 ---
 
@@ -715,7 +715,7 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 5. **Targeted test run** — full suite plus specifically the regression tests for the affected module. Full E2E suite not required.
 6. **Production deployment** — PO approves with rollback plan in hand (same gate as Phase 7's deployment).
 7. **Smoke tests** pass automatically after deployment.
-8. **Merge hotfix branch back** into the current working sprint branch, so the fix isn't undone next sprint.
+8. **Confirm the fix is preserved going forward.** Story branches are cut from and merged directly into `main` (no persistent sprint-integration branch exists in this framework's git model — see `implement-story.md`) — so merging the hotfix PR into `main` in step 4 already means every story branch cut from `main` afterward includes the fix automatically. The one case that needs a manual check: any story branch for the current sprint that was already cut from `main` *before* the hotfix merged. Merge or rebase `main` into that branch before its own PR merges, so the hotfix isn't silently reverted by an older branch's diff when it lands.
 
 **What is skipped:** Sprint planning, full regression suite, UAT.
 
@@ -882,6 +882,7 @@ All statuses are set via `update-status` (or inline by the corresponding `review
 | 5 | Architecture (review + lock) | PO (inline via `/review-architecture`) | `/implement-story`, `/gen-sprint-plan` |
 | 6 | Stories (per wave) | PO (inline via `/review-stories`) | `/implement-story` for that wave |
 | 7 | Sprint Activation | PO | Implementation |
+| 7a | Story Plan (per story) | PO | `/implement-story` for that story (hard gate, no override — see Status Values Reference above) |
 | 8 | PR (per story) | PO | Story → Merged |
 | 9 | QA Confirmation (sprint-wide) | PO + AI | UAT checklist generation |
 | 10 | UAT sign-off | PO | Sprint → Complete |

@@ -157,6 +157,28 @@
 |----|-------------|----------|--------|-------|
 |    |             |          |        |       |
 
+### 5.21 Future Capabilities
+
+> **[AI Guide]** Section 5.21 is a fixed, reserved subsection number — unlike 5.1, 5.2, 5.3... above (assigned dynamically, one per real feature area), 5.21 is always 5.21 regardless of how many feature-area subsections this project actually has. The number is set deliberately high on the assumption a BRD rarely reaches 21 real feature areas. If a project's own feature areas ever do reach 5.21, move this subsection to the next unused number (e.g. 5.22) and note the renumbering in Document Control.
+>
+> This subsection holds capabilities the client already discussed and wants eventually — just not in this phase. Use it only when the answer to this test is yes: *can you write one factual sentence describing exactly how it will behave, backed by something already in the domain knowledge document or this discovery session?* If yes, it belongs here with a real REQ-ID. If the honest answer requires guessing, it is not ready for this subsection — it belongs in Section 15 (Parking Lot) instead, undiscovered and untagged, until a discovery pass gives it the same grounding.
+>
+> Because these ARE already-discovered, they carry the same shape as a real requirement — not the low-ceremony form of a Parking Lot row. Format per entry, using the same fields as Section 5 plus a Title for scanning:
+> - **ID** — REQ-XXX, drawn from the same sequential numbering as every other requirement in this document. Do not run a separate numbering track for this subsection.
+> - **Title** — a short label for scanning during epic review (e.g. "Accounting System Export").
+> - **Description** — one factual sentence, exactly as Section 5 requires: what the system must do, backed by something already in the domain doc or this discovery session — not a guess.
+> - **Priority** — Must Have / Should Have / Nice to Have. The priority it will carry once built, not "low" because it's deferred.
+> - **Source** — `[Client-Stated]` | `[Domain-Default]` | `[Assumed]`, same as Section 5.
+> - **Layer** — `Core` | `Ext:PK` | `Ext:School` | `Ext:[code]`, same membership test as Section 5.
+>
+> **Promotion rule:** when the client confirms this capability is now in scope — a new phase kicks off, a change request lands, or the need resurfaces during epic review — cut the row from this table and paste it into a real Section 5.N feature-area subsection (create one if none fits), unchanged unless the underlying facts have changed since it was written. The REQ-ID travels with it; it is now a live requirement like any other. If the client instead confirms the capability will never be built, delete the row — it never became a live requirement, so nothing downstream references its ID. Because the domain/BRD grounding already exists, promoting a Section 5.21 item does not require a fresh discovery pass first, unlike promoting a Section 15 (Parking Lot) entry.
+>
+> Typically empty at initial BRD generation ("None identified"). Like Section 15, entries usually accumulate later — during epic review, story writing, or a later phase kickoff — not during discovery-driven authoring.
+
+| ID | Title | Description | Priority | Source | Layer |
+|----|-------|-------------|----------|--------|-------|
+|    |       |             |          |        |       |
+
 ---
 
 ## 6. Business Rules
@@ -313,6 +335,7 @@ Confirms the right content is in the right sections and nothing has been misplac
 - [ ] Section 1.4 (Scope > Out of Scope) is populated. A BRD with no explicit exclusions is incomplete — something has always been excluded, even if the client didn't say so.
 - [ ] Every item in Section 1.4 (Out of Scope) is either explicitly a permanent exclusion, or has a corresponding REQ-ID in Section 5 tagged `[Client-Stated — Phase 2]` (or equivalent). A deferred capability with no REQ-ID cannot later extend an epic without a full BRD change — check this now, while it is cheap to fix, not after epics exist.
 - [ ] No implementation detail appears anywhere in sections 3–9: no field types, no API endpoints, no database design, no UI decisions, no technology choices.
+- [ ] Every entry in Section 5.21 (Future Capabilities) has all five fields a real requirement has (ID, Title, Description, Priority, Source, Layer) and real domain/BRD grounding for its Description — no entry sits here on a guess. If the grounding is not real, move it to Section 15 (Parking Lot) instead.
 - [ ] Every entry in Section 15 (Parking Lot) has a source/context and an explicit Promotion Path note — no entry is silently treated as if it were already scoped, discovered, or REQ-worthy.
 
 ---

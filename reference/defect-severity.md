@@ -86,14 +86,14 @@ Defines the four severity levels for defects found during testing, with examples
 
 A defect may be set to **Deferred** only when all of the following conditions are met:
 
-1. The defect is **Medium or Low** severity — Critical and High defects cannot be deferred
+1. The defect is **Medium or Low** severity, **or** it is **High** severity with the explicit Product Owner agreement required by condition 3 below — **Critical defects can never be deferred, under any condition or agreement**
 2. If this project has an external client (not an internal/self-built product), the client has been **informed** of the defect and its deferral
-3. The **Product Owner has approved** the deferral
+3. The **Product Owner has approved** the deferral — for a High severity defect this approval must be explicit and individually recorded against that defect (not covered by a blanket sprint sign-off)
 4. A **target sprint** for the fix is agreed and recorded in the defect log
 
 Deferred defects are batched into the agreed sprint. They do not disappear — track all Deferred defects (e.g. in the sprint plan's carry-forward list or the test execution report) and re-test them when the target sprint is delivered.
 
-**A High severity defect may never be deferred without explicit Product Owner agreement.** The default is that High defects block UAT sign-off.
+**The default for both Critical and High defects is to block UAT sign-off.** A High defect may only cross that gate as Deferred, and only with the explicit, individually-recorded Product Owner agreement in condition 3 above. A Critical defect can never cross it as Deferred — there is no agreement that changes this.
 
 ---
 

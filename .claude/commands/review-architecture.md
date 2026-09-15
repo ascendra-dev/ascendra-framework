@@ -447,13 +447,13 @@ If any fixes were applied during the review, add one row to the architecture doc
 
 > "All five concerns reviewed. [N] flags raised, all resolved. [N] changes applied.
 >
-> Ready to lock the architecture? Type `lock` to set Status to Locked and complete the review, or `not yet` to leave it in Under Review for further changes."
+> Ready to lock the architecture? Reply `lock: {one-line summary of what you specifically verified}` (e.g. `lock: confirmed RBAC matches every BRD role and the schema covers every screen's data requirements`) to set Status to Locked and complete the review, or `not yet` to leave it in Under Review for further changes."
 
-Wait for PO response.
+Wait for PO response. A bare `lock` with no rationale is accepted too — do not block on it — but ask once: "Anything specific you want on record as verified before I lock it?" and capture the answer if given, or proceed with `lock` alone if the PO declines.
 
 ---
 
-**If PO types `lock`:**
+**If PO types `lock` (with or without a rationale):**
 
 Update the architecture document:
 - `**Status:** Locked`
@@ -462,6 +462,7 @@ Update the architecture document:
 In Section 10 (Approval):
 - `**Decision:** Approved`
 - `**Date:** {today's date}`
+- `**Locked because:** {the PO's rationale, verbatim, if given — otherwise omit this line entirely rather than writing a placeholder}`
 - Leave the PO identity field blank — the PO fills it if required
 
 Update Section 11:

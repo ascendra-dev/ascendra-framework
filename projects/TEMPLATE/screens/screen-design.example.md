@@ -1,4 +1,4 @@
-Harborview Consulting Ltd — Invoice Management System (BRD v1.0, Approved). This example demonstrates: a single-portal Staff App with a flat navigation map; a Screen Inventory row set covering both EPIC-002 (Client Management) and EPIC-003 (Invoice Management); mandatory, cited Surface/UI Pattern/Matched Reference fields on every row (no generic labels); an overlay screen (Dialog) correctly distinguished from a routed Page; and a fully completed Per-Screen Data Requirements section and Verification checklist.
+Harborview Consulting Ltd — Invoice Management System (BRD v1.0, Approved). This example demonstrates: a single-portal Staff App with a flat navigation map; a Screen Inventory row set covering both EPIC-002 (Payer Management) and EPIC-003 (Invoice Management); mandatory, cited Surface/UI Pattern/Matched Reference fields on every row (no generic labels); an overlay screen (Dialog) correctly distinguished from a routed Page; a fully completed Per-Screen Data Requirements section and Verification checklist; and journey citations that cite a specific numbered step within a BRD journey (e.g. "Journey 4.1, step 1"), not an invented sub-heading.
 
 ---
 
@@ -31,28 +31,30 @@ Harborview Consulting Ltd — Invoice Management System (BRD v1.0, Approved). Th
 | Nav item | Portal | Visibility condition | Grouping |
 |---|---|---|---|
 | Dashboard | Staff App | baseline — always visible | flat |
-| Clients | Staff App | baseline — always visible | flat |
+| Payers | Staff App | baseline — always visible | flat |
 | Invoices | Staff App | baseline — always visible | flat |
 
 ### 3. Screen Inventory
 
+> Journey citations reference a specific numbered step within a BRD Section 4 journey (e.g. "Journey 4.1, step 1" — the first numbered step under `### 4.1`), since BRD journeys number their steps as a plain list, not as sub-headings. There is no `4.1.1` heading anywhere in the BRD — never cite one.
+
 | Screen ID | Portal | Route | Reachable by | Purpose | Source | Surface | UI Pattern | Matched Reference | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| SCR-001 | Staff App | `/app/clients` | baseline | Browse all client records | Journey 4.1.1, REQ-010 | Page | Table-List | Data Table + Empty State | Empty State candidate — new account |
-| SCR-002 | Staff App | overlay on SCR-001 | baseline | Create or edit a client record | Journey 4.1.2, REQ-011 | Sheet | Form | closest: Customer Profile | |
-| SCR-003 | Staff App | `/app/invoices` | baseline | Browse all invoices | Journey 4.2.1, REQ-020 | Page | Table-List | Data Table + Page Bar | Empty State candidate — new account |
-| SCR-004 | Staff App | `/app/invoices/new` | baseline | Draft and send a new invoice against an existing client | Journey 4.2.2–4, REQ-021/022 | Page | Form (Complex) | closest: Create Product Listing (multi-section, mixed grid) | Line-item totals computed inline |
-| SCR-005 | Staff App | `/app/invoices/{id}` | baseline | Invoice detail — line items, status, totals | Journey 4.2.5, REQ-023 | Page | Detail | Item + Card | |
+| SCR-001 | Staff App | `/app/payers` | baseline | Browse all Payer records | Journey 4.1, step 1, REQ-010 | Page | Table-List | Data Table + Empty State | Empty State candidate — new account |
+| SCR-002 | Staff App | overlay on SCR-001 | baseline | Create or edit a Payer record | Journey 4.1, step 1 (Payer must exist before selection), REQ-011 | Sheet | Form | closest: Customer Profile | |
+| SCR-003 | Staff App | `/app/invoices` | baseline | Browse all invoices | Journey 4.1, step 4 (post-save landing), REQ-020 | Page | Table-List | Data Table + Page Bar | Empty State candidate — new account |
+| SCR-004 | Staff App | `/app/invoices/new` | baseline | Draft and send a new invoice against an existing Payer | Journey 4.1, steps 1–5, REQ-021/022 | Page | Form (Complex) | closest: Create Product Listing (multi-section, mixed grid) | Line-item totals computed inline |
+| SCR-005 | Staff App | `/app/invoices/{id}` | baseline | Invoice detail — line items, status, totals | Journey 4.1, step 7; Journey 4.2, steps 6–9 (approval status visible here too), REQ-023 | Page | Detail | Item + Card | |
 
 ### 4. Per-Screen Data Requirements
 
 | Screen ID | Fields shown/collected | Actions available | Notes |
 |---|---|---|---|
-| SCR-001 | Client name, billing contact, payment terms, invoice count | Filter, sort, open detail, create new | |
+| SCR-001 | Payer name, billing contact, payment terms, invoice count | Filter, sort, open detail, create new | |
 | SCR-002 | Company name, billing contact name/email, payment terms | Save | REQ-011 payment terms required |
-| SCR-003 | Invoice #, Client, Amount, Status, Due date | Filter, sort, open detail, create new | |
-| SCR-004 | Client (select existing), line items (description, qty, unit price), due date | Save draft, send | Tax and total computed from line items |
-| SCR-005 | Invoice #, status, client, line items, totals, sent/draft timestamps | Edit (if Draft), send | Only Draft invoices are editable |
+| SCR-003 | Invoice #, Payer, Amount, Status, Due date | Filter, sort, open detail, create new | |
+| SCR-004 | Payer (select existing), line items (description, qty, unit price), due date | Save draft, send | Tax and total computed from line items |
+| SCR-005 | Invoice #, status, Payer, line items, totals, sent/draft timestamps | Edit (if Draft), send | Only Draft invoices are editable |
 
 ---
 

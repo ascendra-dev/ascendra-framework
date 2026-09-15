@@ -186,4 +186,4 @@ State file:       projects/{PROJECT_CODE}/brds/brd-discovery-state.md
 
 If `projects/{PROJECT_CODE}/brds/brd-discovery-state.md` already exists with completed sections: skip those sections. Start from the first uncovered topic in Section 3 (Playbook Progress). Reference the saved answers throughout — do not re-ask covered questions.
 
-If the user opens a resumed session and wants to revisit a previously covered topic: allow it, update the saved answer, and note the revision in Section 5 (Open Issues) with the reason for the change.
+If the user opens a resumed session and wants to revisit a previously covered topic: allow it, update the saved answer, and note the revision in Section 7 (Open Questions) with the reason for the change. If the revision contradicts an answer already reflected in a Scope Risk Flag (Section 4), update that flag's status too rather than leaving it stale.
