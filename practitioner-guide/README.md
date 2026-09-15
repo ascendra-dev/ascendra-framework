@@ -16,7 +16,7 @@ This guide is being built phase by phase, checkpointed against real feedback rat
 | 3 | [`03-brd-discovery-and-scope-lock.md`](03-brd-discovery-and-scope-lock.md) | Stage 2 (BRD half) + Stage 3 — BRD discovery, scope lock | ✅ Live |
 | 4 | [`04-product-structuring-epics.md`](04-product-structuring-epics.md) | Stage 4 — `/gen-epics`, epic boundaries and sizing | ✅ Live |
 | 5 | [`05-screen-design.md`](05-screen-design.md) | Stage 5 — `/gen-screen-design`, `/gen-ui-mocks` | ✅ Live |
-| 6 | `06-architecture.md` | Stage 6 — `/gen-architecture`, the 35-check review | ⏳ Planned |
+| 6 | [`06-architecture.md`](06-architecture.md) | Stage 6 — `/gen-architecture`, the 35-check review | ✅ Live |
 | 7 | `07-sprint-planning.md` | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ⏳ Planned |
 | 8 | `08-development.md` | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ⏳ Planned |
 | 9 | `09-qa-uat.md` | Stage 9–10 — QA, UAT | ⏳ Planned |
