@@ -82,6 +82,18 @@
 
 ---
 
+### 5. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-screen-design` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/05-screen-design.md`'s own tests (the Portal boundary/auth-flow test, the `closest:` citation-reasoning convention, the Screen/Surface/UI Pattern equal-weight rule, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 6 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this screen design, this section does not appear at all; do not pre-create it empty.
+
+### 6. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 5's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this screen design, this section does not appear at all; do not pre-create it empty.
+
+> **[AI Guide — numbering note]** Sections 5 and 6 are reserved for `/judgment-check` as shown here — unrelated to `/review-screen-design`'s own `## Review Record` section, which is a bare, unnumbered heading appended to this same file and carries no section number of its own, so there is no numbering collision between the two mechanisms.
+
+---
+
 ## Part 2 — Verification
 
 > **[AI Guide — Verification]** Run every check below before reporting `/gen-screen-design` complete. A document that fails any check must be corrected before the PO reviews it in `/review-screen-design`.

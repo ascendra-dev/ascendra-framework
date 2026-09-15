@@ -292,3 +292,13 @@ These checks confirm the document covers what it should.
 
 **Mock discovery status:** Not yet run — playbook not yet written.
 **Planned after:** Playbook completion.
+
+---
+
+## 13. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-domain-knowledge` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/02-domain-discovery.md`'s own tests (the Section 5-vs-Section 10 universality test, the generalization filter, the confidence-score and Factual Accuracy Log reasoning, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 14 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this document, this section does not appear in the document at all; do not pre-create it empty.
+
+## 14. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control above. Each row records one finding from Section 13's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this document, this section does not appear in the document at all; do not pre-create it empty.

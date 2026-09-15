@@ -116,6 +116,18 @@ All scenarios in this checklist have been executed. Results are recorded above.
 
 ---
 
+## Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-uat-checklist` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/09-qa-uat.md`'s own tests (the AC-to-scenario translation density test — numbered steps, observable expected results, no technical jargon — and the rest of that chapter's checkable material) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Density & Judgment Resolution below for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this checklist, this section does not appear at all; do not pre-create it empty.
+
+## Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Density & Judgment Findings' history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this checklist, this section does not appear at all; do not pre-create it empty.
+>
+> **[AI Guide — numbering note]** This checklist's own sections are unnumbered by convention ("How to use this checklist," "Sprint Summary," "UAT Sign-off" above) — these two headings follow that same unnumbered style rather than the numbered-section convention used elsewhere in this framework. No `/review-uat-checklist` command exists to reserve a conflicting heading here.
+
+---
+
 _Generated via `/gen-uat-checklist` from approved sprint stories. All test scenarios are derived directly from story acceptance criteria._
 
 ---

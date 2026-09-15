@@ -162,6 +162,18 @@ XS / S / M / L / XL
 
 ---
 
+### 8. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-stories` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/07-sprint-planning.md`'s own tests (the persona tie-break rule, the story sizing/AC-count proxy and its Pattern Novelty / Context Footprint factors, the wave-vs-epic boundary test as it bears on this story's own Dependencies, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 9 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this story, this section does not appear at all; do not pre-create it empty.
+
+### 9. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 8's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this story, this section does not appear at all; do not pre-create it empty.
+
+> **[AI Guide — numbering note]** Sections 8 and 9 are per-story, reserved for `/judgment-check` as shown here — unrelated to `stories/review-record.md`, which is a separate, project-wide file `/review-stories` maintains across all stories and does not use this numbering at all, so there is no numbering collision between the two mechanisms.
+
+---
+
 ## Part 2 — Verification
 
 > **[AI Guide — Verification]** Run every check below on every story before it enters a sprint plan. A story that fails any check must be corrected before sprint lock — not after.

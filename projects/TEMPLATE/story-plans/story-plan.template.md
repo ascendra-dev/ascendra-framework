@@ -140,6 +140,18 @@
 
 ---
 
+### 8. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-story-plan` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/08-development.md`'s own tests (the story-plan confirmation checklist — the Auth/RBAC line, the Queries tenant-scoping clause, the Route/Surface match against the approved mock, the Data layer line, and Section 6's Risks/Open Questions — and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 9 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this plan, this section does not appear at all; do not pre-create it empty.
+
+### 9. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 8's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this plan, this section does not appear at all; do not pre-create it empty.
+
+> **[AI Guide — numbering note]** Sections 8 and 9 are reserved for `/judgment-check` as shown here, immediately after whichever numbered content section is genuinely last in a given plan. Section 4 (Worker Plan) above is itself conditional — a plan with no Worker Plan renumbers Test Scenarios, Risks, and Deviations down by one, ending its content at Section 6 rather than 7. When that happens, Density & Judgment Findings and Resolution land at 7 and 8 for that plan, not 8 and 9 — `/judgment-check` writes to the two numbers immediately after this specific plan's actual last content section, never after Part 2 — Verification, and never by inventing a numbering gap to preserve 8/9 literally. There is no `/review-story-plan` command and no separate review-record file these numbers could collide with.
+
+---
+
 ## Part 2 — Verification
 
 > **[AI Guide — Verification]** Run every check below before writing the plan file. A plan that fails any check must be corrected before the PO reviews it.

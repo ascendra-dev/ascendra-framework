@@ -152,6 +152,18 @@ If no defects were found in this sprint, write: **No defects found.**
 
 ---
 
+### 7. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled when this report is generated, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/09-qa-uat.md`'s own tests (the corrected Deferred Defect Process — condition 3's requirement for explicit, individually-recorded Product Owner agreement on each High defect, never a blanket sign-off — and the trigger test for when this full report is warranted vs. a one-line sprint-plan confirmation) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 8 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this report, this section does not appear at all; do not pre-create it empty.
+
+### 8. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 7's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this report, this section does not appear at all; do not pre-create it empty.
+>
+> **[AI Guide — numbering note]** Sections 7 and 8 are reserved for `/judgment-check` as shown here, immediately after Section 6 (Approval) and before Part 2 (Verification). No `/review-test-execution-report` command exists in this framework, so there is no other command reserving a conflicting section number here.
+
+---
+
 ## Part 2 — Verification
 
 > **[AI Guide — Verification]** Run every check below before submitting this report. A report that fails any check will produce an incorrect Product Owner decision.

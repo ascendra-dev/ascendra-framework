@@ -22,18 +22,20 @@ If no path is given, ask:
 
 Resolve the artifact's type from its path and filename, then its matching practitioner-guide chapter, from this table — the only two things this command ever reads:
 
-| Artifact | Chapter | Pilot status |
-|---|---|---|
-| `brief.md` | `practitioner-guide/01-intake.md` | Not yet piloted |
-| `domain/*.md` (domain knowledge) | `practitioner-guide/02-domain-discovery.md` | Not yet piloted |
-| `brds/brd-*.md` | `practitioner-guide/03-brd-discovery-and-scope-lock.md` | **Piloted** |
-| `epics/EPIC-*.md` | `practitioner-guide/04-product-structuring-epics.md` | **Piloted** |
-| `screens/screen-design.md` | `practitioner-guide/05-screen-design.md` | Not yet piloted |
-| `architecture/arch-v1.md` | `practitioner-guide/06-architecture.md` | **Piloted** |
-| `stories/US-*.md`, `sprints/sprint-*.md` | `practitioner-guide/07-sprint-planning.md` | Not yet piloted |
-| `story-plans/*.md`, `pr/*.md` | `practitioner-guide/08-development.md` | Not yet piloted |
-| `sprints/*-uat-checklist.md`, `test-reports/*.md` | `practitioner-guide/09-qa-uat.md` | Not yet piloted |
-| `releases/*.md` | `practitioner-guide/10-release-support-hotfix.md` | Not yet piloted |
+| Artifact | Chapter |
+|---|---|
+| `brief.md` | `practitioner-guide/01-intake.md` |
+| `domain/*.md` (domain knowledge) | `practitioner-guide/02-domain-discovery.md` |
+| `brds/brd-*.md` | `practitioner-guide/03-brd-discovery-and-scope-lock.md` |
+| `epics/EPIC-*.md` | `practitioner-guide/04-product-structuring-epics.md` |
+| `screens/screen-design.md` | `practitioner-guide/05-screen-design.md` |
+| `architecture/arch-v1.md` | `practitioner-guide/06-architecture.md` |
+| `stories/US-*.md`, `sprints/sprint-*.md` | `practitioner-guide/07-sprint-planning.md` |
+| `story-plans/*.md`, `pr/*.md` | `practitioner-guide/08-development.md` |
+| `sprints/*-uat-checklist.md`, `test-reports/*.md` | `practitioner-guide/09-qa-uat.md` |
+| `releases/*.md` | `practitioner-guide/10-release-support-hotfix.md` |
+
+Every row above is live — the pilot on BRD/Epics/Architecture validated the mechanism (see the simulation record referenced in `practitioner-guide/README.md`), and it has since been extended to the remaining seven rows, each with the reserved template sections and a worked example. Every corresponding template and `.example.md` pair carries the two sections this command writes to.
 
 If the path doesn't match any row, stop:
 
@@ -46,7 +48,7 @@ If the path doesn't match any row, stop:
 | Check | How to verify | Failure message |
 |-------|--------------|----------------|
 | Artifact file exists | Read the path from Step 1 | "`{path}` not found. Check the path and try again." |
-| Artifact type is piloted | Cross-check the Step 1 table's Pilot status column | "Judgment Check is not yet extended to {artifact type} — currently piloted on BRD, Epics, and Architecture only, while the mechanism is validated in real use. Ask the Product Owner if this should be extended next." |
+| Artifact's own template has the reserved sections | Confirm the matching template in `projects/TEMPLATE/` has "Density & Judgment Findings"/"Resolution" sections before running — this should always be true per the table above; treat a missing pair as a framework defect to report, not something to route around by inventing a section shape on the spot | "`{artifact type}`'s template doesn't yet define the Density & Judgment sections — this shouldn't happen for a covered artifact type; flag it rather than improvising a section shape." |
 
 Do not proceed past a failed check.
 
