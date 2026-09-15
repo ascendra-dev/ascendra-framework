@@ -39,6 +39,22 @@ Say it plainly before you hit it the first time: **if this is the first story fo
 
 ---
 
+## Vendoring an `ascendra-commons` module on first touch
+
+Only relevant if this project actually adopted one or more `ascendra-commons` modules during architecture — check `projects/{CODE}/standards/` for a `*-pattern.md` file that cites `ascendra-commons`; if none exist, this doesn't apply, the same way `/implement-story` itself skips its own Step 2 item 7 for a project that adopted none. [`06-architecture.md`](06-architecture.md) covers how that adoption decision gets made and what Model (1 or 2) means in the first place.
+
+Where repo scaffolding above happens once, at whichever story first touches a given repo, vendoring happens at a finer grain. The first **story** that actually requires a specific adopted module — not the whole project, and not at repo-bootstrap time — triggers vendoring that one module's specific packages into `src/ascendra-commons/{module}/`. `/implement-story` Step 3 reads that module's own real `README.md` (its "Consuming this module" section or equivalent) to determine exactly which packages the adopted Model needs — typically `{module}.core` plus its Model 1 family package, occasionally with a further package the README names explicitly (`payment-gateway-adapter`'s `.api`, for its admin read surface) — and copies only those, never the whole module folder speculatively. A project that adopted 2 of the 15 modules never touches the other 13; nothing in that project's repos ever mentions them. If a later story needs the same module, `/implement-story` checks whether `src/ascendra-commons/{module}/` already exists and skips vendoring — it happens once per module, not once per story that touches it.
+
+**What to expect in the diff:** the first story that vendors a given module produces, alongside its own implementation, a separate commit — `chore: vendor ascendra-commons/{module}` — kept apart from the story's own commit, mirroring how the `ascendra-ui` scaffold commit (`chore: scaffold {web-repo-name} from ascendra-ui`) is already kept separate from a Web story's own work above. Look for that commit specifically when reviewing a PR that's the first to touch a module — its presence (or its absence, on a later story reusing an already-vendored module) tells you which case you're in without having to ask.
+
+### The `.core`-only rule, at the level you'll actually see it
+
+[`06-architecture.md`](06-architecture.md) covers why the `.core`-only rule exists at architecture time — it's the seam that lets a future Model 1 → Model 2 swap happen without touching business logic. What you'll actually be looking at, in a real story's diff, is narrower: every import from `src/ascendra-commons/{module}/` in this project's own code should resolve to that module's `.core` package — or, only where the module's own README explicitly names a further package the vertical is meant to depend on directly — never a concrete `.core.<family>.<stack>` or `.core.<capability>` implementation package reached past `.core` for convenience.
+
+You don't have to catch this yourself line by line — it's one of the things `/implement-story`'s own Standards Compliance Self-Check re-reads the actual diff against before reporting a story done, the same discipline it already applies to [`reference/ascendra-ui/hard-instructions.md`](../reference/ascendra-ui/hard-instructions.md) on a Web story: re-check every relevant import or pattern against the diff itself, not from memory of what was written earlier in the same session. If a PR's diff shows a direct import from `.core.<family>.<stack>` where `.core` alone should have sufficed, that's the same class of defect [`FW-033`](../decisions/FW-033-implement-story-standards-compliance.md), `FW-040`, and `FW-041` already show compiles, lints, and passes tests cleanly regardless — worth a second look specifically because nothing automated catches it.
+
+---
+
 ## The asymmetric recovery loop — and what to actually do when something fails
 
 `/implement-story` and `/verify-story` fail in genuinely different ways, and the framework only gives you a clean procedure for one of them.
@@ -78,6 +94,7 @@ This chapter builds on [`00-orientation.md`](00-orientation.md)'s terminology ma
 - **Plan Status (`Draft`/`Confirmed`)** — the story plan's own gate field, set via `update-status`. Distinct from the story's own `**Status:**` field (`Reviewed`/`In Progress`/etc.) — a story can be `Reviewed` while its plan is still `Draft`. `/implement-story` checks the plan's Plan Status, not the story's Status, for this particular gate.
 - **Target** (`API`/`Web`/`Worker`/`+`-joined) — set once, at `/gen-stories` time, from the Locked architecture's repo topology (`FW-030`). `/gen-story-plan`, `/implement-story`, and `/verify-story` all read it as authoritative, cross-checking rather than re-deriving it, except as a fallback for stories generated before this field existed.
 - **Plan Conformance** — the section `/verify-story` adds to its report, comparing what the plan declared (Section 2/3/4) against what was actually delivered. A documented deviation (see next) is a Match-with-rationale, not a Defect; an undeclared one is.
+- **Scaffolding vs. vendoring** — both are "first touch" mechanics, but at different granularity. Scaffolding happens once per **repo** — the first story to touch `../{repo-name}` at all bootstraps the whole project. Vendoring happens once per **`ascendra-commons` module** — the first story that actually needs that specific module copies just its packages into `src/ascendra-commons/{module}/`, regardless of how many stories already exist in that repo. A repo can be long-scaffolded and still vendor a new module for the first time on story forty.
 - **Deviations from Plan (plan Section 7)** — where `/implement-story` records any point it had to diverge from what the Confirmed plan stated, and why. Blank at generation; filled in only if execution genuinely needs to depart from the plan.
 
 ---

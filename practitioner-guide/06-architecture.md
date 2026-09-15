@@ -27,6 +27,34 @@ Both are dense in the same way REQ-002 was dense in Chapter 3 — every sentence
 
 ---
 
+## `ascendra-commons` module adoption — optional, stack-gated, evaluated inside Step 7
+
+Skip this section entirely if this project's confirmed backend (Section 2, confirmed in Step 5) isn't NestJS + Drizzle on Postgres or Supabase — the gate is stated exactly that plainly in [`reference/ascendra-commons/adoption-guide.md`](../reference/ascendra-commons/adoption-guide.md), and `/gen-architecture` enforces it the same way: *"`ascendra-commons` applies only when the confirmed backend stack is NestJS + Drizzle, with Postgres or Supabase as the database. For any other confirmed stack ... `ascendra-commons` does not apply, full stop."* No partial match, no "translate the concept to this stack" fallback — a Spring backend, or a NestJS backend on MySQL rather than Postgres/Supabase, doesn't qualify regardless of how close the fit looks. Most projects this framework generates architecture for will never see `ascendra-commons` mentioned anywhere in their own output, and that's the expected, correct outcome — not a gap.
+
+When the gate does pass, `ascendra-commons` adoption is folded into Step 7's Tier 3 pass — the same step that proposes project-specific pattern documents like Harborview's own `idempotent-stripe-webhook-handling.md`. Each of the fifteen modules is evaluated on its own, never as a package deal: does this project's own BRD or domain knowledge actually establish a real need for this capability (a dunning-email requirement for `notification`, a webhook-based payment integration for `payment-gateway-adapter`) — never a speculative "might be useful." Declining a module is as normal an outcome as adopting one; most projects on the matching stack still adopt only a handful of the fifteen.
+
+### What you're actually confirming when a module shows up in the Step 7 table
+
+When Step 7's proposed-files table shows a row like `notification-pattern.md | Additional (ascendra-commons) | REQ-014 dunning reminders`, don't read it the way you'd read a baseline Tier 1 row (`api-standards.md`, generated whether you engage with it or not). Treat it the way this chapter already asks you to treat the Actor Identity Shape line in Step 4: a real, consequential decision sitting inside a table row you could easily nod through because most of the other rows genuinely are routine.
+
+What's actually being decided isn't just *whether* to adopt the module — it's **which Model**. Every module's own README states plainly what its Model 1 ships and the concrete trigger for Model 2, and `/gen-architecture` reads that README to settle the question against this project's actual scale and requirements, not a guess. Adopting `optimistic-locking`'s Model 1 (a single-process atomic-update helper) versus whatever its README names as the Model 2 trigger is exactly the kind of choice worth asking "why this and not the other" about before you confirm — the same instinct this chapter already asks you to apply to the twelve-row tech stack table, and for the same structural reason: Section 9 can't catch a bad choice made in the same confirmation that produces the baseline it's checked against, and a Tier 3 `ascendra-commons` row is precisely that kind of baseline-forming confirmation.
+
+### Why the generated file cites, rather than invents
+
+`standards/{module}-pattern.md` follows the same `architectural-pattern.template.md` shape as any project-invented Tier 3 file, but its content isn't derived the way Harborview's own webhook-handling pattern was — it's read directly from the real module's `README.md` in `../ascendra-commons/{module}/` and cited, not re-derived. This is the same "cite, don't restate" discipline `api-standards.md`'s own generation already applies to `reference/api-contract/contract.md` — point at the source of truth, don't retype it as if this project invented it.
+
+The generated file also records which `ascendra-commons` git commit or date that README was read at. `ascendra-commons` has no release/versioning tooling yet — its own root `README.md` says so — so without a frozen reference, a later change to the source repo could make an already-Locked project's citation silently stale. This is the same discipline [`FW-001`](../decisions/FW-001-document-versioning.md) already establishes for this project's own architecture document: freeze the version you built against, don't cite a moving target.
+
+### The one rule worth remembering in one sentence
+
+Every module's public surface is its `.core` package — everything past that (`.core.<capability>`, `.core.<family>.<stack>`, `.api`) is an implementation this project's own code never imports directly, and the entire reason that discipline exists is so a future Model 1 → Model 2 swap never has to touch a single line of this project's own business logic — the seam is the whole point. `/implement-story` is held to this exactly as strictly as it's held to any other non-negotiable rule; see [`08-development.md`](08-development.md) for what that looks like at the implementation level, in a real story's diff.
+
+### Where this doesn't show up
+
+Harborview itself is stack-neutral by design — its architecture never confirms NestJS + Drizzle as excluding some other option, so it never exercises this gate at all, and none of its `.example.md` files show an adopted `ascendra-commons` module. [`case-studies/harder-cases.md`](case-studies/harder-cases.md) is the right home for a worked commons-adoption walkthrough once one exists; it isn't written yet.
+
+---
+
 ## The dense judgment calls inside `/gen-architecture` itself
 
 Three decisions in this command are consequential, hard to reverse, and easy to skim past because none of them is asked as its own clearly-flagged question. Slow down for all three.
@@ -129,6 +157,7 @@ This chapter builds on [`00-orientation.md`](00-orientation.md)'s terminology ma
 - **Actor Identity Shape** — the derived decision on whether audit columns (`createdBy`/`updatedBy`/`deletedBy`) are a foreign key into one user table or a self-contained actor-label string. Single actor identity space → FK is fine. More than one kind of actor (authenticated user, tokenized-link customer, scheduled job/webhook) → the label shape is required, because one FK cannot represent more than one target table. See the worked explanation above.
 - **Deviation (Section 9)** — a difference between the architecture document and `standards/system-architecture.md`, the file the document is checked against. Only catches drift *after* the baseline exists — it structurally cannot flag a bad choice made in the same confirmation that produces the baseline.
 - **Composable capability model** — the `capabilities: string[]` JWT shape, used instead of a single `role: string` when the BRD describes permissions as independently assignable rather than one fixed role per user. Detected automatically from BRD wording; confirm it against your own memory of the actual permission conversation.
+- **Standards Tiers (Tier 1/2/3)** — not the same thing as the Fix tiers below, despite sharing the word. Step 7's own classification for every file it writes to `standards/`: Tier 1 (cross-cutting baseline, generated regardless of stack — `api-standards.md` and its seven siblings), Tier 2 (one file per confirmed technology substantial enough to warrant its own conventions), Tier 3 (AI-determined additional patterns — a project-invented pattern like Harborview's webhook-handling document, or an adopted `ascendra-commons` module's `{module}-pattern.md`). One classifies a generated file; the other, below, classifies a review-time correction.
 - **Fix tiers (Tier 1–4)** — the same pattern as `/review-epics`, reused here: Tier 1 applies silently, Tier 2 confirms before applying, Tier 3 is a PO decision, Tier 4 halts the review (structurally incomplete coverage, multiple unresolved Open Decisions).
 
 ---

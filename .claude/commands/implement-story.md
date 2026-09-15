@@ -90,7 +90,9 @@ The Confirmed plan (read in Step 1) already states *what* to build — which end
    - **If the confirmed UI library is Ascendra UI:** also read `reference/ascendra-ui/hard-instructions.md` in full before building any UI. This file is a living list of corrections to how `ascendra-ui` is actually used in practice (found by PO review or direct investigation against `../ascendra-ui`'s real component source and real pages) — read *in addition to*, never instead of, `ascendra-ui/docs/ui-reference.md`/`showcase-reference.md`. Where a hard instruction and a docs template disagree, the hard instruction wins — it exists specifically to record cases where the docs were wrong or incomplete.
    - **Any story building a client-side validation schema:** also read `reference/form-validation-messages.md` before writing it — a general, UI-library-agnostic convention for validation message wording and check ordering.
 
-7. **Screen design and approved mock** (Web stories only) — before building any UI:
+7. **Ascendra Commons module reference** (API stories only) — check `projects/{PROJECT_CODE}/standards/` for any `*-pattern.md` file whose content cites `ascendra-commons` (Tier 3 pattern files also cover project-invented patterns with no relation to `ascendra-commons` — a filename match alone is not proof of adoption). If none cite it, this project adopted no `ascendra-commons` module — skip this item entirely, the same way item 6 skips when the confirmed UI library isn't Ascendra UI. If one or more do, read only the file(s) whose documented module this story's Confirmed plan actually cites — most stories on a project that adopted, say, `notification` will never touch it, and reading a pattern file for a capability this story doesn't use is wasted context, not diligence. Each cited pattern file states which Model (1 or 2) this project adopted and what the module provides. **Also read `reference/ascendra-commons/adoption-guide.md` in full** before touching any vendored code — in particular its `.core`-only import rule, which Step 4's Standards Compliance Self-Check re-checks against the actual diff, the same way it re-checks `reference/ascendra-ui/hard-instructions.md` for Web stories.
+
+8. **Screen design and approved mock** (Web stories only) — before building any UI:
    - Find this story's screen(s) in `projects/{PROJECT_CODE}/screens/screen-design.md` Section 3 (or architecture Section 3.1.3.3, once carried over) and read its Surface (Page/Dialog/Sheet/Drawer), UI Pattern, and Matched Reference.
    - **Then open the actual approved mock file** for this screen's portal — `projects/{PROJECT_CODE}/mocks/{portal-slug}-mock.html` — and locate this specific screen inside it. The mock's real markup (layout, component structure, copy, field order) is the visual ground truth the PO already approved — build the screen to match it, adapting only what's needed to wire it to real data and real endpoints. Do not redesign or reinterpret — a text description (Surface/Pattern) is a category, not a substitute for the actual approved shape.
    - Read `projects/{PROJECT_CODE}/architecture/arch-v1.md` Section 3.1.3.2 (Navigation Map) for this portal. Build the persistent nav exactly as listed — same items, same grouping, same visibility conditions — not a fresh navigation design.
@@ -176,6 +178,18 @@ Check `../{repo-name}`. Three cases — a directory merely existing is not proof
 **Worker (only when Section 3.1 declares one):** follow that unnumbered `####` subsection's own structure the same way — scaffold per its confirmed stack (never assume Node/NestJS), restructure to match its documented layout, `.env.example` from Section 7.3, fresh `git init` if not cloned from an existing base.
 
 After scaffolding any repo, commit the scaffold (`chore: scaffold {repo-name}`) before proceeding to branch for the story itself — the scaffold and the story's own changes are separate commits.
+
+**Vendor any `ascendra-commons` module this story requires:**
+
+Applies only to a target repository confirmed on the NestJS/Drizzle stack (Section 2) that Step 2 item 7 found at least one `ascendra-commons`-citing pattern file for — ordinarily the API repository, or a declared Worker repository built on that same stack. Skip this sub-block entirely for a Web target, and for any project that adopted no `ascendra-commons` module.
+
+This sub-block runs on every story touching that target, regardless of whether the repository above was just bootstrapped or already existed — vendoring a specific module happens once, the first time any story actually needs it, not for every adopted module up front at repo-bootstrap time, and not speculatively for a module the architecture document didn't record as adopted.
+
+For each module this story's Confirmed plan (cross-checked against its `standards/{module}-pattern.md` citation, read in Step 2) actually requires: check whether `{target-repo-name}/src/ascendra-commons/{module}/` already exists. If it does, an earlier story already vendored it — skip. If it doesn't, read that module's own real `README.md` at `../ascendra-commons/{module}/README.md` (never the pattern file alone) and find its "Consuming this module" section (or equivalent) to determine exactly which package(s) the adopted Model needs — a Model 1 adoption is typically `{module}.core` plus its Model 1 family package (e.g. `domain-events.core` + `domain-events.core.in-process`); some modules also require `.api` consumed directly even under Model 1 (e.g. `payment-gateway-adapter` adds `.api` for its admin read surface); a single-folder module with no split (e.g. `optimistic-locking`) is copied whole. Copy exactly those packages — never the whole module folder speculatively, never a package this project's own pattern file didn't record as adopted — from `../ascendra-commons/{module}/` into `{target-repo-name}/src/ascendra-commons/{module}/`, verbatim.
+
+Like `ascendra-ui/`, this tree is managed: never hand-edit a file inside it once vendored, and never centralize state across vendored modules — each module keeps its own `forRoot()`-style wiring exactly as its README shows, never a shared bootstrap file that reaches into more than one module's internals. A later currency check is a direct diff against `../ascendra-commons/{module}/`, the same discipline as the `ascendra-ui` sync above, applied at module granularity instead of whole-library granularity — a project that adopted only 2 of the 15 modules never needs the other 13 diffed or refreshed.
+
+Commit each newly vendored module on its own, before the story's own implementation commit: `chore: vendor ascendra-commons/{module}` — mirroring how the `ascendra-ui` scaffold commit above is kept separate from the story's own commit.
 
 **Branch the story:**
 
@@ -339,13 +353,13 @@ npm test             Vitest test suite
 - Pages live under the correct Next.js route group per portal, matching Section 3.1.2's folder names exactly
 - Follow the exact folder names listed — do not invent a new route group
 
-**Screens** (Section 3.1.3.3, cross-checked against the approved mock per Step 2 item 7)
+**Screens** (Section 3.1.3.3, cross-checked against the approved mock per Step 2 item 8)
 - Build the screen to match the approved mock's actual markup and layout — the mock is the PO-approved visual reference, not a starting suggestion
 - Wire the mock's static structure to real data (API calls) and real form submission — do not change the visual shape while doing so
 
 **Validation messages** — read `reference/form-validation-messages.md` before writing any client-side validation schema (Zod or whatever the project confirms). Every message names the actual field (its visible label text, not the schema key) — never a bare "Required"/"Invalid X". Within one field's chain, the required check always comes first, so an empty field shows a "required" message, never a format/length message about nothing having been entered.
 
-**Navigation** (Section 3.1.3.2, per Step 2 item 7)
+**Navigation** (Section 3.1.3.2, per Step 2 item 8)
 - Build the portal's persistent nav exactly as the Navigation Map lists it — same items, same grouping, same visibility conditions per role/capability
 - Any cross-cutting UI rule in Section 3.1.3.5 (e.g. a blanket read-only mode for a review role, a delegated-access indicator banner) applies across every screen in the portal, not just the ones this story touches directly — check whether this story's screen needs a gating caption or banner
 
@@ -399,6 +413,8 @@ Before running automated checks, re-read every file in `projects/{PROJECT_CODE}/
 This check exists because standards-file rules are easy to satisfy in the plan and miss in the code, and automated lint/build/test cannot catch them: a missing database trigger, an unwired CORS policy, or a token-verification mechanism that diverges from what the project's own standard specifies will all pass lint, build, and a naive test suite. Only re-reading each rule against the actual diff catches these.
 
 **Web stories on Ascendra UI — also re-check against `reference/ascendra-ui/hard-instructions.md`:** re-read every entry and check the actual UI diff against it (e.g. `FieldLegend` vs a raw heading, `FieldHint` vs `FieldError`, table-page action placement). Same reasoning as above — these are exactly the kind of detail lint/build/test cannot catch, and are easy to get right in one screen and drift on the next unless re-checked against the diff each time.
+
+**API stories importing a vendored `ascendra-commons` module — also re-check against the `.core`-only rule (`reference/ascendra-commons/adoption-guide.md`):** re-read every `@/ascendra-commons/{module}/...` import in the actual diff and confirm it resolves to that module's `.core` package — or, only where the module's own README explicitly names a further package the vertical is meant to depend on directly (e.g. `payment-gateway-adapter`'s `.api` for its admin read surface), that exact package — never a concrete `.core.<family>.<stack>` or `.core.<capability>` implementation package reached past `.core` for convenience, however small the shortcut looks. Same reasoning as the `ascendra-ui` re-check above: this compiles, lints, and passes tests cleanly regardless of which package is imported, and only re-checking the actual diff against the module's own README catches a bypass.
 
 **Any story with a validation schema — also re-check against `reference/form-validation-messages.md`:** confirm every message names its field and that required checks come first in each field's chain. Same reasoning — a naming slip or wrong check order compiles and passes tests cleanly.
 
