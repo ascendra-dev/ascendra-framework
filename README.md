@@ -80,9 +80,10 @@ Full breakdown of every folder and file: `CLAUDE.md`.
 | [`CLAUDE.md`](CLAUDE.md) | The complete rulebook — philosophy, folder structure, every slash command, ubiquitous language, project registry conventions |
 | [`SDLC.md`](SDLC.md) | The conceptual stage map — what happens and why at each of the twelve delivery stages |
 | [`PROJECT-LIFECYCLE.md`](PROJECT-LIFECYCLE.md) | The operational reference — every step, the exact command that runs it, the gate that closes it |
+| [`practitioner-guide/`](practitioner-guide/README.md) | **What to actually write, how much, and what breaks downstream if you get a judgment call wrong** — the layer above the other three docs. Built phase by phase; start at `00-orientation.md`. |
 | [`decisions/index.md`](decisions/index.md) | Framework-level ADRs — why the framework works the way it does |
 
-Start with `CLAUDE.md` for the full picture, then use `SDLC.md` and `PROJECT-LIFECYCLE.md` as your day-to-day reference once you're running real projects.
+Start with `CLAUDE.md` for the full picture, then use `SDLC.md` and `PROJECT-LIFECYCLE.md` as your day-to-day reference once you're running real projects — and the practitioner's guide whenever you hit a judgment call none of the three tells you how to make.
 
 ---
 

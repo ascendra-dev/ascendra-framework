@@ -1,0 +1,57 @@
+# Orientation — How to Use This Guide
+
+## What this is, and what it isn't
+
+[`CLAUDE.md`](../CLAUDE.md), [`SDLC.md`](../SDLC.md), and [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) tell you **what** happens at each stage, **which command** runs it, and **which gate** closes it. They're accurate and you'll keep using them as day-to-day reference once you know the framework.
+
+This guide exists for a different question: **what do I actually write, how much, and what happens three phases downstream if I get it wrong?** That's a judgment-call problem, not a mechanics problem, and it's the thing the framework's own files consistently under-specify — not because they're careless, but because a judgment call is hard to write a rule for. This guide's job is to turn as many of those judgment calls as possible into a test you can apply, backed by a worked example, and to be honest about the ones that still come down to your own read of the situation.
+
+Every finding referenced here — every "this is under-specified," every "the framework doesn't tell you X" — was verified against the actual command and template files as they exist today, not assumed. The full research is preserved in [`FRAMEWORK-AUDIT.md`](../FRAMEWORK-AUDIT.md) at the repo root, alongside a record of the 14 framework defects that research surfaced and fixed before this guide was written. If you want the receipts behind a specific claim in this guide, that's where they are.
+
+## The running example: Harborview
+
+Every `.example.md` file in [`projects/TEMPLATE/`](../projects/TEMPLATE/) — all seventeen of them, from [`brief.example.md`](../projects/TEMPLATE/brief.example.md) through `release-notes.example.md` — traces the same fictional project: **Harborview Consulting Ltd, Invoice Management System**, project code `HARBORVIEW-INV-001`. That's not a coincidence and it's not decoration — it means you already have one complete, internally consistent worked example of the entire pipeline sitting in the repo. This guide leans on it constantly, by direct reference to the real files rather than by re-quoting them, so what you read here and what you find on disk always agree.
+
+Harborview is deliberately the **easy case**: one client, one domain (invoice payment) the AI already knows well, one portal, Core-layer only, no contradictions during discovery, no regulatory complexity. That's exactly why it's a good teaching example for the normal path — and exactly why it can't teach you the harder judgment calls. For those — a niche or regulated domain, an extension project, a multi-portal system with real RBAC complexity — see [`case-studies/harder-cases.md`](case-studies/harder-cases.md), which is being built out alongside this guide, phase by phase, specifically to cover what Harborview doesn't.
+
+## The terminology map
+
+Four things in this framework sound related, get discussed in the same breath, and are in fact completely independent. Confusing them is easy and the cost is real — you can approve a BRD that's internally consistent under one reading and contradictory under another. Learn this table before you touch a real project; refer back to it any time "scope," "priority," "layer," or "core/extension" comes up and you're not sure which one is meant.
+
+| Axis | Answers the question | Where it lives | Values |
+|---|---|---|---|
+| **Scope** | Will this be built in this project **at all**? | BRD §1.4 | In Scope / Out of Scope |
+| **Priority** | Given it's in scope, how essential is it to **this phase**? | BRD §5, per requirement | Must Have / Should Have / Nice to Have |
+| **Layer** | What **technical sequence** must it be built in? | BRD §5, per requirement | `Core` / `Ext:PK` / `Ext:School` / `Ext:[code]` |
+| **Core/Extension architecture** | How does a *separate future project* plug into *this* one? | [`reference/architecture/layered-domain-architecture.md`](../reference/architecture/layered-domain-architecture.md) | A cross-project design methodology, not a per-requirement field |
+
+They look related because Layer and the Core/Extension architecture methodology share vocabulary (both say "Core" and "Extension") — but Layer is a **label on one BRD requirement inside one project**, while the Core/Extension methodology is **how a whole separate project** (with its own brief, its own BRD, its own `Extends:` pointer — see [`01-intake.md`](01-intake.md)) is architected to build on top of this one. Harborview never exercises the second one at all — it's a standalone project, `Project Type: Standalone` in its brief. If you're working an extension project, you need both: Layer tells you which of *this* project's own requirements are foundational vs. market-specific, and the Core/Extension methodology tells you how the *next* project down the chain plugs in. See [`case-studies/harder-cases.md`](case-studies/harder-cases.md) for a worked extension project exercising both at once.
+
+### Scope vs. Priority vs. Layer, worked from a real BRD
+
+Harborview's BRD ([`brd.example.md`](../projects/TEMPLATE/brds/brd.example.md)) gives you real instances of all three axes in the same document. Read them side by side:
+
+- **Scope** (§1.4, In Scope): "Invoice creation, sending, and payment tracking" is in. Accounting-system export (Xero) is explicitly **Out of Scope** — deferred, but real enough that it also has a REQ-ID in §5.21 (Future Capabilities), because it was already discussed and has real domain backing. That's the distinction §5.21 exists to hold: Out of Scope isn't "we never talked about this," it's "we talked about it and it's not this phase." A vaguer idea with no discovery grounding goes in §15 (Parking Lot) instead — see [`03-brd-discovery-and-scope-lock.md`](03-brd-discovery-and-scope-lock.md) for the exact test.
+- **Priority** (§5, per requirement): within what *is* in scope, REQ-001 (Payer creation with dedup) is Must Have — the system doesn't function without it. A later reporting nicety might be Should Have or Nice to Have — it ships this phase if time allows, cut first under pressure.
+- **Layer** (§5, per requirement): every Harborview requirement is `Core`, because Harborview is standalone — there's no `Ext:PK` or `Ext:School` requirement anywhere in this BRD to contrast against. Apply the membership test yourself on a requirement you're unsure about: *"Would a UK retailer using this system need this requirement?"* ([`brd.template.md`](../projects/TEMPLATE/brds/brd.template.md) §5's own AI Guide). If yes, Core. If it exists only because of one specific market or sector, it's `Ext:[code]`.
+
+**Where these three axes can genuinely conflict, and what to do about it:** a requirement can be Must Have (business-critical) and `Ext:PK` (architecturally must be built after Core) at the same time — Priority says build it first, Layer says you can't. Layer wins for *build order* (Core must exist before any Ext requirement that depends on it can be implemented, regardless of how urgent the client considers it); Priority still governs *sequencing within what's buildable right now* — a Must-Have Ext:PK requirement jumps the queue the moment Core is done, ahead of a Should-Have Core requirement that's merely nice-to-have. Neither axis silently overrides the other; if they seem to conflict on a real project, that's usually a sign the requirement should be split — the part that's genuinely urgent and Core-buildable now, and the part that has to wait on the extension seam.
+
+### Other pairs worth knowing before they surprise you
+
+| Pair | The distinction | Where explained in full |
+|---|---|---|
+| **Content Status vs. Status** | `Status` is the whole project's lifecycle (`Active`/`On Hold`/`Complete`) — set once, rarely touched. `Content Status` is one document's own readiness (`Draft`→`Approved`→...) — this is the field every gate actually checks. **This two-field split is unique to `brief.md`** — every other gated artifact (BRD, Architecture, Epic, Story) uses a single `Status` field for both purposes. Don't go looking for a separate Content Status on the BRD; it isn't there. | [`01-intake.md`](01-intake.md) |
+| **Wave vs. Sprint vs. Epic** | A wave is the unit `/gen-stories` generates against — normally one epic, occasionally more when epics are genuinely interleaved at the story level (covered in the Sprint Planning chapter, not yet written). A sprint is the unit of delivery cadence, decided separately and later, by `/review-stories`' Sprint Assignment step, purely from real story count vs. capacity. A wave and a sprint are not the same size and are not decided at the same time — don't assume one wave = one sprint. | `07-sprint-planning.md` (coming) |
+| **Portal vs. Screen vs. Surface vs. UI Pattern** | Portal = a navigation shell (one app/session). Screen = one row in the Screen Inventory, full weight regardless of size — an overlay Dialog is as much "a screen" as a routed Page. Surface = the screen's container mechanism (Page/Dialog/Sheet/Drawer). UI Pattern = the screen's internal content shape (Form/Dashboard/Table-List/Detail), independent of Surface — a Form can live on a Page or inside a Sheet. | `05-screen-design.md` (coming) |
+
+## A pattern to watch for across every phase: scores and thresholds you can't reproduce
+
+Two different points in the pipeline — Domain Discovery and BRD Discovery — give you a percentage (Domain Confidence Score, Requirement Confidence Score) and a fixed gate (70%, 85%) to clear before you're told you're ready to move on. Neither score's formula is fully specified anywhere in the command files, which means you can't independently check whether a number you're handed is right — you can only take it on faith. Treat any confidence score in this framework as a rough signal, not a certified measurement: read the section it claims is weak yourself before trusting the number, and — this is the part nothing in the framework tells you on its own — **raise your personal bar above the stated threshold whenever the domain is regulated, unfamiliar, or the cost of a wrong assumption is more than a sprint to unwind.** A 70% pass on a niche compliance domain is not the same confidence as a 70% pass on an internal expense tool, even though the gate treats them identically. The phase docs for Domain Discovery and BRD Discovery say more about exactly what to personally re-check at each threshold.
+
+## Where to find more
+
+- [`FRAMEWORK-AUDIT.md`](../FRAMEWORK-AUDIT.md) (repo root) — the full research this guide is built on, organized by phase, with exact file/line citations for every finding.
+- [`SDLC.md`](../SDLC.md) / [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) — the conceptual and operational references this guide complements, not replaces.
+- [`decisions/`](../decisions/) — the ADRs. This guide cites the ones that explain a *why* worth knowing; it doesn't try to replace reading one when you need the full history behind a rule.
+- [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the scenarios Harborview doesn't cover, built out phase by phase alongside this guide.
