@@ -48,16 +48,16 @@ If no standards files exist, the checks fall back to the universal technology-ag
 
 ## Step 3 — Review Record: initialise or resume
 
-Check Section 11 of the architecture document.
+Check Section 13 of the architecture document.
 
 ---
 
-**Fresh session (Section 11 does not exist):**
+**Fresh session (Section 13 does not exist):**
 
-Append Section 11 to `projects/{PROJECT_CODE}/architecture/arch-v1.md` now:
+Append Section 13 to `projects/{PROJECT_CODE}/architecture/arch-v1.md` now:
 
 ```markdown
-## Section 11 — Review Record
+## Section 13 — Review Record
 
 **Review started:** {today's date}
 **Review status:** In Progress
@@ -91,9 +91,9 @@ Proceed to Step 4 starting from Concern A.
 
 ---
 
-**Resumed session (Section 11 exists, status `In Progress`):**
+**Resumed session (Section 13 exists, status `In Progress`):**
 
-Read Section 11. Find the first concern with status `Pending` or `In Progress`. That is the resume point.
+Read Section 13. Find the first concern with status `Pending` or `In Progress`. That is the resume point.
 
 > "Resuming architecture review for {PROJECT_CODE}. Completed so far: [list Reviewed concerns]. Picking up from Concern [letter]: [Description]."
 
@@ -101,9 +101,9 @@ Jump to Step 4 at the resume point.
 
 ---
 
-**Review already complete (Section 11 exists, status `Complete`):**
+**Review already complete (Section 13 exists, status `Complete`):**
 
-> "The architecture review is already complete per Section 11. Current document status: `{status}`. Run `/update-status projects/{PROJECT_CODE}/architecture/arch-v1.md Locked` if it is not yet Locked."
+> "The architecture review is already complete per Section 13. Current document status: `{status}`. Run `/update-status projects/{PROJECT_CODE}/architecture/arch-v1.md Locked` if it is not yet Locked."
 
 ---
 
@@ -205,7 +205,7 @@ Apply fixes by tier. For Tier 2, present the proposed change and wait for confir
 
 Wait for PO response. Apply any additions raised.
 
-**Update Section 11:**
+**Update Section 13:**
 
 Set Concern A Status → `Reviewed`. Update Flags count and log any changes in Changes Applied.
 
@@ -259,7 +259,7 @@ Apply fixes by tier.
 
 Wait for PO response. Apply any changes raised.
 
-**Update Section 11:**
+**Update Section 13:**
 
 Set Concern B Status → `Reviewed`. Update Flags count and Changes Applied.
 
@@ -306,7 +306,7 @@ Apply fixes by tier.
 
 Wait for PO response. Apply any changes raised.
 
-**Update Section 11:**
+**Update Section 13:**
 
 Set Concern C Status → `Reviewed`. Update Flags count and Changes Applied.
 
@@ -361,7 +361,7 @@ Apply fixes by tier.
 
 Wait for PO response. Apply any changes raised.
 
-**Update Section 11:**
+**Update Section 13:**
 
 Set Concern D Status → `Reviewed`. Update Flags count and Changes Applied.
 
@@ -415,7 +415,7 @@ Apply fixes by tier. For any open decision flagged in check 30: ask the PO for t
 
 Wait for PO response. Apply any changes raised.
 
-**Update Section 11:**
+**Update Section 13:**
 
 Set Concern E Status → `Reviewed`. Update Flags count and Changes Applied.
 
@@ -427,7 +427,7 @@ Set Concern E Status → `Reviewed`. Update Flags count and Changes Applied.
 
 **Resolve open flags:**
 
-Check the Open Flags table in Section 11. If any flags remain `Open`:
+Check the Open Flags table in Section 13. If any flags remain `Open`:
 
 > "The following items were not resolved during the concern walkthrough:
 > [List each open flag: concern, section, issue]
@@ -465,7 +465,7 @@ In Section 10 (Approval):
 - `**Locked because:** {the PO's rationale, verbatim, if given — otherwise omit this line entirely rather than writing a placeholder}`
 - Leave the PO identity field blank — the PO fills it if required
 
-Update Section 11:
+Update Section 13:
 - `**Review status:** Complete`
 - Add `**Review completed:** {today's date}`
 - Fill the Review Summary
@@ -491,4 +491,4 @@ No architecture changes permitted without /assess-change.
 
 **If PO types `not yet`:**
 
-> "Architecture remains in Under Review status. Progress is saved in Section 11 — return to this review at any time. Run `/review-architecture {PROJECT_CODE}` to resume."
+> "Architecture remains in Under Review status. Progress is saved in Section 13 — return to this review at any time. Run `/review-architecture {PROJECT_CODE}` to resume."

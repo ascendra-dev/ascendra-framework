@@ -50,7 +50,7 @@ One skilled PO can run multiple projects in parallel using this framework.
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 30 slash commands — the framework's executable interface
+├── .claude/commands/       # 31 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
 ├── conventions/            # Framework-authoring meta-rules — command, template, and artifact-naming conventions
@@ -147,6 +147,7 @@ ascendra-framework/
 | `/assess-change` | Assess the impact of a requested scope or architecture change |
 | `/update-status` | Update the status of a project artifact |
 | `/project-status` | Live dashboard: epic/story status, per-sprint progress, and an ATTENTION section flagging blockers — run at any time |
+| `/judgment-check` | Supplementary density/judgment-quality check against one artifact, sourced from the matching `practitioner-guide/` chapter — run before that artifact's `/review-X` walkthrough. Piloted on BRD, Epics, and Architecture; not yet extended to the rest. |
 
 ---
 

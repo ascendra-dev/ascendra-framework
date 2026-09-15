@@ -75,6 +75,7 @@ Read this document when: starting a new project, resuming a project mid-delivery
 - `/assess-change` — assesses a described change's blast radius across the document pipeline and applies coordinated updates. Not tied to any one phase; used whenever scope needs to change after a gate has closed.
 - `update-status` — the single mechanism that records every gate decision. Referenced throughout the table above.
 - `/project-status projects/{PROJECT_CODE}` — live dashboard showing all epic statuses, story completion by status and size, per-sprint progress bars, and an ATTENTION section flagging anything that needs action (stale statuses, unresolved dependencies, L-stories not split, sprints at risk of slipping). Run it to get a situational picture before any gate, at session start, or whenever you need to know where the project stands.
+- `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture only; every other artifact type reports "not yet extended" until the pilot is validated.
 
 ---
 
@@ -725,7 +726,7 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 
 ## Command Reference
 
-Every command in `.claude/commands/` (30 total), with its domain region and phase.
+Every command in `.claude/commands/` (31 total), with its domain region and phase.
 
 | Command | Domain | Phase | Inputs | Output | Template |
 |---------|--------|-------|--------|--------|---------|
@@ -759,6 +760,7 @@ Every command in `.claude/commands/` (30 total), with its domain region and phas
 | `/assess-change` | Cross-cutting | Any phase | Change description, project path | Updated artifacts | — |
 | `update-status` | Cross-cutting | Any gate | Artifact path + new status | Updated artifact + index | — |
 | `/project-status` | Cross-cutting | Any time | Project path | Status dashboard | — |
+| `/judgment-check` | Cross-cutting | Before any `/review-X` (piloted: BRD, Epics, Architecture) | Artifact path | Density & Judgment Findings/Resolution sections in that artifact | — |
 
 ---
 

@@ -413,3 +413,15 @@ Confirms the BRD is in a state where a Product Owner can responsibly sign it.
 | ID | Idea | Surfaced (Date / Context) | Promotion Path | Status |
 |----|------|---------------------------|-----------------|--------|
 |    |      |                           | Requires domain + BRD discovery before it can become a REQ | Parked / Promoted |
+
+---
+
+## 16. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-brd` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/03-brd-discovery-and-scope-lock.md`'s own tests (REQ density, the Scope/Priority/Layer distinction, the Section 5.21-vs-15 test, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 17 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this BRD, this section does not appear in the document at all; do not pre-create it empty.
+
+## 17. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 16's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this BRD, this section does not appear in the document at all; do not pre-create it empty.
+
+> **[AI Guide — reserved numbering]** Sections 16 and 17 are reserved for `/judgment-check` as shown here. `/review-brd` creates its own **Section 18 (Review Record)** at the end of the document on first run — never Section 16, to avoid colliding with these two. If `/judgment-check` has not run yet when `/review-brd` creates Section 18, Sections 16–17 simply don't exist yet; Section 18 still follows immediately after Section 15 (Parking Lot) in that case.

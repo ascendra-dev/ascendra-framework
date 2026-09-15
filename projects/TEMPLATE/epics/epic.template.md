@@ -135,6 +135,18 @@
 
 ---
 
+### 9. Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-epics` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/04-product-structuring-epics.md`'s own tests (the epic-cohesion test, the dependency-ordering test, the story-level interleaving criteria, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 10 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this epic, this section does not appear at all; do not pre-create it empty.
+
+### 10. Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 9's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this epic, this section does not appear at all; do not pre-create it empty.
+
+> **[AI Guide — numbering note]** Sections 9 and 10 are per-epic, reserved for `/judgment-check` as shown here — unrelated to `epics/review-record.md`, which is a separate, project-wide file `/review-epics` maintains across all epics and does not use this numbering at all.
+
+---
+
 ## Part 2 — Verification
 
 > **[AI Guide — Verification]** Run every check below before this epic is approved and before story generation begins. An epic that fails any check produces incomplete or incorrect stories.

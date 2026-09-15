@@ -687,3 +687,15 @@ Summary: [correlation mechanism] / [exception contract, both the expected and un
 - [ ] Section 6.5 (Logging & Exception Handling) is present, names actual confirmed tools/mechanisms (not left aspirational), and every field in Section 6.4's sensitive-field table is covered by the redaction policy it references (`FW-041`)
 - [ ] Tech Stack table (Section 2) includes a Logging row and an Error Tracking row — never omitted, never "TBD" (`FW-041`)
 - [ ] `standards/logging-standards.md` exists and matches what Section 6.5 summarizes
+
+---
+
+## Section 11 — Density & Judgment Findings
+
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-architecture` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/06-architecture.md`'s own tests (the Actor Identity Shape derivation, the deviation-detection blind spot, the composable-capability silent fork, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 12 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this architecture document, this section does not appear at all; do not pre-create it empty.
+
+## Section 12 — Density & Judgment Resolution
+
+> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Change History. Each row records one finding from Section 11's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this architecture document, this section does not appear at all; do not pre-create it empty.
+
+> **[AI Guide — reserved numbering]** Sections 11 and 12 are reserved for `/judgment-check` as shown here. `/review-architecture` creates its own **Section 13 (Review Record)** at the end of the document on first run — never Section 11, to avoid colliding with these two. If `/judgment-check` has not run yet when `/review-architecture` creates Section 13, Sections 11–12 simply don't exist yet; Section 13 still follows immediately after Part 2 (Verification) in that case.
