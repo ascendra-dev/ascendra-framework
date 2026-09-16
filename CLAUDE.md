@@ -50,7 +50,7 @@ One skilled PO can run multiple projects in parallel using this framework.
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 32 slash commands — the framework's executable interface
+├── .claude/commands/       # 33 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
 ├── conventions/            # Framework-authoring meta-rules — command, template, and artifact-naming conventions
@@ -95,6 +95,8 @@ ascendra-framework/
     │   └── releases/
     │       └── release-notes.template.md
     └── {PROJECT_CODE}/     # ⚠ GITIGNORED — your private client project workspace
+        ├── source-material/     # PO-dropped raw material for /run-priming-session
+        ├── priming/             # Generated: priming-package.md
         ├── brief.md
         ├── domain/              # Generated: domain knowledge, playbooks, discovery state
         ├── standards/           # User-defined: tech stack, API, DB, security, test strategy
@@ -119,6 +121,7 @@ ascendra-framework/
 |---------|--------------|
 | `/anchor-project` | Anchors and sequences a project through the full lifecycle, invoking whichever command below owns the current stage — state continuity across sessions, lighter PO interaction, freeform document ingestion, and cross-artifact drift checking on top of the same unmodified commands. Optional at every level; every command remains fully usable standalone. See `ANCHOR-PROJECT-DESIGN.md` and `PROJECT-LIFECYCLE.md`'s "Running This Sequence via `/anchor-project`". |
 | `/init-project` | Create a new project folder with all required subfolders |
+| `/run-priming-session` | Free-form session (with optional dropped source material — an SRS, legacy notes, anything) that materializes facts into a `priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start. Scoped to Problem Domain only; runs after `/init-project`. See `ANCHOR-PROJECT-DESIGN.md` §5. |
 | `/run-intake` | Complete the project brief interactively with the Product Owner |
 | `/gen-domain-knowledge` | Generate domain knowledge docs from a discovery session |
 | `/gen-domain-playbook` | Generate a discovery playbook for a domain |

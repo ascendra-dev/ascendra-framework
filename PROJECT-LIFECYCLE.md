@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document is the authoritative reference for the Ascendra delivery workflow from first client contact to production release. It defines every step, the slash command that executes it, the template it produces from, the gate that closes it, and the status that records it. Every one of the framework's 32 commands (`ls .claude/commands/`) is accounted for somewhere in this document — see the Completeness Check at the end.
+This document is the authoritative reference for the Ascendra delivery workflow from first client contact to production release. It defines every step, the slash command that executes it, the template it produces from, the gate that closes it, and the status that records it. Every one of the framework's 33 commands (`ls .claude/commands/`) is accounted for somewhere in this document — see the Completeness Check at the end.
 
 Read this document when: starting a new project, resuming a project mid-delivery, onboarding a new agent to an in-flight project, or verifying that all gates are correctly closed before advancing.
 
@@ -734,11 +734,12 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 
 ## Command Reference
 
-Every command in `.claude/commands/` (32 total), with its domain region and phase.
+Every command in `.claude/commands/` (33 total), with its domain region and phase.
 
 | Command | Domain | Phase | Inputs | Output | Template |
 |---------|--------|-------|--------|--------|---------|
 | `/init-project` | Problem | Intake | Arguments | `brief.md` (placeholders), folder skeleton | `brief.template.md` |
+| `/run-priming-session` | Problem | Intake *(optional, repeatable)* | `source-material/` files and/or live conversation | `priming/priming-package.md` | `priming-package.template.md` |
 | `/run-intake` | Problem | Intake | `brief.md` (placeholders) | Completed `brief.md` | `brief.template.md` |
 | `/gen-domain-playbook` | Problem | Discovery *(optional)* | `brief.md` | `domain/{slug}-domain-playbook.md` | `domain-playbook.template.md` |
 | `/run-domain-discovery` | Problem | Discovery *(optional)* | Domain playbook, brief | `domain/domain-discovery-state.md` | `domain-discovery-state.template.md` |
@@ -778,6 +779,7 @@ Every command in `.claude/commands/` (32 total), with its domain region and phas
 | Template | Location | Used by |
 |---------|----------|---------|
 | `brief.template.md` | `projects/TEMPLATE/` | `/init-project`, `/run-intake` |
+| `priming-package.template.md` | `projects/TEMPLATE/priming/` | `/run-priming-session` |
 | `domain-playbook.template.md` | `projects/TEMPLATE/domain/` | `/gen-domain-playbook` |
 | `domain-discovery-state.template.md` | `projects/TEMPLATE/domain/` | `/run-domain-discovery` |
 | `domain.template.md` | `projects/TEMPLATE/domain/` | `/gen-domain-knowledge` |
@@ -972,11 +974,12 @@ projects/index.md                             # Global project registry (not per
 
 ## Completeness Check
 
-All 32 commands in `.claude/commands/`, cross-checked against this document:
+All 33 commands in `.claude/commands/`, cross-checked against this document:
 
 | Command | Documented at |
 |---------|--------------|
 | `init-project.md` | Step 1 |
+| `run-priming-session.md` | Cross-cutting utility (optional, Problem Domain only — see the utilities list after the Lifecycle at a Glance table) |
 | `run-intake.md` | Step 1a |
 | `gen-domain-playbook.md` | Step 2a |
 | `run-domain-discovery.md` | Step 2b |
@@ -1009,4 +1012,4 @@ All 32 commands in `.claude/commands/`, cross-checked against this document:
 | `judgment-check.md` | Utility (cross-cutting) — before any `/review-X` |
 | `anchor-project.md` | "Running This Sequence via `/anchor-project`" (orchestrates every step above; not tied to one) |
 
-**Result: all 32 commands accounted for.** Four were entirely missing before the original rewrite (`gen-domain-playbook`, `run-domain-discovery`, `run-mock-discovery`, `gen-brd-playbook` — the last was previously referenced under a nonexistent `/gen-playbook` name), and `run-intake` was missing along with the brief-approval gate it feeds. `gen-story-plan.md` was added under `FW-031`, splitting `/implement-story`'s prior all-in-one design+execution responsibility into a PO-reviewable planning step (Step 17a) and a plan-executing step (Step 18). `judgment-check.md` was also previously missing from this specific table despite already being live and listed in the Command Reference above — an inconsistency within this same document, now corrected alongside adding `anchor-project.md`. No manual/no-command steps (Sprint-wide QA Confirmation, PO UAT, Production Deployment, Defect Triage, Project Closure) have a corresponding command file, by design — they're deliberate human checkpoints.
+**Result: all 33 commands accounted for.** Four were entirely missing before the original rewrite (`gen-domain-playbook`, `run-domain-discovery`, `run-mock-discovery`, `gen-brd-playbook` — the last was previously referenced under a nonexistent `/gen-playbook` name), and `run-intake` was missing along with the brief-approval gate it feeds. `gen-story-plan.md` was added under `FW-031`, splitting `/implement-story`'s prior all-in-one design+execution responsibility into a PO-reviewable planning step (Step 17a) and a plan-executing step (Step 18). `judgment-check.md` was also previously missing from this specific table despite already being live and listed in the Command Reference above — an inconsistency within this same document, now corrected alongside adding `anchor-project.md`. No manual/no-command steps (Sprint-wide QA Confirmation, PO UAT, Production Deployment, Defect Triage, Project Closure) have a corresponding command file, by design — they're deliberate human checkpoints.

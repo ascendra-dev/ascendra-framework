@@ -95,7 +95,7 @@ The mechanism behind "top-down triage" is three distinct passes, not one undiffe
 - A source with real structure (an SRS, a spec, anything with real headings) — Map builds its outline directly from that structure, and Triage works section by section.
 - A source with no reliable structure (raw notes, a handwritten dump, stream-of-consciousness fragments) — Map has no headings to skim by, so it clusters fragments by inferred topic instead, before Triage can ask "relevant or not" of each cluster. Same pipeline, same discipline, different technique for the one step that depends on the source actually being organized.
 
-**Transparency:** persist the Map + Triage decisions themselves (not just the final extraction) as a short section in `extraction-log.md` — one line per unit: gist, decision, destination if kept. This is what makes ingestion legible rather than a black box that silently dropped content, and it's also where §5.8's checkpoint pointer lives for a source too large to process in one pass.
+**Transparency:** persist the Map + Triage decisions themselves (not just the final extraction) — **simplified during implementation** from a separate `extraction-log.md` file to the priming package's own Section 8 (Source Material Index), which already records file, purpose, and when to reference it back; a second file duplicating the same information wasn't worth the extra artifact. One line per source unit: gist, decision, destination if kept. This is what makes ingestion legible rather than a black box that silently dropped content, and it's also where §5.8's checkpoint pointer lives for a source too large to process in one pass.
 
 ### 5.6 Legacy material — don't let a bad system distort the domain model
 
@@ -114,7 +114,7 @@ Legacy material can carry credential-shaped strings (API keys, tokens, passwords
 
 ### 5.8 Volume handling
 
-"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state, not a reason to re-hold the whole source in memory across turns. This is the same checkpoint §5.5 already places in `extraction-log.md` — one mechanism, not two.
+"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state, not a reason to re-hold the whole source in memory across turns. This is the same checkpoint §5.5 already places in the priming package's Section 8 — one mechanism, not two.
 
 ### 5.9 The staging model — one document, decomposed later
 

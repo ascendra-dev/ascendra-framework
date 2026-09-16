@@ -92,7 +92,7 @@ A missing `brief.md` is expected for a brand-new project and is not a gate failu
 3. **Where no intermediate file exists and the phase is mid-flight** (e.g. a `brief.md` that exists but isn't yet Approved), the resume point is simply "continue running the owning command" — it will find the partial document and pick up from whatever's incomplete.
 4. **Rebuild the Lineage Ledger** from each artifact's own Document Control / Document History table: for every artifact that has a documented upstream dependency (Domain→BRD, BRD→Epics, BRD/Epics→Screen Design, Screen Design/BRD/Epics→Architecture, Architecture→Stories), record the upstream version the downstream artifact's own content or history implies it was built against, and the upstream's actual current version. Where the downstream artifact gives no explicit indication, assume it was built against the upstream's version at the downstream's own creation date and note this as an assumption rather than a confirmed fact.
 5. **Extension projects:** if the brief's Extension Context names a base project, add its relevant artifact(s) to the Lineage Ledger too, with a path into that other project's folder (`projects/{BASE_CODE}/...`) rather than this one. Read the base artifact's Status/Document History directly — it does not need to be anchor-managed itself for this to work.
-6. **Reference Material Index:** list every file previously produced by ingestion (Step 7) or by a prior anchor session, with its kind and a count of unresolved open items pulled from its own Open Issues section — do not re-read the full content of each file here, just its own open-item count.
+6. **Reference Material Index:** if `projects/{PROJECT_CODE}/priming/priming-package.md` exists, list it here with a count of `Pending` topics (Section 3) and open items (Section 9) — do not re-read its full content in this step, just its own counts. This is what Step 7 checks before offering a priming session, and what Step 9 checks before decomposing into whichever phase it's about to invoke.
 
 ---
 
@@ -147,31 +147,21 @@ This step is a standing behavioral rule, not a one-time action — every PO-faci
 
 ---
 
-## Step 7 — Offer document ingestion
+## Step 7 — Offer a priming session
 
-If the PO indicated they have source material (Step 5), or at any point asks to feed something in: accept it and triage it before proceeding. This works at any phase, not only intake — a legacy SRS, scattered notes, or an old requirements doc can inform whichever phase is currently active.
+**Corrected 2026-09-17:** document ingestion is no longer anchor's own logic — it moved to a standalone companion command, `/run-priming-session`, scoped to Problem Domain (Brief/Domain/BRD). This step is now a handoff, not a pipeline.
 
-**Zero-new-format principle:** the output target is always whichever input mechanism the current phase's command already reads — never a bespoke new format.
-- Where an intermediate state file exists for the phase (`domain-discovery-state.md`, `brd-discovery-state.md`), triage the source and write directly into that template's existing sections. The downstream command runs completely unmodified, unaware whether the state file came from a live session or from triage.
-- Where no intermediate file exists (Phase 1), pre-extract answers and feed them in as the PO's own answers when the owning command's questions come up during Step 9.
+If the PO indicated they have source material or want to talk through raw facts (Step 5), or at any point asks to feed something in, and the current stage is still within Problem Domain (Brief, Domain, or BRD — not yet Locked/Approved past BRD):
 
-**The three-pass pipeline:**
-1. **Map** — skim only, no deep reading. Build a lightweight outline: what's in the source and roughly where. For a structured source (an SRS, a spec with real headings), build the outline from that structure. For an unstructured source (raw notes, a handwritten dump, fragments with no reliable order), cluster by inferred topic instead — there are no headings to skim by.
-2. **Triage** — against the map and the current phase's actual information needs, mark each unit relevant / redundant / irrelevant / ambiguous. Drop irrelevant units without deep-reading them. Flag redundant units so the same fact isn't extracted twice.
-3. **Extract** — deep-read only what survived, and write it compressed and deduplicated into the target from the zero-new-format principle above — never a verbatim transcription, never the same fact restated because it appeared in two places.
+> "That's what `/run-priming-session` is for — handing off to it now."
 
-Persist the Map + Triage decisions as a section in an `extraction-log.md` file in the relevant phase folder (e.g. `projects/{PROJECT_CODE}/domain/extraction-log.md`) — one line per unit: gist, decision, destination if kept. This is what makes ingestion legible rather than a black box, and it is also where the checkpoint for a source too large for one pass lives (record how far triage has gotten; do not re-hold the whole source across turns).
+Invoke `/run-priming-session {PROJECT_CODE}` and let it run its own gate check, triage, and session in full, unmodified. `/run-priming-session` remains fully usable standalone too — this handoff is what happens when the request surfaces *inside* an anchor session.
 
-**Legacy material — don't let a bad system distort the domain model.** Check every extracted fact against your own generic/canonical domain understanding before writing it anywhere:
-- **Matches the generic model** → ordinary content, written normally.
-- **Diverges for a legitimate business reason** (regulatory, contractual, genuinely how this business operates) → goes into the domain-discovery-state file's Section 5 (AI Knowledge Corrections) table — the framework's existing mechanism for exactly this, unmodified.
-- **Diverges and looks like a legacy design flaw rather than a real constraint** → neither content nor a silent correction. Becomes an explicit Open Issue framed as a negotiation: "the legacy system does X this way — real constraint, or something to leave behind in the upgrade?" The same posture applies to integration modernization (legacy sync → propose async) and legacy contract renegotiation — surfaced as discussion items with a recommendation, never carried forward silently, never decided unilaterally.
+**Once it completes, decomposition happens here, not there.** `/run-priming-session` never writes into `brief.md`, `domain-discovery-state.md`, or `brd-discovery-state.md` directly — per its own design, no existing command is modified to read `priming-package.md`. When Step 9 is about to invoke `/run-intake`, `/run-domain-discovery`, or `/run-brd-discovery`, first check `projects/{PROJECT_CODE}/priming/priming-package.md` for the matching section (4, 5, or 6) and pre-fill that command's own expected input from it — answering its live questions as the PO's own stated answers where the package already covers them, and letting genuinely `Pending` topics proceed as a normal live question. This is the same interception mechanism Step 6 already describes for any PO-facing question, just sourced from the priming package instead of (or in addition to) what's already in state.
 
-**Sensitive content:** recognize obviously credential-shaped strings (API keys, tokens, passwords) in the source and flag them to the PO rather than filing them into a catalog document, even though `projects/{PROJECT_CODE}/` is gitignored.
+If the current stage is past Problem Domain (Architecture or later), a priming session has nothing left to usefully feed — say so and suggest `/assess-change` instead if the PO has new material that should change something already approved.
 
-**A hard constraint discovered mid-stream** (e.g. "the same database schema is fixed") is a drift trigger, not just a note — it feeds Step 4's constraint-propagation check via a second trigger type: check it against everything already built or approved that might assume otherwise, the same way a version bump would.
-
-Once ingestion completes (or if there was nothing to ingest), continue to Step 8.
+Once this step completes (a priming session ran, or there was nothing to offer), continue to Step 8.
 
 ---
 
