@@ -50,7 +50,7 @@ One skilled PO can run multiple projects in parallel using this framework.
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 31 slash commands — the framework's executable interface
+├── .claude/commands/       # 32 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
 ├── conventions/            # Framework-authoring meta-rules — command, template, and artifact-naming conventions
@@ -117,6 +117,7 @@ ascendra-framework/
 
 | Command | What It Does |
 |---------|--------------|
+| `/anchor-project` | Anchors and sequences a project through the full lifecycle, invoking whichever command below owns the current stage — state continuity across sessions, lighter PO interaction, freeform document ingestion, and cross-artifact drift checking on top of the same unmodified commands. Optional at every level; every command remains fully usable standalone. See `ANCHOR-PROJECT-DESIGN.md` and `PROJECT-LIFECYCLE.md`'s "Running This Sequence via `/anchor-project`". |
 | `/init-project` | Create a new project folder with all required subfolders |
 | `/run-intake` | Complete the project brief interactively with the Product Owner |
 | `/gen-domain-knowledge` | Generate domain knowledge docs from a discovery session |

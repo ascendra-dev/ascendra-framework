@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This document is the authoritative reference for the Ascendra delivery workflow from first client contact to production release. It defines every step, the slash command that executes it, the template it produces from, the gate that closes it, and the status that records it. Every one of the framework's 30 commands (`ls .claude/commands/`) is accounted for somewhere in this document — see the Completeness Check at the end.
+This document is the authoritative reference for the Ascendra delivery workflow from first client contact to production release. It defines every step, the slash command that executes it, the template it produces from, the gate that closes it, and the status that records it. Every one of the framework's 32 commands (`ls .claude/commands/`) is accounted for somewhere in this document — see the Completeness Check at the end.
 
 Read this document when: starting a new project, resuming a project mid-delivery, onboarding a new agent to an in-flight project, or verifying that all gates are correctly closed before advancing.
 
 **Relationship to `SDLC.md`:** `SDLC.md` describes the twelve delivery *stages* and the responsible *agents*. This document describes the specific *slash commands* that implement those stages and the exact sequence of execution. They are complementary — read both.
 
-**Relationship to `decisions/FW-022-problem-solution-domain-boundary.md`:** every phase below is explicitly tagged with its domain region. **Problem Domain** (Phases 1–4: Intake, Discovery, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Phase 5: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Phases 6–8: Sprint Delivery, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, and `project-status` are cross-cutting utilities that operate across all three regions and belong to none of them.
+**Relationship to `decisions/FW-022-problem-solution-domain-boundary.md`:** every phase below is explicitly tagged with its domain region. **Problem Domain** (Phases 1–4: Intake, Discovery, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Phase 5: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Phases 6–8: Sprint Delivery, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, `project-status`, and `judgment-check` are cross-cutting utilities that operate across all three regions and belong to none of them. `/anchor-project` is different in kind from all four — it doesn't add a utility alongside the sequence below, it drives the sequence itself; see "Running This Sequence via `/anchor-project`" immediately after this table.
 
 **Repeatable / optional steps are called out explicitly** — most of this lifecycle runs once per project, but a few sections repeat (Phase 6 runs once per **wave**, not once per project) or are conditional (Domain Discovery, Mock Discovery, Screen Design are all skippable under stated conditions). See the "Repeats / Optional" column in the table below.
 
@@ -75,7 +75,15 @@ Read this document when: starting a new project, resuming a project mid-delivery
 - `/assess-change` — assesses a described change's blast radius across the document pipeline and applies coordinated updates. Not tied to any one phase; used whenever scope needs to change after a gate has closed.
 - `update-status` — the single mechanism that records every gate decision. Referenced throughout the table above.
 - `/project-status projects/{PROJECT_CODE}` — live dashboard showing all epic statuses, story completion by status and size, per-sprint progress bars, and an ATTENTION section flagging anything that needs action (stale statuses, unresolved dependencies, L-stories not split, sprints at risk of slipping). Run it to get a situational picture before any gate, at session start, or whenever you need to know where the project stands.
-- `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture only; every other artifact type reports "not yet extended" until the pilot is validated.
+- `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture, then extended to every other artifact type this table covers — no type reports "not yet extended" any more.
+
+---
+
+## Running This Sequence via `/anchor-project`
+
+Everything above — every step, command, gate, and template — describes running the framework by typing each command yourself. `/anchor-project {PROJECT_CODE}` is a second way to run the identical sequence: it resolves or bootstraps a project, determines the current stage the same way this document's own "How to Resume a Mid-Project Session" section below describes doing it by hand, then invokes the right command for that stage and executes its instructions exactly as written — nothing about a command's own behavior, file formats, or gates changes depending on whether it was invoked directly or through anchor. What anchor adds on top: state continuity across sessions (so resuming doesn't require re-deriving where you left off), a compression layer on PO-facing questions and review output, freeform document ingestion (a legacy SRS or raw notes triaged into whatever input a phase's command already expects), and cross-artifact drift checking nothing else in the pipeline runs proactively. It stops driving once a project's Walking Skeleton (`FW-048`) is complete — see `ANCHOR-PROJECT-DESIGN.md` §9 — narrowing afterward to release prep and formal scope changes, with day-to-day story work reverting to direct command use. Full design and rationale: `ANCHOR-PROJECT-DESIGN.md` at the repo root; the command itself: `.claude/commands/anchor-project.md`.
+
+Every command remains fully usable standalone, with or without anchor — this is an additive way to run the sequence, not a replacement for the one documented above.
 
 ---
 
@@ -726,7 +734,7 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 
 ## Command Reference
 
-Every command in `.claude/commands/` (31 total), with its domain region and phase.
+Every command in `.claude/commands/` (32 total), with its domain region and phase.
 
 | Command | Domain | Phase | Inputs | Output | Template |
 |---------|--------|-------|--------|--------|---------|
@@ -760,7 +768,8 @@ Every command in `.claude/commands/` (31 total), with its domain region and phas
 | `/assess-change` | Cross-cutting | Any phase | Change description, project path | Updated artifacts | — |
 | `update-status` | Cross-cutting | Any gate | Artifact path + new status | Updated artifact + index | — |
 | `/project-status` | Cross-cutting | Any time | Project path | Status dashboard | — |
-| `/judgment-check` | Cross-cutting | Before any `/review-X` (piloted: BRD, Epics, Architecture) | Artifact path | Density & Judgment Findings/Resolution sections in that artifact | — |
+| `/judgment-check` | Cross-cutting | Before any `/review-X` (all artifact types) | Artifact path | Density & Judgment Findings/Resolution sections in that artifact | — |
+| `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact) | — (invokes each phase's own template via that phase's own command) |
 
 ---
 
@@ -898,6 +907,8 @@ All statuses are set via `update-status` (or inline by the corresponding `review
 
 ## How to Resume a Mid-Project Session
 
+**This entire procedure is what `/anchor-project {PROJECT_CODE}` automates** — steps 1–5 below map directly onto its Step 3 (Load and reconcile anchor state), which runs this same walk of the Gate Summary table and writes the result to `.anchor-state.md` so it doesn't need re-deriving by hand on the next resume. Manual and automated are both fully valid; use this procedure directly when you want full control or aren't using anchor for this project.
+
 1. Run `/project-status projects/{PROJECT_CODE}` — see current state of all epics, stories, and sprints
 2. Check `projects/{PROJECT_CODE}/brief.md` and `projects/index.md` for document/project statuses
 3. Find the first step in this document where the gate has not been closed
@@ -961,7 +972,7 @@ projects/index.md                             # Global project registry (not per
 
 ## Completeness Check
 
-All 30 commands in `.claude/commands/`, cross-checked against this document:
+All 32 commands in `.claude/commands/`, cross-checked against this document:
 
 | Command | Documented at |
 |---------|--------------|
@@ -995,5 +1006,7 @@ All 30 commands in `.claude/commands/`, cross-checked against this document:
 | `gen-release-notes.md` | Step 28 |
 | `update-status.md` | Every gate step (cross-cutting) |
 | `project-status.md` | Utility (cross-cutting) |
+| `judgment-check.md` | Utility (cross-cutting) — before any `/review-X` |
+| `anchor-project.md` | "Running This Sequence via `/anchor-project`" (orchestrates every step above; not tied to one) |
 
-**Result: all 30 commands accounted for.** Four were entirely missing before the original rewrite (`gen-domain-playbook`, `run-domain-discovery`, `run-mock-discovery`, `gen-brd-playbook` — the last was previously referenced under a nonexistent `/gen-playbook` name), and `run-intake` was missing along with the brief-approval gate it feeds. `gen-story-plan.md` was added under `FW-031`, splitting `/implement-story`'s prior all-in-one design+execution responsibility into a PO-reviewable planning step (Step 17a) and a plan-executing step (Step 18). No manual/no-command steps (Sprint-wide QA Confirmation, PO UAT, Production Deployment, Defect Triage, Project Closure) have a corresponding command file, by design — they're deliberate human checkpoints.
+**Result: all 32 commands accounted for.** Four were entirely missing before the original rewrite (`gen-domain-playbook`, `run-domain-discovery`, `run-mock-discovery`, `gen-brd-playbook` — the last was previously referenced under a nonexistent `/gen-playbook` name), and `run-intake` was missing along with the brief-approval gate it feeds. `gen-story-plan.md` was added under `FW-031`, splitting `/implement-story`'s prior all-in-one design+execution responsibility into a PO-reviewable planning step (Step 17a) and a plan-executing step (Step 18). `judgment-check.md` was also previously missing from this specific table despite already being live and listed in the Command Reference above — an inconsistency within this same document, now corrected alongside adding `anchor-project.md`. No manual/no-command steps (Sprint-wide QA Confirmation, PO UAT, Production Deployment, Defect Triage, Project Closure) have a corresponding command file, by design — they're deliberate human checkpoints.

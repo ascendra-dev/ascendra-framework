@@ -54,7 +54,7 @@ Every subsequent phase — domain knowledge, BRD, epics, screen design, architec
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 31 slash commands — the framework's executable interface
+├── .claude/commands/       # 32 slash commands — the framework's executable interface
 ├── conventions/            # Framework-authoring meta-rules
 ├── decisions/              # Framework-level Architecture Decision Records — see decisions/index.md
 ├── projects/               # Your project workspace

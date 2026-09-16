@@ -2,7 +2,7 @@
 
 The Ascendra Framework's own docs — [`CLAUDE.md`](../CLAUDE.md), [`SDLC.md`](../SDLC.md), [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) — tell you **what** happens at each stage and **which command** runs it. This guide answers a different question: **what do you actually write, how much, and what breaks three phases downstream if you get a judgment call wrong.** That gap — real, not imagined — was found by a full read-through of every command, template, and example file in the framework, preserved in [`FRAMEWORK-AUDIT.md`](../FRAMEWORK-AUDIT.md) at the repo root. This guide is what came out of closing it.
 
-**Start here:** [`00-orientation.md`](00-orientation.md) — how this guide relates to the rest of the framework's docs, the running example every chapter leans on, and the terminology map that resolves the most common source of confusion in the whole framework (Scope vs. Priority vs. Layer vs. Core/Extension architecture — four different things that sound related and aren't).
+**Start here:** [`00-orientation.md`](00-orientation.md) — how this guide relates to the rest of the framework's docs, the running example every chapter leans on, the terminology map that resolves the most common source of confusion in the whole framework (Scope vs. Priority vs. Layer vs. Core/Extension architecture — four different things that sound related and aren't), and the two ways to run everything below: typing each command directly, or through `/anchor-project`.
 
 ## Status
 
