@@ -126,7 +126,7 @@ After confirmation, generate one file per story following `projects/TEMPLATE/sto
 
 For each story:
 
-**Header:** Story ID (US-{epic-number}-{seq}), Epic (EPIC-{NNN} — Title), Title (verb-noun format only), Layer (matches parent epic's Layer), Target (which repo(s) the story's code lands in — derive from the Locked architecture: Section 3.1 names the repo roles, and the story's ACs determine which apply; values `API` / `Web` / `Worker` / `+`-joined combinations in dependency order, e.g. `API+Web`; never name a repo role Section 3.1 doesn't declare)
+**Header:** Story ID (US-{epic-number}-{seq}), Epic (EPIC-{NNN} — Title), Title (verb-noun format only), Layer (matches parent epic's Layer), Target (which repo(s) the story's code lands in — derive from the Locked architecture: Section 3.1 names the repo roles, and the story's ACs determine which apply; values `API` / `Web` / `Worker` / `+`-joined combinations in dependency order, e.g. `API+Web`; never name a repo role Section 3.1 doesn't declare), Walking Skeleton (FW-048 — `Yes` if the REQ this story references, per Section 2 below, is tagged `Yes` in the parent epic's Section 2; `—` otherwise; never re-derived)
 
 **Section 1 — Story Statement:**
 - Exactly one persona from BRD Section 3 (User Roles)
@@ -161,7 +161,7 @@ Use Pass 1 format (plain English concepts). For infrastructure dependencies (env
 Include only if there is a non-obvious constraint the developer must know: idempotency requirement, specific library or approach required by architecture, known edge case in the data, or context needed to interpret an AC correctly. Omit entirely if nothing non-obvious applies.
 
 **Verification:**
-Work through all 15 checklist items. Tick each that passes [x]. Record any failure before writing the file.
+Work through all 16 checklist items. Tick each that passes [x]. Record any failure before writing the file.
 
 ---
 
@@ -174,7 +174,7 @@ Fill in the Stories table with: Story ID, Title, Size, Status (Draft) for every 
 
 **Update or create the stories index** at `projects/{PROJECT_CODE}/stories/index.md`:
 If the index exists, add the new stories to it. If it does not exist, create it with:
-- Story registry table (Story ID, Epic, Title, Layer, Target, Size, Status, Sprint) — the Sprint column starts as "TBD" for every story; it is filled in later by `/gen-sprint-plan`, never at generation time
+- Story registry table (Story ID, Epic, Title, Layer, Target, Walking Skeleton, Size, Status, Sprint) — the Sprint column starts as "TBD" for every story; it is filled in later by `/gen-sprint-plan`, never at generation time. Walking Skeleton (FW-048) is carried from each story's own header field — never re-derived here.
 - Sprint plan section — left as "Not yet planned" until `/gen-sprint-plan` runs; do not invent a sprint grouping here
 - Should Have register (list of Should Have story IDs)
 - Flags register (L-sized stories requiring PO split review before sprint lock, plus any cross-epic sequencing constraints noted during generation)

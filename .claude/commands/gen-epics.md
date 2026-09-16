@@ -114,7 +114,7 @@ For each epic, populate:
 1–2 sentences from the user's perspective. "When this epic is done, [persona] can [capability]." No technical deliverables. No list of requirements.
 
 **Section 2 — BRD Requirements Covered:**
-Use exact descriptions from the BRD — word for word. No paraphrasing. Every REQ assigned to this epic appears here.
+Use exact descriptions from the BRD — word for word. No paraphrasing. Every REQ assigned to this epic appears here. Carry the Walking Skeleton column straight from the BRD (FW-048) — `Yes` or `—`, exactly as tagged there. Never re-derive or re-judge it here.
 
 **Section 3 — Scope:**
 - 3.1 In Scope: bullet list specific enough that a story title is derivable from each item without reading the BRD. If a bullet cannot produce a story title, it is too vague — break it down.
@@ -146,7 +146,8 @@ After all epic files are written, create `projects/{PROJECT_CODE}/epics/index.md
 
 1. **Epic Registry table** — Epic ID (linked to file), Title, Priority, Status (Draft), REQ Count, Dependencies
 2. **REQ Coverage Map** — one row per epic, listing all REQ IDs assigned to it. Every REQ-ID from the BRD's selected Layer must appear exactly once across all epics. No REQ missing. No REQ in two epics.
-3. **Dependency Graph notes** — the build order (ordered list of epics by dependency layer, with explanation of why), followed by a **Story-Level Interleaving** check.
+3. **Walking Skeleton Coverage** (FW-048) — one row per epic that carries at least one `Yes`-tagged REQ, listing which REQ IDs and confirming the epic appears first (or tied-first alongside another Walking Skeleton epic) in the Dependency Graph build order below. If no epic carries a Walking Skeleton REQ, something is wrong — every BRD has exactly one Walking Skeleton journey (or a PO-justified second) per FW-048, and its REQs must have landed in some epic; stop and resolve this before writing the index rather than writing an empty table.
+4. **Dependency Graph notes** — the build order (ordered list of epics by dependency layer, with explanation of why), followed by a **Story-Level Interleaving** check. Walking Skeleton epics come first in this order, ahead of any epic that carries no Walking Skeleton REQ, regardless of what an ordinary dependency-only ordering would otherwise produce — a real Section 5 dependency can still place one Walking Skeleton epic before another, but never place a non-Walking-Skeleton epic ahead of one that carries the tag.
 
 For every epic pair connected by a Section 5 dependency, apply this trigger test: can you name one *specific* story in the depended-on epic — not the whole epic — that must land before a specific story in the dependent epic can be built or meaningfully demoed? If yes, and the dependent epic does not need the rest of the depended-on epic's Definition of Done to be met first, the pair's true build order is finer-grained than a simple epic-before-epic dependency. If the dependent epic can simply wait for the other epic's Definition of Done (Section 6) in full, this is an ordinary epic-level dependency — no note is needed.
 

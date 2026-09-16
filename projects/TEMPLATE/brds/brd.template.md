@@ -35,6 +35,8 @@
 >
 > **Correct:** "Reduce the time finance officers spend on monthly reconciliation from 4 hours to under 30 minutes."
 > **Incorrect:** "Improve the invoicing process." — not measurable; no baseline; cannot be verified at UAT
+>
+> **Required — Walking Skeleton goal (FW-048):** one bullet naming this project's Walking Skeleton journey (by name, cross-referencing its Section 4 entry) and stating it must be demonstrated working end-to-end, via the real requirements tagged `Walking Skeleton: Yes` in Section 5, before any epic is built out to full breadth. Format: "The Walking Skeleton — [Journey Name] — is demonstrably working end-to-end before any other epic is built to full breadth." This is as testable as any other goal here: the journey either runs end-to-end or it doesn't.
 
 ### 1.4 Scope
 
@@ -109,9 +111,11 @@
 > Format each journey as a numbered step sequence. Note where the system acts vs where the user acts. Note any decision points or branches (e.g. approval granted vs rejected).
 >
 > Do not describe UI interactions. Do not describe API calls. Stay at the business action level.
+>
+> **Required — Walking Skeleton journey (FW-048):** exactly one journey in this section is this project's Walking Skeleton — the thinnest possible real, end-to-end path that exercises the full intended architecture. Suffix its heading `(Walking Skeleton)`. It does not have to be its own separate journey — it is often the core of an existing persona's primary journey, trimmed to the minimum steps that still form a complete, real, demoable path. A second journey suffixed `(Walking Skeleton)` is not forbidden, but stop and ask the PO to justify it explicitly before proceeding — a second one is far more often a sign the first wasn't kept thin, or that two unrelated concerns got bundled, than a genuine case for two.
 
 ### 4.1 [Persona Name] — [Journey Name]
-> **[AI Guide]** Replace heading with persona and journey name (e.g. "Finance Manager — Submit and Track an Invoice"). Add one subsection per primary journey.
+> **[AI Guide]** Replace heading with persona and journey name (e.g. "Finance Manager — Submit and Track an Invoice"). Add one subsection per primary journey. If this is the Walking Skeleton journey, suffix it: "Finance Manager — Submit and Track an Invoice (Walking Skeleton)".
 
 1. ...
 2. ...
@@ -139,23 +143,26 @@
 > - **Priority** — Must Have / Should Have / Nice to Have
 > - **Source** — [Client-Stated] | [Domain-Default] | [Assumed]
 > - **Layer** — `Core` | `Ext:PK` | `Ext:School` | `Ext:[code]`
+> - **Walking Skeleton** — `Yes` | `—` (FW-048)
 >
 > **How to assign Layer**: A requirement is `Core` if it applies regardless of country or sector. Apply the membership test: *"Would a UK retailer need this?"* If yes → `Core`. If the requirement exists only because the client is in Pakistan → `Ext:PK`. If it exists only because the client is a school → `Ext:School`. If unsure, ask the test.
 >
 > Layer determines implementation order: all `Core` requirements must be implemented and tested before any `Ext` requirement that depends on them. `Ext` requirements within the same layer (e.g. all `Ext:School`) can be built in parallel with `Ext:PK` — they do not depend on each other.
+>
+> **How to assign Walking Skeleton (FW-048)**: `Yes` if this requirement is part of the one journey named as the Walking Skeleton in Section 4; `—` (dash, not "No") otherwise. Every `Yes`-tagged requirement, taken together, must compose exactly one complete, thin, real, end-to-end path — not a fragment of the journey's steps with gaps, and not every requirement that merely feels important. When in doubt whether a requirement belongs: would leaving it out break the Walking Skeleton journey's chain from start to finish? If the journey still runs end-to-end without it, it does not belong.
 
 ### 5.1 [Feature Area Name]
 > **[AI Guide]** Replace this heading with the feature area name (e.g. "Invoice Creation", "Payment Processing"). Add as many feature area sections as needed.
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-|    |             |          |        |       |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+|    |             |          |        |       |                   |
 
 ### 5.2 [Feature Area Name]
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-|    |             |          |        |       |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+|    |             |          |        |       |                   |
 
 ### 5.21 Future Capabilities
 
@@ -170,6 +177,8 @@
 > - **Priority** — Must Have / Should Have / Nice to Have. The priority it will carry once built, not "low" because it's deferred.
 > - **Source** — `[Client-Stated]` | `[Domain-Default]` | `[Assumed]`, same as Section 5.
 > - **Layer** — `Core` | `Ext:PK` | `Ext:School` | `Ext:[code]`, same membership test as Section 5.
+>
+> No Walking Skeleton column here (FW-048): a Future Capability is by definition not built this phase, so it cannot be part of the one thing that must be proven working before any epic reaches full breadth. If a promoted entry later turns out to belong in the Walking Skeleton, that only becomes possible after promotion into a real Section 5.N row, tagged there like any other requirement.
 >
 > **Promotion rule:** when the client confirms this capability is now in scope — a new phase kicks off, a change request lands, or the need resurfaces during epic review — cut the row from this table and paste it into a real Section 5.N feature-area subsection (create one if none fits), unchanged unless the underlying facts have changed since it was written. The REQ-ID travels with it; it is now a live requirement like any other. If the client instead confirms the capability will never be built, delete the row — it never became a live requirement, so nothing downstream references its ID. Because the domain/BRD grounding already exists, promoting a Section 5.21 item does not require a fresh discovery pass first, unlike promoting a Section 15 (Parking Lot) entry.
 >
@@ -337,6 +346,7 @@ Confirms the right content is in the right sections and nothing has been misplac
 - [ ] No implementation detail appears anywhere in sections 3–9: no field types, no API endpoints, no database design, no UI decisions, no technology choices.
 - [ ] Every entry in Section 5.21 (Future Capabilities) has all five fields a real requirement has (ID, Title, Description, Priority, Source, Layer) and real domain/BRD grounding for its Description — no entry sits here on a guess. If the grounding is not real, move it to Section 15 (Parking Lot) instead.
 - [ ] Every entry in Section 15 (Parking Lot) has a source/context and an explicit Promotion Path note — no entry is silently treated as if it were already scoped, discovered, or REQ-worthy.
+- [ ] (FW-048) Exactly one journey in Section 4 is suffixed `(Walking Skeleton)`, unless a second is present with an explicit PO-justification note recorded. The requirements tagged `Walking Skeleton: Yes` in Section 5 compose that journey's full chain end-to-end with no gaps — not a subset of its steps, and not requirements that merely feel important. Section 1.3 (Business Goals) has the required Walking Skeleton bullet naming that journey.
 
 ---
 

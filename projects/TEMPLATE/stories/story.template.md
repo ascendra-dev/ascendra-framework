@@ -49,6 +49,10 @@
 
 > **[AI Guide]** Which repo(s) this story's code lands in. Populated by `/gen-stories` from the Locked architecture — Section 3.1 (Project Structure) names the repos; the story's acceptance criteria determine which of them this story touches. Use only repo roles Section 3.1 actually declares (never `Worker` if no worker repo is confirmed). Join multiple targets with `+` in dependency order (e.g. `API+Web`). `/implement-story` reads this field to decide where to implement — it must never be left as the placeholder.
 
+**Walking Skeleton:** Yes / —
+
+> **[AI Guide — FW-048]** Carried straight from the parent epic's Section 2 for the REQ this story references (Section 2, below) — never re-derived or re-judged here. If one REQ produces multiple stories and that REQ is `Yes`-tagged, every one of those stories inherits `Yes`.
+
 **Status:** Draft / Reviewed / Approved
 
 ---
@@ -182,6 +186,7 @@ XS / S / M / L / XL
 - [ ] Epic ID is populated and references a file that exists in the project's epics/ directory
 - [ ] Layer matches the parent epic's layer
 - [ ] Target is populated and names only repo roles declared in architecture Section 3.1 (Project Structure)
+- [ ] Walking Skeleton matches the tag on the REQ this story references in the parent epic's Section 2 — never re-derived (FW-048)
 - [ ] Story Statement has exactly one persona drawn from BRD Section 3 (User Roles)
 - [ ] The action in the Story Statement is a specific capability, not a feature area description
 - [ ] FR References trace to requirements in the approved BRD — no story references a requirement that does not exist or was not approved

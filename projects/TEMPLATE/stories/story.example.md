@@ -17,6 +17,7 @@ Harborview Consulting Ltd — Invoice Management System (BRD v1.1). Three exampl
 **Title:** Generate invoice reference number
 
 **Layer:** Core
+**Walking Skeleton:** Yes
 **Status:** Approved
 
 ---
@@ -85,6 +86,7 @@ Use a single global database sequence (PostgreSQL `SEQUENCE`). Wrap the sequence
 **Title:** Create invoice form
 
 **Layer:** Core
+**Walking Skeleton:** Yes
 **Status:** Approved
 
 ---
@@ -158,6 +160,7 @@ Quantity and unit price are numeric inputs. Subtotal, VAT, and total are compute
 **Title:** Stripe webhook payment confirmation
 
 **Layer:** Core
+**Walking Skeleton:** Yes
 **Status:** Approved
 
 ---

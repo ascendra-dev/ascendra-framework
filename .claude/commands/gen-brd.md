@@ -80,7 +80,7 @@ Follow the structure of `projects/TEMPLATE/brds/brd.template.md` exactly. Popula
 **Section 1 — Project Overview:**
 - 1.1 Project name — use the exact name provided
 - 1.2 Problem statement — 2–4 sentences from the client's perspective: the problem today, the cost/consequence, and what success looks like
-- 1.3 Business goals — specific, measurable outcomes the client expects
+- 1.3 Business goals — specific, measurable outcomes the client expects. Required (FW-048): one bullet naming the Walking Skeleton journey identified in Section 4 and stating it must be demonstrated working end-to-end before any epic is built to full breadth.
 - 1.4 Scope — In Scope (feature-area level only, not screens or fields) and Out of Scope (explicitly named exclusions, including anything deferred)
 - 1.5 Assumptions and constraints — only what was stated or confirmed
 
@@ -93,6 +93,8 @@ Draw from playbook Section 8.3 (Access Levels). One subsection per role. Each ro
 **Section 4 — User Journeys:**
 Draw from playbook Section 6 (Journey Walkthroughs) as recorded during discovery. One subsection per primary persona and their end-to-end journey. Step-level only — no screens, no API calls.
 
+**Walking Skeleton (FW-048):** exactly one journey in this section is this project's Walking Skeleton — the thinnest possible real, end-to-end path that exercises the full intended architecture. It does not have to stand alone; it is often the trimmed core of an existing persona's primary journey, or a combined cross-persona journey where the recorded journeys hand off between personas (e.g. one persona creates, another completes). Suffix its heading `(Walking Skeleton)`. If discovery has not made it obvious which journey this is, ask the PO directly before generating Section 5 — the REQ tagging below depends on it. If more than one journey looks like a legitimate candidate, do not tag more than one without asking the PO to justify a second explicitly; a second candidate is far more often a sign the first wasn't kept thin than a genuine need for two.
+
 **Section 5 — Functional Requirements:**
 Organise by feature area. For each requirement:
 - **ID:** REQ-001 format (sequential across the whole document)
@@ -100,8 +102,11 @@ Organise by feature area. For each requirement:
 - **Priority:** Must Have / Should Have / Nice to Have
 - **Source:** `[Client-Stated]` / `[Domain-Default]` / `[Assumed]`
 - **Layer:** `Core` / `Ext:PK` / `Ext:School` / `Ext:[code]`
+- **Walking Skeleton:** `Yes` / `—` (FW-048)
 
 Apply the Layer membership test: *"Would a UK retailer using this system need this requirement?"* If yes → Core. If only because the client is in a specific country → that country's Ext code. If only because of the client's sector → that sector's Ext code.
+
+Tag `Yes` only for requirements that belong to the journey identified as the Walking Skeleton in Section 4. Taken together, every `Yes`-tagged requirement must compose that journey's full chain end-to-end with no gaps — test each candidate with: does the Walking Skeleton journey still run start-to-finish without this requirement? If yes, it does not belong in the skeleton, even if it feels important; tag it `—` and let it belong to normal epic breadth instead. Section 5.21 (Future Capabilities) entries never get this column — a capability deferred past this phase cannot be part of what must prove working this phase.
 
 Do NOT restate domain defaults unless the client overrode them or they drive a specific implementation decision.
 
@@ -135,7 +140,7 @@ Leave as "None identified" at initial generation. Parking Lot entries hold ideas
 
 Work through every check in Sections 13.1, 13.2, 13.3, and 13.4 of the BRD template:
 
-**13.1 Content Integrity** — required fields, no restated domain defaults, no implementation detail, every deferred Out of Scope item has a REQ-ID (permanent exclusions do not need one)
+**13.1 Content Integrity** — required fields, no restated domain defaults, no implementation detail, every deferred Out of Scope item has a REQ-ID (permanent exclusions do not need one), exactly one Walking Skeleton journey is tagged (or a justified second) and its `Yes`-tagged requirements compose a complete end-to-end chain with no gaps (FW-048)
 **13.2 Cross-Section Consistency** — personas in journeys, journeys backed by requirements, integrations have security requirements, roles referenced in requirements
 **13.3 Downstream Readiness** — requirements are specific enough for story writing, no deferred-definition language, business rules referenced to requirements, NFRs are measurable
 **13.4 Approval Readiness** — open questions have owners, scope blockers are flagged, dependencies have owners, version matches

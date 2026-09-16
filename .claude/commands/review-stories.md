@@ -166,6 +166,7 @@ Run all 10 checks against this story using the shared context and the loaded epi
 8. **Size Validity** — Size declared in the story header is consistent with the AC count per the project estimation standard (`projects/{PROJECT_CODE}/standards/estimation.md`). XL stories must be split before sprint lock. L stories require a PO split decision recorded in the review record before approval.
 9. **Dependency Correctness** — All dependencies in story Section 6 reference valid existing story IDs (US-XX-XXX format). No epic-level references remaining. No circular dependencies. No missing dependency where this story reads data or invokes a capability that another story produces.
 10. **Should Have / Layer / Target / Verification** — Should Have tag correctly applied per `stories/index.md` register; Layer field matches the parent epic's layer; Target field is populated, names only repo roles declared in architecture Section 3.1 (Project Structure), and is consistent with what the ACs describe (a story whose ACs describe a screen but whose Target says only `API` is a flag, and vice versa); Verification checklist is present and all items are ticked.
+11. **Walking Skeleton Tag Accuracy** (FW-048) — the story header's Walking Skeleton field matches the tag on the REQ it references (Section 2) in the parent epic's own Section 2 table, exactly. Never re-derived at story level.
 
 **Real-world framing:**
 
@@ -250,6 +251,7 @@ After all stories in this epic are walked through, run the 6 epic-level checks:
 4. **Dependency Chain Coherence** — The intra-epic dependency chain declared in story Section 6 is consistent with the delivery sequence in `stories/index.md`. A story cannot depend on a story that runs in a later sprint.
 5. **Sprint Capacity** — flag only; the actual sprint-boundary decision happens in the new Part F below, once this epic's real story count is known. This check just confirms Part F has not been skipped for a previously reviewed epic still showing "TBD" in `stories/index.md`.
 6. **Cross-epic data dependency** — For each story that consumes data produced by another epic (e.g. `payer_id`, `invoice_amount`, a computed status), verify that an upstream story in the referenced epic has an AC that explicitly produces that data. Flag if this epic depends on data that no upstream story's ACs produce.
+7. **Walking Skeleton Independence** (FW-048) — for every `Walking Skeleton: Yes` story in this epic, every dependency listed in its Section 6 (intra-epic or cross-epic) is itself a `Yes`-tagged story. This is the real enforcement point for the whole convention: a Walking Skeleton story silently depending on a non-Walking-Skeleton story means the "thin, real, end-to-end path" isn't actually thin — some breadth story is propping it up. Flag any violation by name; do not wave it through as "practically fine."
 
 If epic-level FLAGS are raised, work through them with the PO. Apply agreed changes to the relevant story files and update `stories/index.md` if story counts or IDs change.
 
@@ -284,6 +286,8 @@ Update `stories/review-record.md` Epic Log:
 ### F — Sprint Assignment
 
 No prior step in this pipeline decides sprint boundaries — `/gen-stories` deliberately leaves the Sprint column `TBD`, and `/gen-sprint-plan` only extracts an assignment that must already exist. This is the step that makes the decision, using this epic's now-known real story count.
+
+**Walking Skeleton ordering (FW-048):** this is enforced upstream by `epics/index.md`'s build order (Walking Skeleton epics sequenced first, per `/gen-epics` Step 6 and `/review-epics` check 14) — as long as epics are worked through `/gen-stories`/`/review-stories` in that build order, Walking Skeleton stories land in the earliest sprint automatically. Treat a PO request to review a later epic out of that build order as a flag to raise, not silently follow: confirm whether skipping ahead is intentional (e.g. an unrelated fast-track) before it displaces Walking Skeleton stories from the sprint that's actually being filled first.
 
 **If this epic carries a documented story-level interleaving note** (checked in Step 2 against `epics/index.md` Section 3 — e.g. two epics whose true build order only resolves at the story level): do not run Sprint Assignment until **both** epics in the pair have completed Parts A–E. Combine their story counts before proceeding.
 

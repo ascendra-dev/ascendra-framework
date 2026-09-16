@@ -97,9 +97,11 @@
 >
 > If this sprint's epics carry a documented story-level interleaving note in `epics/index.md`'s Dependency Graph (e.g. two epics whose true build order only resolves at the story level), reflect that interleaved order here rather than grouping strictly by epic.
 
-| Order | Story ID | Title | Epic | Size | Status |
-|-------|----------|-------|------|------|--------|
-| 1 | US-NN-NNN | [Title] | EPIC-NNN | [Size] | [Status] |
+| Order | Story ID | Title | Epic | Size | Status | Walking Skeleton |
+|-------|----------|-------|------|------|--------|-------------------|
+| 1 | US-NN-NNN | [Title] | EPIC-NNN | [Size] | [Status] | Yes / — |
+
+> **[AI Guide — FW-048]** If any story in this sprint is `Walking Skeleton: Yes`, add one line directly beneath the table: "Walking Skeleton status: [N] of [N] stories Done/Merged." Once all reach Done/Merged with a passing verification report, this becomes the project's `Walking Skeleton Complete: Yes` signal in `stories/index.md` Section 8 — do not mark it complete here ahead of that being true there. If no story in this sprint carries the tag, omit the line entirely.
 
 ---
 
@@ -185,6 +187,7 @@ Step 2 → [Story ID: what it builds on Step 1]
 - [ ] Pre-Sprint Readiness Checklist has a result for all six gates; any Fail has a resolution note
 - [ ] Story Board is in delivery sequence order, not registry order
 - [ ] Any documented story-level interleaving note from `epics/index.md` is reflected in the Story Board and Delivery Sequence
+- [ ] Walking Skeleton column in Story Board matches each story's own header field; the status line beneath the table (if present) matches `stories/index.md` Section 8 (FW-048)
 - [ ] Capacity Analysis total matches the Story Board row count
 - [ ] Every Should Have story in this sprint has a recorded decision
 - [ ] Definition of Done uses the five standard items, unmodified

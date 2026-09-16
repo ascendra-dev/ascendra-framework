@@ -174,6 +174,12 @@ FILES TO DEPRECATE (if any):
 - [file path] — [reason: requirement removed / story superseded / etc.]
 ```
 
+**Walking Skeleton flag (FW-048):** if any REQ, epic, or story touched by this change is tagged `Walking Skeleton: Yes`, add one line directly beneath the blast radius table:
+
+> ⚠ **This change touches the Walking Skeleton** — [REQ/story IDs]. It affects the foundational proof-of-architecture milestone, not routine scope. Confirm explicitly before proceeding, even if the change would otherwise classify as informal (Pattern 1/2).
+
+This does not change the Pattern classification itself or introduce a new formality tier — it is a named flag inside the existing patterns, surfaced so the PO weighs it deliberately rather than approving it as if it were an ordinary change.
+
 ---
 
 ## Step 5 — Formal change gate (Pattern 3 and 4 only)

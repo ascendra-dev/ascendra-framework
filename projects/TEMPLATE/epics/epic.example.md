@@ -27,13 +27,13 @@ When this epic is done, the Finance Manager can register client companies (Payer
 
 ### 2. BRD Requirements Covered
 
-| REQ ID | Description (exact from BRD) | Priority |
-|--------|------------------------------|----------|
-| REQ-001 | The system must allow the Finance Manager to register a new Payer with name, primary contact email, and phone number. | Must Have |
-| REQ-002 | The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both (either match triggers detection). Default is phone number. | Must Have |
-| REQ-003 | When a secondary deduplication key matches an existing Payer, the system must show a soft warning and require the Finance Manager to explicitly acknowledge it before proceeding. | Must Have |
-| REQ-004 | The system must allow the Finance Manager to import Payers from a CSV file. The import must run deduplication checks and produce a per-row import log showing success or failure. Duplicate rows are flagged and not imported — manual resolution required. | Must Have |
-| REQ-005 | The system must allow the Finance Manager to create an Opening Balance invoice against any Payer to record outstanding debt carried forward from a prior system. | Must Have |
+| REQ ID | Description (exact from BRD) | Priority | Walking Skeleton |
+|--------|------------------------------|----------|-------------------|
+| REQ-001 | The system must allow the Finance Manager to register a new Payer with name, primary contact email, and phone number. | Must Have | Yes |
+| REQ-002 | The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both (either match triggers detection). Default is phone number. | Must Have | — |
+| REQ-003 | When a secondary deduplication key matches an existing Payer, the system must show a soft warning and require the Finance Manager to explicitly acknowledge it before proceeding. | Must Have | — |
+| REQ-004 | The system must allow the Finance Manager to import Payers from a CSV file. The import must run deduplication checks and produce a per-row import log showing success or failure. Duplicate rows are flagged and not imported — manual resolution required. | Must Have | — |
+| REQ-005 | The system must allow the Finance Manager to create an Opening Balance invoice against any Payer to record outstanding debt carried forward from a prior system. | Must Have | — |
 
 ---
 

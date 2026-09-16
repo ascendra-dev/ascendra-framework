@@ -167,7 +167,7 @@ These two value sets never overlap — which field applies is determined by the 
 | Transition | Additional action |
 |-----------|-----------------|
 | Any status → `In Progress` | Check the story's Section 6 (Dependencies). If any dependency story is not yet `Merged` or `Done`, warn: "This story has unresolved dependencies: [list]. Are you sure you want to set it to In Progress?" Wait for confirmation. |
-| Any status → `Done` | Check the epic's Section 7 Stories table. If all other stories in this epic are also `Done`, ask: "All stories in EPIC-{NNN} are now Done. Do you want to also update the epic status to Done?" |
+| Any status → `Done` | Check the epic's Section 7 Stories table. If all other stories in this epic are also `Done`, ask: "All stories in EPIC-{NNN} are now Done. Do you want to also update the epic status to Done?" (FW-048) If this story's Walking Skeleton field is `Yes`, check every other `Walking Skeleton: Yes` story across the whole project in `stories/index.md`. If every one is now `Done` (not merely `Merged` — this must be QA-verified, not just code-landed), update that sprint's `Walking Skeleton Complete` field in Section 8 from `No` to `Yes` and report it: "All Walking Skeleton stories are now Done — Walking Skeleton Complete set to Yes for Sprint {NN}." |
 | Any status → `Deprecated` | Ask: "Confirm deprecation. This story will be marked Deprecated in the file and index. This does not delete the file. Confirm?" |
 
 ---

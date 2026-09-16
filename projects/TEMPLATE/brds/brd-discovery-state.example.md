@@ -52,6 +52,8 @@
 | 6.2 | High-Value Invoice — Approval Flow | Covered | Director approval currently done by forwarding the Excel invoice by email and waiting for a reply. No formal tracking. Director (Sarah Chen, present in Session 2) confirmed: she reviews on her phone frequently and needs the approval to work on mobile. Any one of the three Directors can approve — no escalation. Directors want email notification when approval is needed. Rejection: Finance Manager needs to know the reason clearly. |
 | 6.3 | Overdue Invoice — Reminder to Resolution | Covered | Currently sends overdue reminders manually — "when I remember to" (James's words). Wants Day 1, Day 7, Day 14 reminders as the default schedule, but wants to be able to change it. After Day 14 reminder, Finance Manager wants a system alert that manual follow-up is now required. No automation beyond that point. Key account exception: James mentioned one client (not named) he would prefer to call rather than email when overdue. Confirmed: per-client dunning is NOT required in Phase 1 — he will call them manually after the Day 14 escalation alert. |
 
+**Walking Skeleton (FW-048):** Journey 6.1 (Standard Invoice — Creation to Payment), trimmed to its core chain — create invoice, send it, collect real payment — is the Walking Skeleton. Confirmed with James: Director approval (6.2) and overdue reminders (6.3) are both real, needed capabilities, but neither has to work before the basic create-send-pay loop is proven end to end.
+
 ---
 
 ## 4. Scope Risk Flags

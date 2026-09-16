@@ -107,7 +107,7 @@ Use `projects/TEMPLATE/sprints/sprint-plan.template.md` as the document structur
 Fill in the following data from Steps 3–5:
 - **Header fields:** sprint number, status, epic(s), story count with size breakdown, sprint goal, start/end dates, generation date
 - **Pre-Sprint Readiness Checklist:** results from Step 5 gate checks (Pass / Fail / N/A per item). If any item is Fail, add a resolution note below the checklist.
-- **Story Board:** all stories in delivery sequence order (not registry order), with current status
+- **Story Board:** all stories in delivery sequence order (not registry order), with current status. Include the Walking Skeleton column, carried from each story's own header field (FW-048) — never re-derived. If any story in this sprint is tagged `Yes`, add the status line beneath the table per the template's guide; pull the Done/Merged count from `stories/index.md` Section 1 (Story Registry).
 - **Delivery Sequence:** reformatted from the Notes column in stories/index.md Section 8 — make it readable (Step 1 → Step 2 → etc.)
 - **Capacity Analysis:** size breakdown table, total count, Must Have vs Should Have breakdown
 - **Should Have Decision:** list each Should Have story with its inclusion decision

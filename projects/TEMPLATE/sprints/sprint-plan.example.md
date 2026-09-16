@@ -51,14 +51,16 @@ Capacity decision: 6 stories (2 from EPIC-002, 4 from EPIC-003) is below the 8�
 
 ### 4. Story Board
 
-| Order | Story ID | Title | Epic | Size | Status |
-|-------|----------|-------|------|------|--------|
-| 1 | US-03-001 | Invoice database schema | EPIC-003 | S | Reviewed |
-| 2 | US-02-001 | Client database schema and CRUD API | EPIC-002 | S | Reviewed |
-| 3 | US-03-005 | Generate invoice reference number | EPIC-003 | S | Reviewed |
-| 4 | US-02-002 | Client list and detail UI | EPIC-002 | M | Reviewed |
-| 5 | US-03-002 | Create invoice form | EPIC-003 | M | Reviewed |
-| 6 | US-03-003 | Invoice detail page | EPIC-003 | M | Reviewed |
+| Order | Story ID | Title | Epic | Size | Status | Walking Skeleton |
+|-------|----------|-------|------|------|--------|-------------------|
+| 1 | US-03-001 | Invoice database schema | EPIC-003 | S | Reviewed | Yes |
+| 2 | US-02-001 | Client database schema and CRUD API | EPIC-002 | S | Reviewed | Yes |
+| 3 | US-03-005 | Generate invoice reference number | EPIC-003 | S | Reviewed | Yes |
+| 4 | US-02-002 | Client list and detail UI | EPIC-002 | M | Reviewed | — |
+| 5 | US-03-002 | Create invoice form | EPIC-003 | M | Reviewed | Yes |
+| 6 | US-03-003 | Invoice detail page | EPIC-003 | M | Reviewed | — |
+
+Walking Skeleton status: 0 of 4 stories Done/Merged.
 
 ---
 

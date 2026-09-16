@@ -27,6 +27,7 @@ Harborview Consulting Ltd manages all client invoicing through a shared Excel sp
 - Ensure 100% of overdue invoices receive an automated reminder within 24 hours of the due date passing — no manual intervention
 - Give Finance Manager and Directors a live view of outstanding and overdue balances at all times
 - Replace email-based Director approval with a tracked, in-system workflow that produces an auditable approval record
+- The Walking Skeleton — Finance Manager / Payer — Create, Send, and Collect Payment — is demonstrably working end-to-end before any other epic is built to full breadth
 
 ### 1.4 Scope
 
@@ -120,55 +121,66 @@ Harborview Consulting Ltd manages all client invoicing through a shared Excel sp
 4. Stripe sends a webhook event to the system confirming successful payment.
 5. Invoice status changes from Sent to Paid. Finance Manager sees the updated status on the dashboard.
 
+### 4.4 Finance Manager / Payer — Create, Send, and Collect Payment (Walking Skeleton)
+
+> **[AI Guide — worked example, FW-048]** This is the trimmed, cross-persona core of Journeys 4.1 and 4.3 — the thinnest real path that exercises the full stack (database, backend API, frontend, Stripe integration, webhook) end-to-end. It deliberately excludes Director approval (4.2 — a breadth feature, not required to prove the core loop), Payer deduplication/CSV import (breadth on top of basic registration), and overdue reminders (only reachable after the core loop already works). A single low-value invoice is used specifically so approval routing never triggers.
+
+1. Finance Manager registers a Payer with name, contact email, and phone number.
+2. Finance Manager creates an invoice for that Payer: one line item, a due date, total below the £10,000 approval threshold.
+3. System calculates subtotal, VAT, and total; assigns a unique reference number.
+4. Finance Manager sends the invoice. System generates a PDF and emails it to the Payer with an embedded Stripe payment link. Status changes to Sent.
+5. Payer opens the email, clicks "Pay Now", and completes payment on Stripe's hosted checkout page.
+6. Stripe sends a webhook event confirming payment. Invoice status changes to Paid.
+
 ---
 
 ## 5. Functional Requirements
 
 ### 5.1 Payer Management
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-| REQ-001 | The system must allow the Finance Manager to register a new Payer with name, primary contact email, and phone number. | Must Have | Client-Stated | Core |
-| REQ-002 | The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both (either match triggers detection). Default is phone number. | Must Have | Client-Stated | Core |
-| REQ-003 | When a secondary deduplication key matches an existing Payer, the system must show a soft warning and require the Finance Manager to explicitly acknowledge it before proceeding. | Must Have | Domain-Default | Core |
-| REQ-004 | The system must allow the Finance Manager to import Payers from a CSV file. The import must run deduplication checks and produce a per-row import log showing success or failure. Duplicate rows are flagged and not imported — manual resolution required. | Must Have | Client-Stated | Core |
-| REQ-005 | The system must allow the Finance Manager to create an Opening Balance invoice against any Payer to record outstanding debt carried forward from a prior system. | Must Have | Client-Stated | Core |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+| REQ-001 | The system must allow the Finance Manager to register a new Payer with name, primary contact email, and phone number. | Must Have | Client-Stated | Core | Yes |
+| REQ-002 | The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both (either match triggers detection). Default is phone number. | Must Have | Client-Stated | Core | — |
+| REQ-003 | When a secondary deduplication key matches an existing Payer, the system must show a soft warning and require the Finance Manager to explicitly acknowledge it before proceeding. | Must Have | Domain-Default | Core | — |
+| REQ-004 | The system must allow the Finance Manager to import Payers from a CSV file. The import must run deduplication checks and produce a per-row import log showing success or failure. Duplicate rows are flagged and not imported — manual resolution required. | Must Have | Client-Stated | Core | — |
+| REQ-005 | The system must allow the Finance Manager to create an Opening Balance invoice against any Payer to record outstanding debt carried forward from a prior system. | Must Have | Client-Stated | Core | — |
 
 ### 5.2 Invoice Management
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-| REQ-006 | The system must allow the Finance Manager to create an invoice by selecting a Payer, adding line items (description, quantity, unit price), and setting a due date. | Must Have | Client-Stated | Core |
-| REQ-007 | The system must calculate subtotal, VAT at 20%, and total automatically. These values must recalculate in real time as line items change and must not be editable by the user. | Must Have | Client-Stated | Core |
-| REQ-008 | Every invoice must be assigned a unique reference number in the format INV-YYYY-NNNNNN at creation time, where YYYY is the calendar year and NNNNNN is a zero-padded sequential number that never resets between years. | Must Have | Domain-Default | Core |
-| REQ-009 | The system must generate a PDF of the invoice and attach it to the invoice sending email. The PDF must include Payer details, line items, subtotal, VAT, total, reference number, and due date. | Must Have | Client-Stated | Core |
-| REQ-010 | Invoices above the organisation's high-value threshold must be submitted for Director approval before they can be sent. The approval threshold is configurable per organisation. Harborview's threshold is £10,000 (inclusive). | Must Have | Client-Stated | Core |
-| REQ-011 | All three Harborview Directors must be notified by email when an invoice is submitted for approval. Any one Director may approve or reject the invoice — a second Director's approval is not required. | Must Have | Client-Stated | Core |
-| REQ-012 | When a Director rejects an invoice, a rejection reason must be recorded and the Finance Manager notified. The Finance Manager may edit and resubmit the invoice. | Must Have | Client-Stated | Core |
-| REQ-013 | The system must allow the Finance Manager to void a Sent or Approved invoice. A voided invoice cannot be edited, reactivated, or resent. | Should Have | Client-Stated | Core |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+| REQ-006 | The system must allow the Finance Manager to create an invoice by selecting a Payer, adding line items (description, quantity, unit price), and setting a due date. | Must Have | Client-Stated | Core | Yes |
+| REQ-007 | The system must calculate subtotal, VAT at 20%, and total automatically. These values must recalculate in real time as line items change and must not be editable by the user. | Must Have | Client-Stated | Core | Yes |
+| REQ-008 | Every invoice must be assigned a unique reference number in the format INV-YYYY-NNNNNN at creation time, where YYYY is the calendar year and NNNNNN is a zero-padded sequential number that never resets between years. | Must Have | Domain-Default | Core | Yes |
+| REQ-009 | The system must generate a PDF of the invoice and attach it to the invoice sending email. The PDF must include Payer details, line items, subtotal, VAT, total, reference number, and due date. | Must Have | Client-Stated | Core | Yes |
+| REQ-010 | Invoices above the organisation's high-value threshold must be submitted for Director approval before they can be sent. The approval threshold is configurable per organisation. Harborview's threshold is £10,000 (inclusive). | Must Have | Client-Stated | Core | — |
+| REQ-011 | All three Harborview Directors must be notified by email when an invoice is submitted for approval. Any one Director may approve or reject the invoice — a second Director's approval is not required. | Must Have | Client-Stated | Core | — |
+| REQ-012 | When a Director rejects an invoice, a rejection reason must be recorded and the Finance Manager notified. The Finance Manager may edit and resubmit the invoice. | Must Have | Client-Stated | Core | — |
+| REQ-013 | The system must allow the Finance Manager to void a Sent or Approved invoice. A voided invoice cannot be edited, reactivated, or resent. | Should Have | Client-Stated | Core | — |
 
 ### 5.3 Payment Collection
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-| REQ-014 | The system must generate a Stripe payment link for each Sent invoice and embed it in the invoice email as a "Pay Now" button. Payers pay via the Stripe-hosted checkout page — no payment UI is built within the system. | Must Have | Client-Stated | Core |
-| REQ-015 | When Stripe confirms a successful payment via webhook, the system must automatically update the invoice status to Paid and record the payment date and amount received. | Must Have | Client-Stated | Core |
-| REQ-016 | If the payment amount confirmed by Stripe is less than the invoice total, the system must not mark the invoice as Paid. The discrepancy must be logged and the Finance Manager alerted for manual resolution. | Must Have | Assumed | Core |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+| REQ-014 | The system must generate a Stripe payment link for each Sent invoice and embed it in the invoice email as a "Pay Now" button. Payers pay via the Stripe-hosted checkout page — no payment UI is built within the system. | Must Have | Client-Stated | Core | Yes |
+| REQ-015 | When Stripe confirms a successful payment via webhook, the system must automatically update the invoice status to Paid and record the payment date and amount received. | Must Have | Client-Stated | Core | Yes |
+| REQ-016 | If the payment amount confirmed by Stripe is less than the invoice total, the system must not mark the invoice as Paid. The discrepancy must be logged and the Finance Manager alerted for manual resolution. | Must Have | Assumed | Core | — |
 
 ### 5.4 Overdue Management
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-| REQ-017 | The system must automatically send an overdue reminder email to the Payer when a Sent invoice passes its due date without payment. The first reminder fires within 24 hours of the due date. | Must Have | Client-Stated | Core |
-| REQ-018 | The overdue reminder schedule must be configurable by the Finance Manager: number of reminders and the interval between them (e.g. Day 1, Day 7, Day 14 after due date). | Should Have | Client-Stated | Core |
-| REQ-019 | After the configured maximum number of reminders is sent, the system must flag the invoice status as Overdue (Escalated) and alert the Finance Manager that manual follow-up is required. | Should Have | Client-Stated | Core |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+| REQ-017 | The system must automatically send an overdue reminder email to the Payer when a Sent invoice passes its due date without payment. The first reminder fires within 24 hours of the due date. | Must Have | Client-Stated | Core | — |
+| REQ-018 | The overdue reminder schedule must be configurable by the Finance Manager: number of reminders and the interval between them (e.g. Day 1, Day 7, Day 14 after due date). | Should Have | Client-Stated | Core | — |
+| REQ-019 | After the configured maximum number of reminders is sent, the system must flag the invoice status as Overdue (Escalated) and alert the Finance Manager that manual follow-up is required. | Should Have | Client-Stated | Core | — |
 
 ### 5.5 Dashboards
 
-| ID | Description | Priority | Source | Layer |
-|----|-------------|----------|--------|-------|
-| REQ-020 | The Finance Manager dashboard must display: total outstanding balance, total overdue balance, invoices due within the next 7 days, and recently paid invoices. All figures update in real time. | Must Have | Client-Stated | Core |
-| REQ-021 | Directors must have a dedicated approval queue view listing all invoices pending their approval, with the ability to view full invoice details before acting. | Must Have | Client-Stated | Core |
+| ID | Description | Priority | Source | Layer | Walking Skeleton |
+|----|-------------|----------|--------|-------|-------------------|
+| REQ-020 | The Finance Manager dashboard must display: total outstanding balance, total overdue balance, invoices due within the next 7 days, and recently paid invoices. All figures update in real time. | Must Have | Client-Stated | Core | — |
+| REQ-021 | Directors must have a dedicated approval queue view listing all invoices pending their approval, with the ability to view full invoice details before acting. | Must Have | Client-Stated | Core | — |
 
 ### 5.21 Future Capabilities
 
@@ -285,6 +297,7 @@ None — all questions raised during discovery were resolved before approval.
 - [x] Every business rule in section 6 is client-specific or non-obvious. BR-005 (no sequence reset) is a domain default included because the client explicitly asked about reference numbering.
 - [x] Section 1.4 Out of Scope is populated with 5 explicit exclusions including the accounting integration and Payer portal.
 - [x] No implementation detail in sections 3–9 — no field types, API paths, database schema, or technology choices.
+- [x] (FW-048) Exactly one journey (4.4) is suffixed `(Walking Skeleton)`. Its 7 tagged requirements (REQ-001, 006, 007, 008, 009, 014, 015) compose the full chain end-to-end with no gaps: register a Payer, create and price an invoice, send it with a payment link, collect real payment, and reflect Paid status — Director approval, deduplication/import, and overdue reminders are deliberately excluded as breadth, not oversights. Section 1.3 carries the required Walking Skeleton goal naming this journey.
 
 ### 13.2 Cross-Section Consistency
 

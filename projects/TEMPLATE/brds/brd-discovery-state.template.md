@@ -61,6 +61,8 @@
 | 6.1 | [Journey name] | Covered / Pending | |
 | 6.2 | [Journey name] | Covered / Pending | |
 
+**Walking Skeleton (FW-048):** [Which journey — or trimmed, cross-persona combination of journeys above — is the thinnest real end-to-end path the PO confirmed. `/gen-brd` reads this directly to tag Section 5 requirements; do not leave blank once Section 6 is Covered.]
+
 ---
 
 ## 4. Scope Risk Flags

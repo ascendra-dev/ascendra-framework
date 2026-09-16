@@ -98,6 +98,8 @@ Work through the playbook section by section:
 
 **Playbook Section 6 (Journey Walkthroughs):** After all core questions are answered, walk through each primary journey. Set the scene, walk step by step, probe at each step for edge cases and exceptions.
 
+**Walking Skeleton (FW-048):** once the primary journeys are walked, ask the PO directly which one is the thinnest real path that would prove the whole system works end-to-end if nothing else were built yet — or whether it's a trimmed, cross-persona core cutting across two of the journeys just walked (e.g. one persona creates something, another completes it). Record the answer distinctly in the discovery state, since `/gen-brd` needs it to tag Section 5 requirements and cannot infer it reliably from journey content alone.
+
 **Playbook Section 7 (Integration Confirmation):** Work through the integration table. Confirm in/out for each integration. Record who owns each confirmed integration.
 
 **Playbook Section 8 (Output Confirmation):** Walk through the reports, notifications, and access levels checklist. Correct any assumptions.

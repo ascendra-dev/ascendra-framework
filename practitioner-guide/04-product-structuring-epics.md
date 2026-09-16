@@ -81,6 +81,22 @@ Walk it through on Harborview, where it's supposed to hold, and then on a case w
 
 ---
 
+## The Walking Skeleton: a harder constraint than ordinary dependency ordering (FW-048)
+
+Dependency ordering (above) answers "what must exist before this epic can begin." The Walking Skeleton answers a related but stricter question: "which epic proves the whole system actually works, end to end, before anything else gets built to full breadth." The two can point the same direction — often the Walking Skeleton epic *is* the dependency root — but they're not the same test, and conflating them is exactly how the failure this convention exists to prevent happens.
+
+The failure is real, not hypothetical: a prior Ascendra project shipped its first attempt without one. Its own retrospective names the root cause plainly — *"the core of the system was not established first. Rather than delivering the product core first and adding capability in phases, breadth was built out across many epics before a single thin end-to-end path was proven."* Everything downstream of that one decision got worse for it: stories couldn't be built or verified independently, because nothing had ever proven the thin path actually held together; authorization and notifications both got built out to a depth nobody had confirmed was needed yet, because there was no working core to test the *actual* need against.
+
+**What to check, concretely:** by the time epics reach you, the BRD already carries a `Walking Skeleton: Yes` tag on exactly the requirements that compose one complete, thin, real, end-to-end path (Section 5 — see Chapter 3 for how it got there). Your job at this phase is narrower than re-deciding what the skeleton is — it's making sure the epic set doesn't quietly lose the thread:
+
+- Every `Yes`-tagged REQ landed in some epic — it cannot fall through Step 3's REQ-to-epic assignment.
+- Whichever epic(s) carry those REQs are sequenced first in the build order — ahead of any epic that carries none of them, even one that would otherwise sort earlier by an ordinary dependency read.
+- If a Walking Skeleton REQ ends up split across two epics, that's a signal worth pausing on: a REQ set that was deliberately kept to "one complete chain, no gaps" at BRD time splitting across epic boundaries risks the fragmentation the whole convention exists to prevent. It isn't automatically wrong — sometimes a chain genuinely crosses a natural epic boundary (e.g. Payer Management's registration REQ feeding an Invoice Management epic's creation REQ, as it does on Harborview below) — but it's exactly the kind of split `/review-epics`' Walking Skeleton Build Order check is there to make you look at directly, not wave through by habit.
+
+**The real enforcement doesn't finish here.** Epics only assign REQs to a container; stories are what actually get built and merged independently. The harder, sharper check — do the Walking Skeleton *stories* actually avoid depending on any non-Walking-Skeleton story — belongs to `/review-stories` (Chapter 7 covers it). What you're protecting at this phase is upstream of that: making sure the epic set hands stories a Walking Skeleton that's still intact, not one that's already been diluted by REQ-to-epic assignment decisions made for other reasons.
+
+---
+
 ## The story-level interleaving note
 
 Section 5 dependencies are epic-level: "EPIC-B needs all of EPIC-A's Definition of Done done first." Sometimes that's too coarse — the *true* build order is finer-grained than epic-before-epic: one specific story in A has to land before one specific story in B, but the rest of A's stories can build in parallel with the rest of B's. `/gen-epics` Step 6 now has a real trigger test for exactly this case, written into the epics index rather than left to guesswork:
@@ -167,6 +183,7 @@ This chapter builds on [`00-orientation.md`](00-orientation.md)'s terminology ma
 - Treating REQ count alone as the sizing test — a small epic can still glue two capabilities together; a large one can still be genuinely cohesive.
 - Doing `/review-epics`'s REQ-by-REQ verification work at the `/gen-epics` Step 4 planning table, where the material to check it against doesn't exist yet.
 - Listing a dependency because an epic "feels foundational" instead of naming the specific story in the dependent epic that's actually blocked.
+- Letting a Walking Skeleton REQ silently land in whichever epic feels like the closest fit, without checking whether the resulting epic set still gets sequenced first in the build order (FW-048).
 - Treating every epic-to-epic dependency as fully sequential when the real blocker is one specific story — check the Story-Level Interleaving subsection before scheduling waves as strictly sequential.
 - Letting a Section 8 technical hint (a specific token shape, a specific filtering mechanism) quietly become a fixed architecture decision in your head before `/gen-architecture` has actually run.
 - Treating `/review-epics`' "approximately N stories" as a commitment for sprint planning rather than a rough, unverifiable sanity check.
@@ -184,3 +201,4 @@ This chapter builds on [`00-orientation.md`](00-orientation.md)'s terminology ma
 - **Section 5 (Dependencies)** states Payer Management's role as the dependency root in plain language ("All invoice epics depend on this one") — the assertion the falsifiable test above confirms rather than takes on faith, grounded in REQ-006's "selecting a Payer."
 - **Section 8 (Notes)** is the canonical instance of both a correct use (the deduplication and Opening Balance business rules, traced to REQ-002/003/005) and the sharp edge (the JWT-based `orgId` filtering sentence) discussed above — read it with both in mind, not just as a positive example.
 - **The filled Verification checklist** at the bottom is worth reading once for its own sake: every check cites the specific REQ IDs or BRD section it verified against, which is the standard of specificity `/review-epics`' own 13 checks hold every subsequent epic to.
+- **Section 2's Walking Skeleton column** shows the split case named above directly: REQ-001 (register a Payer) is tagged `Yes` here in EPIC-001, while the rest of Harborview's Walking Skeleton — create the invoice, calculate its total, send it, collect real payment — lands in EPIC-003 (Invoice Management, named in this epic's own Section 3.2, per `brd.example.md` Section 5.2). A Payer has to exist before an invoice can be created, so the chain genuinely does cross this epic boundary; that's the legitimate version of the split case, not the fragmentation the check exists to catch.

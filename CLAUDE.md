@@ -147,7 +147,7 @@ ascendra-framework/
 | `/assess-change` | Assess the impact of a requested scope or architecture change |
 | `/update-status` | Update the status of a project artifact |
 | `/project-status` | Live dashboard: epic/story status, per-sprint progress, and an ATTENTION section flagging blockers — run at any time |
-| `/judgment-check` | Supplementary density/judgment-quality check against one artifact, sourced from the matching `practitioner-guide/` chapter — run before that artifact's `/review-X` walkthrough. Piloted on BRD, Epics, and Architecture; not yet extended to the rest. |
+| `/judgment-check` | Supplementary density/judgment-quality check against one artifact, sourced from the matching `practitioner-guide/` chapter — run before that artifact's `/review-X` walkthrough. Piloted on BRD, Epics, and Architecture; since extended to all remaining artifact types (brief, domain knowledge, screen design, stories/sprint plan, story plan/PR description, UAT checklist/test execution report, release notes). |
 
 ---
 

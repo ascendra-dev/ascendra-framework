@@ -61,9 +61,11 @@
 >
 > A requirement belongs to exactly one epic. If a requirement spans two epics, assign it to the epic where its acceptance criteria would be written. The other epic names it in Section 4.2 (Out of Scope).
 
-| REQ ID | Description (exact from BRD) | Priority |
-|--------|------------------------------|----------|
-| REQ-xxx | ... | Must Have |
+| REQ ID | Description (exact from BRD) | Priority | Walking Skeleton |
+|--------|------------------------------|----------|-------------------|
+| REQ-xxx | ... | Must Have | Yes / — |
+
+> **[AI Guide — FW-048]** Carry the Walking Skeleton value straight from the BRD's Section 5 — never re-derive or re-judge it here. If any row in this table is `Yes`, this epic carries the Walking Skeleton and must be sequenced first in the Dependency Graph in `epics/index.md` (Section 5, below, still applies for the *reason* it's first — Walking Skeleton status is an additional, harder constraint on top of it, not a replacement for it).
 
 ---
 
