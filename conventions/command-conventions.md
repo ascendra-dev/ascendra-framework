@@ -30,6 +30,7 @@ Verifiable rules for all Ascendra slash commands. Apply these when writing a new
 - Generation commands (`gen-*`, `init-*`): dedicated `## Step 1.5 — Gate check` between argument parsing and file reads.
 - Session commands (`run-*`): dedicated `## Step 2 — Gate check`.
 - Review commands (`review-*`): gate check embedded within Step 1.
+- **Exception:** `anchor-project` (and any future cross-cutting orchestration command that invokes other commands rather than performing one artifact's own generation/review/session work) follows the session-command placement — dedicated `## Step 2 — Gate check` — since it is fundamentally a resumable, multi-turn session, just not named `run-*`.
 
 **C-012** Gate checks with 3 or more conditions use the table format:
 ```
@@ -39,6 +40,7 @@ Verifiable rules for all Ascendra slash commands. Apply these when writing a new
 Gate checks with 1–2 conditions may use if/else bullets. Do not mix both formats in the same gate check block.
 
 **C-013** File reading is a dedicated step with a numbered list. Each entry: `` `file path` `` — purpose in one phrase. Restrictions on what NOT to load go at the end of the step.
+- **Exception:** `anchor-project`'s file needs are inherently sequence-dependent — it may resolve a project via `projects/index.md`, reconcile state against whichever artifacts the project has reached, or inherit an invoked command's own file-reading step, all within one run. Its reads are distributed across the steps that actually need them rather than consolidated into one dedicated step. This exception does not extend to commands whose inputs are fixed and knowable in advance — those still use one dedicated file-reading step.
 
 **C-013a** Template files (`projects/TEMPLATE/`) may appear in a command's file read list only in two cases:
 1. The command is a `gen-*` or `init-*` command reading the template for the artifact it is generating
