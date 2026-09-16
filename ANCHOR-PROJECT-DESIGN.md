@@ -72,11 +72,25 @@ Ingestion's output target is **whichever input mechanism the current phase's com
 - Where an intermediate state file already exists for the phase (`domain-discovery-state.template.md`, `brd-discovery-state.template.md`), ingestion triages the source material and writes directly into that template's existing sections — the downstream command (`/gen-domain-knowledge`, `/gen-brd`) runs completely unmodified, unaware whether the state file came from a live discovery session or from triage.
 - Where no such intermediate file exists (Phase 1 — `/run-intake` writes straight to `brief.md`), ingestion pre-extracts answers and feeds them in as the PO's own answers when `run-intake`'s questions come up.
 
-### 5.2 Multi-artifact triage, not one flat dump
+### 5.2 The three-pass pipeline: map, triage, extract
+
+Agreed in discussion but never actually written down until now — the mechanism behind "top-down triage" (§5's own opening line) is three distinct passes, not one undifferentiated read-and-write:
+
+1. **Map** — skim only, no deep reading. Build a lightweight outline of the source: what's in it and roughly where, one short gist per unit. Cheap even for a large document, since nothing is deep-read yet.
+2. **Triage** — against that map, and the current phase's actual information needs, mark each unit relevant / redundant (covered by another unit already) / irrelevant / ambiguous. Irrelevant units are dropped **without** being deep-read at all — this is what keeps a genuinely large or noisy source cheap to process. Redundant units are flagged so the same fact doesn't get extracted twice from two places.
+3. **Extract** — deep-read only what survived triage, and write it into the target (per §5.1) compressed and deduplicated — never a verbatim transcription, never the same fact restated because it appeared in two source units.
+
+**Structured vs. unstructured sources use the same three passes, but the Map step adapts to what's actually there:**
+- A source with real structure (an SRS, a spec, anything with real headings) — Map builds its outline directly from that structure, and Triage works section by section.
+- A source with no reliable structure (raw notes, a handwritten dump, stream-of-consciousness fragments) — Map has no headings to skim by, so it clusters fragments by inferred topic instead, before Triage can ask "relevant or not" of each cluster. Same pipeline, same discipline, different technique for the one step that depends on the source actually being organized.
+
+**Transparency:** persist the Map + Triage decisions themselves (not just the final extraction) as a short section in `extraction-log.md` (§4.2) — one line per unit: gist, decision, destination file if kept. This is what makes ingestion legible rather than a black box that silently dropped content, and it's also where §5.8's checkpoint pointer lives for a source too large to process in one pass.
+
+### 5.3 Multi-artifact triage, not one flat dump
 
 Real source material carries genuinely distinct kinds of knowledge — domain entities/rules, integrations (count, sync/async, technology, third-party contract shape), personas, historical constraints. Triage classifies by kind and routes each into its own properly organized file (e.g. an integration catalog is a real, reusable artifact useful to `/gen-architecture` later — not a footnote in a scratch file), written to be read by a human stakeholder, not just by the AI.
 
-### 5.3 Legacy material — don't let a bad system distort the domain model
+### 5.4 Legacy material — don't let a bad system distort the domain model
 
 Every extracted fact gets checked against the AI's own generic/canonical domain understanding before being written anywhere:
 
@@ -85,21 +99,21 @@ Every extracted fact gets checked against the AI's own generic/canonical domain 
 - **Diverges, and looks like a legacy design flaw rather than a real constraint** (bad normalization, an accidental workaround that calcified) → written as neither content nor a silent correction. It becomes an explicit Open Issue framed as a negotiation: *"the legacy system does X this way — real constraint, or something to leave behind in the upgrade?"* This is the PO negotiation point, not a default.
 - Same posture applies to integration modernization (e.g. legacy sync integration → propose async) and legacy contract renegotiation with a third party — these are surfaced as discussion items with a recommendation, never carried forward silently just because "that's what the old system did," and never decided by anchor unilaterally.
 
-### 5.4 Constraints discovered mid-stream are a drift trigger, not just a note
+### 5.5 Constraints discovered mid-stream are a drift trigger, not just a note
 
 If a hard fact surfaces later than expected (example used in discussion: learning at BRD stage that the same database schema is a fixed constraint), this is structurally the same problem as an artifact version bump — something material is now true that earlier, already-approved artifacts didn't know about. It feeds the same lineage/drift mechanism (§7) via a second trigger type: not just "upstream artifact version changed" but "a new hard constraint was recorded," checked against everything already built or approved that might assume otherwise.
 
-### 5.5 Composability
+### 5.6 Composability
 
 Ingestion's input contract is source-agnostic: a document plus which phase it's informing. It doesn't matter whether the document was pasted by the PO, uploaded, or produced by some other tool/command entirely (e.g. a hypothetical future "extract from legacy code" command). Anchor only needs a document and a target phase — this keeps the door open to composing anchor with other tooling later without redesigning the ingestion step.
 
-### 5.6 Sensitive content
+### 5.7 Sensitive content
 
 Legacy material can carry credential-shaped strings (API keys, tokens, passwords) copy-pasted into old notes or an old SRS. `projects/{CODE}/` being gitignored is not the same as safe to persist verbatim — triage should recognize obviously sensitive strings and flag them to the PO rather than silently filing them into a catalog document.
 
-### 5.7 Volume handling
+### 5.8 Volume handling
 
-"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state (a pointer, per §4.1), not a reason to re-hold the whole source in memory across turns.
+"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state (a pointer, per §4.1), not a reason to re-hold the whole source in memory across turns. This is the same checkpoint §5.2 already places in `extraction-log.md` — one mechanism, not two.
 
 ## 6. PO Interaction Protocol
 
@@ -134,7 +148,7 @@ This is the orchestrator's actual unique contribution — not sequencing conveni
 Driven entirely by the lineage ledger and open-item counts already in state, so "run constantly" isn't a burden:
 
 1. **Version-lineage drift** — for every recorded upstream→downstream pair (Domain→BRD, BRD→Epics, BRD/Epics→Screen Design, Screen Design/BRD/Epics→Architecture, Architecture→Stories), compare the version the downstream was built against to the upstream's current version. Mismatch → flag.
-2. **Constraint-propagation drift** — any fact/correction/constraint recorded after a given artifact was approved, checked against that artifact's scope (§5.4's trigger).
+2. **Constraint-propagation drift** — any fact/correction/constraint recorded after a given artifact was approved, checked against that artifact's scope (§5.5's trigger).
 3. **Orphaned open items** — Open Issues / AI Knowledge Corrections rows still marked Open from a stage the project has since moved past, never resolved or explicitly deferred.
 
 ### 7.2 Heavier checks — content-level, run at gate-close or on explicit request
@@ -160,6 +174,8 @@ Kept fully separate from `decisions/` — a raw waiting room, not a decision log
 - `observations/TEMPLATE.md` — its own lighter template (this is a raw finding, not a ratified decision): what was observed, where/when, why it matters, a proposed direction
 - `observations/OBS-001-{slug}.md` per finding
 - Status field distinct from decisions': `New` → `Under Review` → `Promoted → FW-XXX` / `Rejected` / `Won't Fix`
+
+**Trigger timing:** the write happens in the moment, during execution — whether anchor is running its own orchestration logic or wearing an invoked command's hat mid-`/gen-brd`, mid-`/review-epics`, or anywhere else — whenever it hits something that doesn't work as documented, is genuinely ambiguous, or represents a real, evidenced improvement to the framework itself (not the project). Not a scheduled batch pass, not deferred to session-end — the same way `FRAMEWORK-AUDIT.md`'s defects were actually found, as real friction hit while actually using the thing. It writes silently, without stopping to ask the PO's permission each time (this is about the framework, not their project — asking would undercut the point of the whole design), but it still surfaces briefly in the session output ("noted OBS-004 — a gap in X") so it's never invisible, just not gating. The bar should be genuinely high, the same restraint as the question-budget in §6.2 — a real, evidenced finding, not every passing stylistic thought, or `observations/` turns into noise nobody reviews.
 
 Promotion path: the framework author reviews an observation and, if worth acting on, writes it up as a real `FW-XXX` in `decisions/` using the existing decision template. Observations never write into `decisions/` directly, and are never auto-applied.
 
@@ -212,3 +228,4 @@ A PO who wants the standalone, unanchored experience simply runs any command dir
 | 2026-09-16 | Initial consolidation of design discussion (mechanics, interaction protocol, ingestion, anti-drift axes, self-improvement logging, invocation semantics) |
 | 2026-09-16 | Full review pass: added review-output compression (§6.5), state reconciliation/bootstrap (§4.3), no-gate-fast-forwarding constraint (§2), non-linear request routing (§7.3), extension/base lineage gap (§7.4), judgment-check integration (§7.2 item 7), sensitive-content and volume handling in ingestion (§5.6, §5.7); flagged Phase 6-9 scope as the one significant unresolved fork (§11) |
 | 2026-09-17 | Resolved the Phase 6-9 scope fork using the Walking Skeleton concept (real precedent found in a sibling project, `ascendra-pay-002`, not previously part of this framework): added §9 (Solution Domain Boundary — The Walking Skeleton Handoff), sections renumbered accordingly (Rejected Approaches → §10, Invocation → §11, Open Items → §12). Formalized the underlying concept into the framework itself first, ahead of anchor, as `decisions/FW-048-walking-skeleton-milestone.md` — implemented across the BRD/Epics/Stories/Sprint Planning pipeline and the practitioner guide — so §9's handoff trigger (`stories/index.md`'s `Walking Skeleton Complete` field) is a real mechanism, not a placeholder |
+| 2026-09-17 | Two clarifications filled in that were previously implicit: §5.2 (new) spells out the three-pass ingestion pipeline (map, triage, extract) agreed in discussion but never actually written down, including how the Map step adapts to structured vs. unstructured sources — §5.3-5.8 renumbered accordingly; §8 gained a Trigger Timing paragraph specifying that observations are written in the moment during execution, silently but with a brief session-output mention, at a high evidentiary bar |
