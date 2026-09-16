@@ -1,6 +1,6 @@
 # Anchor Project — Working Design Document
 
-**Status:** Implemented, pending validation and formal writeup. `.claude/commands/anchor-project.md` exists and is self-consistent as of 2026-09-17. Not yet converted into one or more `decisions/FW-XXX` ADRs, and not yet validated against a real project (§12's remaining resolved-but-not-yet-run item). This document stays live until both of those happen — update it in place if validation surfaces a design change.
+**Status:** Partially implemented, currently inconsistent with the code — flagging this plainly rather than letting it sit unnoticed. `.claude/commands/anchor-project.md` was written and self-checked on 2026-09-17, but §5 was rewritten later the same day (ingestion moved out of anchor into a new standalone command, `/run-priming-session`) and `anchor-project.md`'s own Step 7 has not yet been updated to match — it still contains the old embedded ingestion logic this document no longer describes. Do not treat the command file as authoritative over this document until that's fixed. Also still pending: `priming-package.template.md` and `.claude/commands/run-priming-session.md` don't exist yet (§5 describes them, nothing has built them), the `/init-project` `source-material/` addition (§5.12), conversion into one or more `decisions/FW-XXX` ADRs, and validation against a real project.
 **Working command name:** `/anchor-project`
 **Started:** 2026-09-16
 **Owner:** Zaka Shah (framework author)
@@ -61,59 +61,95 @@ State is a cache of what the artifacts already say, never a second source of tru
 
 This also makes **adopting an already-in-progress, non-anchor-driven project a first-class case, not a special one** — a real, immediate example being THORNFIELD-MAINT-001, currently mid-lifecycle (Architecture: Draft) with no anchor state at all. If state is missing, stale, or was never created, anchor bootstraps it by scanning the existing artifacts: infer each phase's status from its own Status field, rebuild the lineage ledger from the version numbers already recorded in each artifact's own Document History section, and initialize from that — no separate "import" step needed.
 
-## 5. Document Ingestion Mode
+## 5. The Priming Session — `/run-priming-session`
 
-A mode of `/anchor-project`, not a change to any existing command, and not phase-1-only. Usable whenever the PO has raw material for whatever phase is currently active — a legacy SRS, scattered notes, an old requirements doc, anything, in any order, possibly self-contradictory, possibly large.
+**Corrected 2026-09-17:** an earlier version of this section described ingestion as a mode of `/anchor-project` itself, usable at any phase. Both halves turned out to be wrong once the composability principle was actually applied to this design: embedding a source-agnostic, document-processing mechanism inside the one command that isn't source-agnostic (anchor is a sequencer) was the same kind of internal contradiction §9 in the earlier draft warned against elsewhere. It is now a **standalone companion command**, `/run-priming-session`, fully usable on its own — not a mode, not phase-1-only in the old sense, but scoped specifically to **Problem Domain** (Brief, Domain, BRD) and nothing past it. Epics, Screen Design, and Architecture are AI synthesis performed *from* an approved BRD, not raw PO knowledge — there is nothing for a front-loaded session to capture there. (This is the same category of mistake §10, Rejected Approaches, already warned against for two other shapes this design considered and discarded — a third instance, caught later than the first two.)
 
-### 5.1 Zero-new-format principle
+### 5.1 What it produces, and where it comes from
 
-Ingestion's output target is **whichever input mechanism the current phase's command already reads** — never a bespoke new format:
+Output: `priming-package.template.md` (new location: `projects/TEMPLATE/priming/`). It is a new *file*, not a new *schema* — its sections are composed from `brief.template.md`, `domain-discovery-state.template.md`, and `brd-discovery-state.template.md`'s own existing structure, not hand-invented. A future field added to any of those (the way `Walking Skeleton` just got added to two of them by `FW-048`) is inherited automatically rather than drifting out of sync — this is the concrete answer to "does this limit anchor's capability": nothing here can fall behind the templates it mirrors, because it isn't a separate thing to keep in sync, it's built from them.
 
-- Where an intermediate state file already exists for the phase (`domain-discovery-state.template.md`, `brd-discovery-state.template.md`), ingestion triages the source material and writes directly into that template's existing sections — the downstream command (`/gen-domain-knowledge`, `/gen-brd`) runs completely unmodified, unaware whether the state file came from a live discovery session or from triage.
-- Where no such intermediate file exists (Phase 1 — `/run-intake` writes straight to `brief.md`), ingestion pre-extracts answers and feeds them in as the PO's own answers when `run-intake`'s questions come up.
+**Density is calibrated to match, not exceed.** The package sits at discovery-state-file density — short "PO stated" distillations per topic — never final-artifact density. It is explicitly not trying to *be* the BRD or the domain knowledge document; it materializes facts as a head start for the sessions that actually produce those, nothing more. Nothing downstream is skipped, shortened, or has its rigor reduced by this command existing.
 
-### 5.2 The three-pass pipeline: map, triage, extract
+### 5.2 The session itself — free-form, no fixed order
 
-Agreed in discussion but never actually written down until now — the mechanism behind "top-down triage" (§5's own opening line) is three distinct passes, not one undifferentiated read-and-write:
+No script, no fixed question order, no template governing *how* the conversation goes — genuinely informal, topics can come up in whatever order the PO raises them. What the session owes the PO before closing is not completeness, it's clarity: a clear sense of what got captured and what didn't, using the same Covered/Pending convention the mirrored templates already carry. **100% coverage was never the bar.** Gaps are expected and fine — `/run-domain-discovery` and `/run-brd-discovery` still run afterward and fill them, exactly as they do today when no priming session happened at all. This command's existence changes where those sessions start from, not whether they still run in full.
+
+### 5.3 Reproducibility — structural completeness, not identical output
+
+A real question: since this is an adaptive, AI-conducted conversation, running it twice on the same source material won't produce identical output — different wording, different order, possibly different things noticed. The framework already has an answer to exactly this problem, because `/run-domain-discovery` and `/run-brd-discovery` are *also* free-form adaptive sessions and face the same variance. Neither is made deterministic to solve it — instead, the *output* is made structurally checkable regardless of wording: a Confidence Score, a Covered/Pending flag per section, a Pre-Generation Verification checklist that gates whether the file is usable yet at all. Two different priming sessions might disagree on phrasing; both get held to the same structural bar before anything downstream trusts them. This command reuses that mechanism rather than inventing a new one.
+
+### 5.4 No Ubiquitous Language yet
+
+The domain glossary this framework enforces conformance against (`CLAUDE.md`'s own rule) doesn't exist until domain discovery actually establishes it — so at this session, there is nothing to enforce conformance *to*. Capture the PO's own terms exactly as used, without normalizing. Where the conversation seems to use two different names for the same concept, flag it — *"PO said both 'Client' and 'Customer' for what looks like the same thing"* — rather than silently picking one. Which term becomes canonical is domain discovery's decision, not this session's; resolving it here would be presumptuous and would risk losing a distinction that turns out to matter.
+
+### 5.5 The three-pass pipeline: map, triage, extract
+
+The mechanism behind "top-down triage" is three distinct passes, not one undifferentiated read-and-write:
 
 1. **Map** — skim only, no deep reading. Build a lightweight outline of the source: what's in it and roughly where, one short gist per unit. Cheap even for a large document, since nothing is deep-read yet.
-2. **Triage** — against that map, and the current phase's actual information needs, mark each unit relevant / redundant (covered by another unit already) / irrelevant / ambiguous. Irrelevant units are dropped **without** being deep-read at all — this is what keeps a genuinely large or noisy source cheap to process. Redundant units are flagged so the same fact doesn't get extracted twice from two places.
-3. **Extract** — deep-read only what survived triage, and write it into the target (per §5.1) compressed and deduplicated — never a verbatim transcription, never the same fact restated because it appeared in two source units.
+2. **Triage** — against that map, and the Problem Domain sections the package needs to fill, mark each unit relevant / redundant (covered by another unit already) / irrelevant / ambiguous. Irrelevant units are dropped **without** being deep-read at all — this is what keeps a genuinely large or noisy source cheap to process. Redundant units are flagged so the same fact doesn't get extracted twice from two places.
+3. **Extract** — deep-read only what survived triage, and write it into the priming package (per §5.9) compressed and deduplicated — never a verbatim transcription, never the same fact restated because it appeared in two source units.
 
 **Structured vs. unstructured sources use the same three passes, but the Map step adapts to what's actually there:**
 - A source with real structure (an SRS, a spec, anything with real headings) — Map builds its outline directly from that structure, and Triage works section by section.
 - A source with no reliable structure (raw notes, a handwritten dump, stream-of-consciousness fragments) — Map has no headings to skim by, so it clusters fragments by inferred topic instead, before Triage can ask "relevant or not" of each cluster. Same pipeline, same discipline, different technique for the one step that depends on the source actually being organized.
 
-**Transparency:** persist the Map + Triage decisions themselves (not just the final extraction) as a short section in `extraction-log.md` (§4.2) — one line per unit: gist, decision, destination file if kept. This is what makes ingestion legible rather than a black box that silently dropped content, and it's also where §5.8's checkpoint pointer lives for a source too large to process in one pass.
+**Transparency:** persist the Map + Triage decisions themselves (not just the final extraction) as a short section in `extraction-log.md` — one line per unit: gist, decision, destination if kept. This is what makes ingestion legible rather than a black box that silently dropped content, and it's also where §5.8's checkpoint pointer lives for a source too large to process in one pass.
 
-### 5.3 Multi-artifact triage, not one flat dump
-
-Real source material carries genuinely distinct kinds of knowledge — domain entities/rules, integrations (count, sync/async, technology, third-party contract shape), personas, historical constraints. Triage classifies by kind and routes each into its own properly organized file (e.g. an integration catalog is a real, reusable artifact useful to `/gen-architecture` later — not a footnote in a scratch file), written to be read by a human stakeholder, not just by the AI.
-
-### 5.4 Legacy material — don't let a bad system distort the domain model
+### 5.6 Legacy material — don't let a bad system distort the domain model
 
 Every extracted fact gets checked against the AI's own generic/canonical domain understanding before being written anywhere:
 
 - **Matches the generic model** → ordinary domain content, written normally.
-- **Diverges, and looks like a legitimate business reason** (regulatory, contractual, genuinely how this business operates) → goes into the domain-discovery-state file's existing **Section 5, AI Knowledge Corrections** table (`Topic | AI Assumption | PO Correction | Confidence`) — a mechanism the framework already has, not a new one. `/gen-domain-knowledge`'s existing rule ("PO's answer takes precedence, note the divergence") does the rest, unmodified.
+- **Diverges, and looks like a legitimate business reason** (regulatory, contractual, genuinely how this business operates) → goes into the priming package's Domain section under the same AI Knowledge Corrections shape `domain-discovery-state.template.md` already has (`Topic | AI Assumption | PO Correction | Confidence`) — mirrored, not reinvented, per §5.1. `/gen-domain-knowledge`'s existing rule ("PO's answer takes precedence, note the divergence") does the rest, unmodified, once this content is decomposed into the real discovery-state file.
 - **Diverges, and looks like a legacy design flaw rather than a real constraint** (bad normalization, an accidental workaround that calcified) → written as neither content nor a silent correction. It becomes an explicit Open Issue framed as a negotiation: *"the legacy system does X this way — real constraint, or something to leave behind in the upgrade?"* This is the PO negotiation point, not a default.
-- Same posture applies to integration modernization (e.g. legacy sync integration → propose async) and legacy contract renegotiation with a third party — these are surfaced as discussion items with a recommendation, never carried forward silently just because "that's what the old system did," and never decided by anchor unilaterally.
+- Same posture applies to integration modernization (e.g. legacy sync integration → propose async) and legacy contract renegotiation with a third party — these are surfaced as discussion items with a recommendation, never carried forward silently just because "that's what the old system did," and never decided unilaterally.
 
-### 5.5 Constraints discovered mid-stream are a drift trigger, not just a note
-
-If a hard fact surfaces later than expected (example used in discussion: learning at BRD stage that the same database schema is a fixed constraint), this is structurally the same problem as an artifact version bump — something material is now true that earlier, already-approved artifacts didn't know about. It feeds the same lineage/drift mechanism (§7) via a second trigger type: not just "upstream artifact version changed" but "a new hard constraint was recorded," checked against everything already built or approved that might assume otherwise.
-
-### 5.6 Composability
-
-Ingestion's input contract is source-agnostic: a document plus which phase it's informing. It doesn't matter whether the document was pasted by the PO, uploaded, or produced by some other tool/command entirely (e.g. a hypothetical future "extract from legacy code" command). Anchor only needs a document and a target phase — this keeps the door open to composing anchor with other tooling later without redesigning the ingestion step.
+Note: this is about a document *describing* a legacy system (an old SRS, migration notes) — prose, handled by this command. Extracting directly from a legacy *codebase* is a different mechanic entirely; see §5.11.
 
 ### 5.7 Sensitive content
 
-Legacy material can carry credential-shaped strings (API keys, tokens, passwords) copy-pasted into old notes or an old SRS. `projects/{CODE}/` being gitignored is not the same as safe to persist verbatim — triage should recognize obviously sensitive strings and flag them to the PO rather than silently filing them into a catalog document.
+Legacy material can carry credential-shaped strings (API keys, tokens, passwords) copy-pasted into old notes or an old SRS. `projects/{CODE}/` being gitignored is not the same as safe to persist verbatim — triage should recognize obviously sensitive strings and flag them to the PO rather than silently filing them into the package.
 
 ### 5.8 Volume handling
 
-"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state (a pointer, per §4.1), not a reason to re-hold the whole source in memory across turns. This is the same checkpoint §5.2 already places in `extraction-log.md` — one mechanism, not two.
+"It can be massive" was named explicitly as a real scenario. Triage of a genuinely large source document should proceed as an iterative, checkpointed pass rather than assume everything fits in one context window — the checkpoint (how far into the source triage has gotten) is itself lightweight state, not a reason to re-hold the whole source in memory across turns. This is the same checkpoint §5.5 already places in `extraction-log.md` — one mechanism, not two.
+
+### 5.9 The staging model — one document, decomposed later
+
+The session produces **one consolidated package** the PO reviews as a single, coherent thing — not three scattered files that each feel unfinished on their own. Decomposition into `brief.md`, `domain-discovery-state.md`, and `brd-discovery-state.md` happens later, when anchor actually reaches each of those phases — not speculatively ahead of time. This keeps state-is-derived-not-authoritative (§4.3) honest: the decomposition is reconciled against what's actually true at the moment it happens, not pre-committed early and left to go stale. No existing command ever reads the priming package directly — `/run-intake`, `/gen-domain-knowledge`, `/run-brd-discovery`, and `/gen-brd` all keep reading exactly the file they already expect; anchor is what pre-fills it from the package, at the right moment, before invoking them.
+
+### 5.10 Constraints discovered mid-stream are a drift trigger, not just a note
+
+If a hard fact surfaces later than expected (example used in discussion: learning at BRD stage that the same database schema is a fixed constraint), this is structurally the same problem as an artifact version bump — something material is now true that earlier, already-approved artifacts didn't know about. It feeds the same lineage/drift mechanism (§7) via a second trigger type: not just "upstream artifact version changed" but "a new hard constraint was recorded," checked against everything already built or approved that might assume otherwise.
+
+### 5.11 One command per mechanic, not per format
+
+`/run-priming-session` handles prose/document material — an SRS, freeform notes, any reference material, regardless of format — because all of it is read the same way (§5.5's pipeline, adapting technique for structured vs. unstructured, never the command itself). A **fundamentally different extraction mechanic** gets its own command instead of bloating this one. Legacy **code** is the concrete case: navigated structurally (modules, entry points, schema/ORM files), not read linearly, and it needs a reverse-engineering step this command doesn't — translating "what the code does" into "what business capability it reflects." That's a planned second command, deferred — chunking strategy for large codebases still needs its own design pass. A third genuinely-different mechanic later (an existing OpenAPI spec, a live DB schema) gets a third command when it actually arrives, not a rewrite of the first two.
+
+### 5.12 Where source material actually lives
+
+`/init-project` gains one small, additive change: a `source-material/` folder created as part of its normal skeleton, so there is somewhere to drop files before priming even runs. **Sequencing:** `/run-priming-session` runs *after* `/init-project`, not before — it needs that folder to exist. It reads from `source-material/` and also accepts material pasted directly into the conversation. Running it more than once on the same project is expected and supported — new material merges into the existing package rather than starting over or erroring.
+
+### 5.13 Section skeleton (working draft, not final)
+
+```
+priming-package.template.md
+├── Section 1: Brief material (mirrors brief.template.md's sections)
+├── Section 2: Domain material (mirrors domain-discovery-state.template.md
+│              Section 4's playbook-progress structure — Covered/Pending per topic)
+├── Section 3: BRD material (mirrors brd-discovery-state.template.md similarly)
+├── Section 4: Terms as used (the UL flag bucket from §5.4 — no normalization)
+├── Section 5: Source Material Index (which files were fed in, one-line purpose
+│              each, when to cross-reference later — not a full read)
+└── Section 6: Open / Uncategorized (Parking-Lot-style overflow — nothing
+               discovered gets dropped just because it doesn't fit above)
+```
+
+### 5.14 Relationship to anchor
+
+Fully standalone-runnable, like every other command (§2's principle extends here) — a PO can run `/run-priming-session` directly without ever touching anchor. When anchor is driving (its own ingestion step, now much lighter than the earlier draft): if the PO wants to feed material in and no priming package exists yet, anchor invokes `/run-priming-session` and resumes once it completes. Anchor no longer contains any triage logic of its own — that entire mechanism moved here.
 
 ## 6. PO Interaction Protocol
 
@@ -148,7 +184,7 @@ This is the orchestrator's actual unique contribution — not sequencing conveni
 Driven entirely by the lineage ledger and open-item counts already in state, so "run constantly" isn't a burden:
 
 1. **Version-lineage drift** — for every recorded upstream→downstream pair (Domain→BRD, BRD→Epics, BRD/Epics→Screen Design, Screen Design/BRD/Epics→Architecture, Architecture→Stories), compare the version the downstream was built against to the upstream's current version. Mismatch → flag.
-2. **Constraint-propagation drift** — any fact/correction/constraint recorded after a given artifact was approved, checked against that artifact's scope (§5.5's trigger).
+2. **Constraint-propagation drift** — any fact/correction/constraint recorded after a given artifact was approved, checked against that artifact's scope (§5.10's trigger).
 3. **Orphaned open items** — Open Issues / AI Knowledge Corrections rows still marked Open from a stage the project has since moved past, never resolved or explicitly deferred.
 
 ### 7.2 Heavier checks — content-level, run at gate-close or on explicit request
@@ -218,6 +254,7 @@ Everything else post-handoff — implementing individual stories, day-to-day ver
 
 - **Editing ~20 existing commands to adopt a shared "lighter interaction" convention file.** Rejected because it violates the frozen-commands constraint (§2) and creates a second place PO-interaction logic could drift from itself over time (the version baked into the shared convention vs. each command's own copy). Superseded by §3 (interception at the invocation seam, zero file edits).
 - **A single fused command that reimplements discovery/review interaction itself instead of invoking the real commands.** Rejected for the same reason — would duplicate logic that already exists correctly in each phase's command, and a PO running that command standalone would get a second, divergent experience instead of today's.
+- **Document ingestion embedded as a mode inside `/anchor-project` itself.** The original §5 design — caught during a later composability pass, not at authoring time. Anchor is a sequencer; ingestion is a source-agnostic document-processing mechanism; welding the second into the first meant anchor's own file wasn't source-agnostic even though the mechanism it contained was, and every future input mechanic (starting with legacy code) would have meant editing `anchor-project.md` again instead of adding a new command. Superseded by §5's current form — `/run-priming-session`, a standalone companion command.
 
 ## 11. Invocation
 
@@ -256,3 +293,4 @@ This design document's own status can now move from "in discussion" — the mech
 | 2026-09-17 | Two clarifications filled in that were previously implicit: §5.2 (new) spells out the three-pass ingestion pipeline (map, triage, extract) agreed in discussion but never actually written down, including how the Map step adapts to structured vs. unstructured sources — §5.3-5.8 renumbered accordingly; §8 gained a Trigger Timing paragraph specifying that observations are written in the moment during execution, silently but with a brief session-output mention, at a high evidentiary bar |
 | 2026-09-17 | Resolved every remaining §12 open item: added §9.1 (Post-Handoff Role — release prep and Formal-tier assess-change only), rewrote §7.4 with the actual cross-folder-lineage mechanism (had been answered in discussion but never written in), added §8.1 (command-level friction is in scope) and §8.2 (the reporting-gap problem and a placeholder contact channel), confirmed validation plan/drift-check depth/escape-hatch persistence as already-written defaults, and recorded the FW-020 exception-handling discipline that will govern `anchor-project.md`'s eventual authoring. §12 kept as a resolution record rather than deleted |
 | 2026-09-17 | `.claude/commands/anchor-project.md` written in full and self-checked against every rule in `conventions/command-conventions.md`'s verification checklist. One real structural bug caught and fixed during self-check: an early draft's Step 9 (post-handoff scope) told the reader to consult it "before Step 8," breaking sequential step order — fixed by swapping step content so post-handoff scope now correctly runs before driving the phase. Two genuinely-needed conventions exceptions proposed centrally in `command-conventions.md` itself (under `C-011` and `C-013`) rather than improvised locally, per that document's own governing principle. `observations/TEMPLATE.md` and `observations/index.md` created as supporting scaffolding the command depends on. Status updated: implemented, pending validation and formal `decisions/FW-XXX` writeup |
+| 2026-09-17 | §5 rewritten in full: document ingestion is no longer a mode of `/anchor-project` — applying the composability principle to the finished design surfaced a real contradiction (a source-agnostic mechanism embedded in the one command that isn't source-agnostic), caught later than it should have been, now recorded as a third entry in §10 (Rejected Approaches). Ingestion becomes `/run-priming-session`, a standalone companion command scoped to Problem Domain only (Brief/Domain/BRD — Epics/Screen Design/Architecture are AI synthesis, nothing to front-load), producing `priming-package.template.md` (composed from existing templates' own sections, not a new schema). New content added, not previously specified: reproducibility via structural completeness rather than identical output (§5.3, reusing the same mechanism `/run-domain-discovery` already relies on), explicit handling for the absence of Ubiquitous Language at this stage (§5.4 — capture terms as used, flag apparent synonyms, never normalize), the staging/decomposition model (§5.9 — one consolidated package the PO reviews, split into each phase's real file only when anchor reaches it), the one-command-per-mechanic principle with legacy code named as the deferred second command (§5.11), and `/init-project`'s own small required addition — a `source-material/` folder (§5.12). `anchor-project.md` itself still needs a matching Step 7 rewrite (now a simple handoff) — not yet done, tracked as a next step, not re-added to §12 |
