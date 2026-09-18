@@ -207,7 +207,7 @@ Files created:
   projects/{PROJECT_CODE}/brief.md
 
 Folders scaffolded:
-  domain/  standards/  brds/  epics/  screens/
+  source-material/  priming/  domain/  standards/  brds/  epics/  screens/
   stories/  architecture/  mocks/  sprints/  test-reports/  pr/  releases/
 
 Registry updated:
@@ -218,7 +218,10 @@ Registry updated:
 Then tell the user:
 
 > **Next steps:**
+> 0. **Optional:** if you have a legacy SRS, notes, or anything else to hand over before formal discovery starts, drop it in `projects/{PROJECT_CODE}/source-material/` and run `/run-priming-session {PROJECT_CODE}` — a free-form session that gives every step below a head start instead of a blank page.
 > 1. Complete the brief — **recommended:** run `/run-intake {PROJECT_CODE}` for a guided session that validates and writes each section. **Alternatively:** fill `projects/{PROJECT_CODE}/brief.md` manually following the `[AI Guide]` notes in `projects/TEMPLATE/brief.template.md` and the worked example in `projects/TEMPLATE/brief.example.md`.
 > 2. Once the brief is Approved, run `/gen-domain-knowledge` to generate the domain knowledge base — required for all projects.
 > 3. **Optional — niche or complex domains only:** run `/gen-domain-playbook` then `/run-domain-discovery` to deepen domain knowledge before BRD discovery. Skip this step for well-known domains.
 > 4. Run `/gen-brd-playbook` to generate the BRD discovery playbook and move to requirement discovery.
+>
+> Or skip all of the above and run `/anchor-project {PROJECT_CODE}` — it sequences everything from here automatically, offering a priming session itself if it looks like you have material to feed in.

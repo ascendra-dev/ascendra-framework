@@ -14,7 +14,7 @@ Full design rationale, and the reasoning behind every mechanism below, lives in 
 
 ## Step 1 — Parse the arguments and resolve the project
 
-`$ARGUMENTS` may contain a `PROJECT_CODE`, a source-material file path (for immediate ingestion, see Step 7), both, or neither.
+`$ARGUMENTS` may contain a `PROJECT_CODE`, or nothing.
 
 **If a `PROJECT_CODE` is given:** look it up in `projects/index.md`. If it does not resolve to an existing row, stop and ask:
 
@@ -167,7 +167,7 @@ Once this step completes (a priming session ran, or there was nothing to offer),
 
 ## Step 8 — Check post-handoff scope
 
-Check the state file's Stage Pointers for whether `stories/index.md` Section 8's `Walking Skeleton Complete` field is `Yes` for this project (per `FW-048`). If Stories haven't been reached yet, or the field is not `Yes`, skip straight to Step 9 with no restriction.
+Check `projects/{PROJECT_CODE}/stories/index.md` Section 8's `Walking Skeleton Complete` field directly (per `FW-048`) — this is cheap, real-artifact content, not something the state file needs to cache. If `stories/index.md` doesn't exist yet (Stories haven't been reached), or the field is not `Yes`, skip straight to Step 9 with no restriction.
 
 **Once it is `Yes`, anchor's active involvement narrows to exactly two triggers** — do not drive routine story implementation, verification, or PRs; that is fully developer-led from here using the standard commands directly, with `/project-status` as the ongoing dashboard instead of this command:
 
@@ -232,7 +232,7 @@ This is a placeholder, deliberately — the real channel is the framework author
 ANCHOR SESSION — {PROJECT_CODE}
 ─────────────────────────────────────────
 Stage:          {current stage}
-This session:   {what actually happened — document written, gate closed, ingestion run, etc.}
+This session:   {what actually happened — document written, gate closed, priming session run, etc.}
 Drift flags:    {count, or "None"}
 Observations:   {count logged this session, or "None"}
 ─────────────────────────────────────────

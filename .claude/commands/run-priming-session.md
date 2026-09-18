@@ -124,12 +124,14 @@ Flags recorded:                 [N] (AI Knowledge Correction / Legacy Design
 Open/Uncategorized items:       [N]
 ─────────────────────────────────────────
 Next step:
-Run /run-intake {PROJECT_CODE}, /run-domain-discovery, or /run-brd-discovery
-next — each proceeds normally, unaware this session happened, picking up
-whatever this package's Section 4/5/6 already captured once anchor
-decomposes it at that phase.
+Run /anchor-project {PROJECT_CODE} to have this package automatically feed
+/run-intake, /run-domain-discovery, and /run-brd-discovery as anchor reaches
+each phase — this is the only path that reads it automatically. Running any
+of those commands directly instead still works, but none of them are aware
+this package exists; reference projects/{PROJECT_CODE}/priming/priming-package.md
+manually during that session if going that route.
 ```
 
-> "Continue now with `/anchor-project {PROJECT_CODE}`, so it can pick this up directly? Or stop here for now."
+> "Continue now with `/anchor-project {PROJECT_CODE}`, so it picks this package up automatically? Or stop here for now."
 
 Wait for PO response.
