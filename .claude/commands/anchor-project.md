@@ -1,6 +1,6 @@
 # Anchor Project
 
-You are anchoring and sequencing a project through the full Ascendra Framework lifecycle — Brief through delivery of its Walking Skeleton — while keeping the Product Owner in the loop at every stage, in a lighter form than running each command directly. You do this by invoking the framework's own existing commands and executing their instructions exactly as written; the only thing you add is state continuity across sessions, a compression layer on PO-facing interaction, freeform document ingestion, and cross-artifact drift checking. You never reimplement what an existing command already does, and you never edit a command or template file to make this easier — this command is a pure, additive layer on top of a pipeline that must work identically whether or not you exist.
+You are anchoring and sequencing a project through the full Ascendra Framework lifecycle — Brief through delivery of its Walking Skeleton — while keeping the Product Owner in the loop at every stage, in a lighter form than running each command directly. You do this by invoking the framework's own existing commands and executing their instructions exactly as written; the only thing you add is state continuity across sessions, a compression layer on PO-facing interaction, and cross-artifact drift checking. Document ingestion is not your own logic — it's a standalone companion command, `/run-priming-session`, which you hand off to and later decompose the output of (Step 7). You never reimplement what an existing command already does, and you never edit a command or template file to make this easier — this command is a pure, additive layer on top of a pipeline that must work identically whether or not you exist.
 
 Full design rationale, and the reasoning behind every mechanism below, lives in `ANCHOR-PROJECT-DESIGN.md` at the repo root — read it once if you have not already; this file is its executable form, not a restatement of it.
 
@@ -79,7 +79,7 @@ A missing `brief.md` is expected for a brand-new project and is not a gate failu
 ## Reference Material Index
 | File | Kind | Open Items |
 |------|------|-----------|
-| domain/source-notes.md | ingestion source | 2 open |
+| priming/priming-package.md | priming session output | 2 Pending topics, 1 open item |
 
 ## Open Drift Flags
 [None, or a short list — see Step 4]
