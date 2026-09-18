@@ -771,7 +771,7 @@ Every command in `.claude/commands/` (33 total), with its domain region and phas
 | `/assess-change` | Cross-cutting | Any phase | Change description, project path | Updated artifacts | — |
 | `update-status` | Cross-cutting | Any gate | Artifact path + new status | Updated artifact + index | — |
 | `/project-status` | Cross-cutting | Any time | Project path | Status dashboard | — |
-| `/judgment-check` | Cross-cutting | Before any `/review-X` (all artifact types) | Artifact path | Density & Judgment Findings/Resolution sections in that artifact | — |
+| `/judgment-check` | Cross-cutting | Before any `/review-X` (all artifact types) | Artifact path | Density & Judgment Log section in that artifact | — |
 | `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact) | — (invokes each phase's own template via that phase's own command) |
 
 ---

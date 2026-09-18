@@ -152,15 +152,13 @@ If no defects were found in this sprint, write: **No defects found.**
 
 ---
 
-### 7. Density & Judgment Findings
+### 7. Density & Judgment Log
 
-> **[AI Guide]** Written only by `/judgment-check` — never filled when this report is generated, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/09-qa-uat.md`'s own tests (the corrected Deferred Defect Process — condition 3's requirement for explicit, individually-recorded Product Owner agreement on each High defect, never a blanket sign-off — and the trigger test for when this full report is warranted vs. a one-line sprint-plan confirmation) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 8 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this report, this section does not appear at all; do not pre-create it empty.
-
-### 8. Density & Judgment Resolution
-
-> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 7's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this report, this section does not appear at all; do not pre-create it empty.
+> **[AI Guide]** Written only by `/judgment-check` — never filled when this report is generated, and left out of the document entirely until that command has actually run once. This section holds every run's findings against `practitioner-guide/09-qa-uat.md`'s own tests (the corrected Deferred Defect Process — condition 3's requirement for explicit, individually-recorded Product Owner agreement on each High defect, never a blanket sign-off — and the trigger test for when this full report is warranted vs. a one-line sprint-plan confirmation) — questions raised for the Product Owner to weigh, never verdicts. Each invocation either logs a new dated block of findings (only when nothing from a prior run is still open) or resolves whatever is still open (amending that finding's own row in place with the Product Owner's outcome — Confirmed as-is / Revised / Acknowledged tradeoff — never a new row for the same finding, never edited again once resolved). The section header itself is reserved here at generation time — always present — but its table is not; if `/judgment-check` has not yet run against this report, leave the placeholder pointer line below exactly as it is rather than inventing a table.
 >
-> **[AI Guide — numbering note]** Sections 7 and 8 are reserved for `/judgment-check` as shown here, immediately after Section 6 (Approval) and before Part 2 (Verification). No `/review-test-execution-report` command exists in this framework, so there is no other command reserving a conflicting section number here.
+> **[AI Guide — numbering note]** Section 7 is reserved for `/judgment-check` as shown here, immediately after Section 6 (Approval) and before Part 2 (Verification). No `/review-test-execution-report` command exists in this framework, so there is no other command reserving a conflicting section number here.
+
+*Not yet run — see `/judgment-check` for what this checks and when to run it.*
 
 ---
 

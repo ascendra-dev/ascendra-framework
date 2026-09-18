@@ -295,10 +295,8 @@ These checks confirm the document covers what it should.
 
 ---
 
-## 13. Density & Judgment Findings
+## 13. Density & Judgment Log
 
-> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-domain-knowledge` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/02-domain-discovery.md`'s own tests (the Section 5-vs-Section 10 universality test, the generalization filter, the confidence-score and Factual Accuracy Log reasoning, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 14 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this document, this section does not appear in the document at all; do not pre-create it empty.
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-domain-knowledge` time, and left out of the document entirely until that command has actually run once. This section holds every run's findings against `practitioner-guide/02-domain-discovery.md`'s own tests (the Section 5-vs-Section 10 universality test, the generalization filter, the confidence-score and Factual Accuracy Log reasoning, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. Each invocation either logs a new dated block of findings (only when nothing from a prior run is still open) or resolves whatever is still open (amending that finding's own row in place with the Product Owner's outcome — Confirmed as-is / Revised / Acknowledged tradeoff — never a new row for the same finding, never edited again once resolved). The section header itself is reserved here at generation time — always present — but its table is not; if `/judgment-check` has not yet run against this document, leave the placeholder pointer line below exactly as it is rather than inventing a table.
 
-## 14. Density & Judgment Resolution
-
-> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control above. Each row records one finding from Section 13's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this document, this section does not appear in the document at all; do not pre-create it empty.
+*Not yet run — see `/judgment-check` for what this checks and when to run it.*

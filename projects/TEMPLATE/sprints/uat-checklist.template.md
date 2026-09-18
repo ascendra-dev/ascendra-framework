@@ -116,13 +116,11 @@ All scenarios in this checklist have been executed. Results are recorded above.
 
 ---
 
-## Density & Judgment Findings
+## Density & Judgment Log
 
-> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-uat-checklist` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/09-qa-uat.md`'s own tests (the AC-to-scenario translation density test — numbered steps, observable expected results, no technical jargon — and the rest of that chapter's checkable material) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Density & Judgment Resolution below for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this checklist, this section does not appear at all; do not pre-create it empty.
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-uat-checklist` time, and left out of the document entirely until that command has actually run once. This section holds every run's findings against `practitioner-guide/09-qa-uat.md`'s own tests (the AC-to-scenario translation density test — numbered steps, observable expected results, no technical jargon — and the rest of that chapter's checkable material) — questions raised for the Product Owner to weigh, never verdicts. Each invocation either logs a new dated block of findings (only when nothing from a prior run is still open) or resolves whatever is still open (amending that finding's own row in place with the Product Owner's outcome — Confirmed as-is / Revised / Acknowledged tradeoff — never a new row for the same finding, never edited again once resolved). The section header itself is reserved here at generation time — always present — but its table is not; if `/judgment-check` has not yet run against this checklist, leave the placeholder pointer line below exactly as it is rather than inventing a table.
 
-## Density & Judgment Resolution
-
-> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Density & Judgment Findings' history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this checklist, this section does not appear at all; do not pre-create it empty.
+*Not yet run — see `/judgment-check` for what this checks and when to run it.*
 >
 > **[AI Guide — numbering note]** This checklist's own sections are unnumbered by convention ("How to use this checklist," "Sprint Summary," "UAT Sign-off" above) — these two headings follow that same unnumbered style rather than the numbered-section convention used elsewhere in this framework. No `/review-uat-checklist` command exists to reserve a conflicting heading here.
 

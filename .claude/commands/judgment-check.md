@@ -20,7 +20,7 @@ If no path is given, ask:
 
 > "Which artifact should I check? Provide the file path (e.g. `projects/{CODE}/brds/brd-core-v1.md`)."
 
-Resolve the artifact's type from its path and filename, then its matching practitioner-guide chapter, from this table — the only two things this command ever reads:
+Resolve the artifact's type from its path and filename, then its matching practitioner-guide chapter, from this table. The chapter itself — and `00-orientation.md`, the terminology map every chapter assumes rather than repeats — are only actually read in Analysis Mode (Step 3). Resolve Mode (Step 4) never needs either, since a finding's full text is already sitting in the artifact's own log.
 
 | Artifact | Chapter |
 |---|---|
@@ -30,12 +30,12 @@ Resolve the artifact's type from its path and filename, then its matching practi
 | `epics/EPIC-*.md` | `practitioner-guide/04-product-structuring-epics.md` |
 | `screens/screen-design.md` | `practitioner-guide/05-screen-design.md` |
 | `architecture/arch-v1.md` | `practitioner-guide/06-architecture.md` |
-| `stories/US-*.md`, `sprints/sprint-*.md` | `practitioner-guide/07-sprint-planning.md` |
+| `stories/EPIC-*/US-*.md`, `sprints/sprint-*.md` | `practitioner-guide/07-sprint-planning.md` |
 | `story-plans/*.md`, `pr/*.md` | `practitioner-guide/08-development.md` |
 | `sprints/*-uat-checklist.md`, `test-reports/*.md` | `practitioner-guide/09-qa-uat.md` |
 | `releases/*.md` | `practitioner-guide/10-release-support-hotfix.md` |
 
-Every row above is live — the pilot on BRD/Epics/Architecture validated the mechanism (see the simulation record referenced in `practitioner-guide/README.md`), and it has since been extended to the remaining seven rows, each with the reserved template sections and a worked example. Every corresponding template and `.example.md` pair carries the two sections this command writes to.
+Every row above is live — the pilot on BRD/Epics/Architecture validated the mechanism (see the simulation record referenced in `practitioner-guide/README.md`), and it has since been extended to the remaining seven rows, each with the reserved template section and a worked example. Every corresponding template and `.example.md` pair carries the one Density & Judgment Log section this command writes to.
 
 If the path doesn't match any row, stop:
 
@@ -48,24 +48,48 @@ If the path doesn't match any row, stop:
 | Check | How to verify | Failure message |
 |-------|--------------|----------------|
 | Artifact file exists | Read the path from Step 1 | "`{path}` not found. Check the path and try again." |
-| Artifact's own template has the reserved sections | Confirm the matching template in `projects/TEMPLATE/` has "Density & Judgment Findings"/"Resolution" sections before running — this should always be true per the table above; treat a missing pair as a framework defect to report, not something to route around by inventing a section shape on the spot | "`{artifact type}`'s template doesn't yet define the Density & Judgment sections — this shouldn't happen for a covered artifact type; flag it rather than improvising a section shape." |
+| Artifact has its reserved Density & Judgment Log section (or, for release notes only, doesn't yet — expected pre-first-run) | Look at the artifact content already loaded for the check above — no separate template read; per `C-013a` this command doesn't read `projects/TEMPLATE/`. Every covered type except release notes reserves this section from generation onward; release notes only gains it once `/judgment-check` first runs. Missing it outside that one expected case is a framework defect, not something to route around by inventing a section shape on the spot | "`{path}` has no Density & Judgment Log section at all, and this isn't release notes' expected pre-first-run state — this shouldn't happen for a covered artifact type; flag it rather than improvising a section shape." |
+| Artifact isn't already past its own approval gate | Read the artifact's own status field directly (no template lookup needed) and compare against the table below. Artifact types with no row have no gate concept — always proceed for these. | "`{path}` is already `{status}`. Judgment Check runs *before* that gate closes, not after — editing an already-approved/locked artifact here would bypass `/assess-change`'s version-bump and Document Control trail. Run `/assess-change` if this content genuinely needs to change; otherwise run Judgment Check while the artifact is still pre-approval." |
+
+**Per-type gate status to check** (field name and the value(s) that mean "already past the gate"):
+
+| Artifact | Status field | Already-gated value(s) |
+|---|---|---|
+| `brief.md` | Content Status | Approved, Locked, Superseded |
+| `brds/brd-*.md` | Status | Approved |
+| `epics/EPIC-*.md` | Status | Approved, In Progress, Done |
+| `screens/screen-design.md` | Status | Approved |
+| `architecture/arch-v1.md` | Status | Approved, Locked |
+| `stories/EPIC-*/US-*.md` | Status | Approved, In Progress, Merged, Done |
+| `sprints/sprint-*.md` | Status | Active, Complete |
+| `story-plans/*.md` | Plan Status | Confirmed |
+
+`domain/*.md` (no gate — PROJECT-LIFECYCLE.md: "reference material, not a locked artifact"), `sprints/*-uat-checklist.md`, `pr/*.md`, `test-reports/*.md`, and `releases/*.md` have no status field to check — always proceed for these.
 
 Do not proceed past a failed check.
 
 ---
 
-## Step 2 — Read exactly two files, nothing more
+## Step 2 — Check for open findings before doing anything else
 
-**Context is a finite resource — this command reads only what this one invocation needs, never the whole guide, never the whole project.** Read:
+Read the target artifact once. Look at its **Density & Judgment Log** section — reserved by the template at generation time for every artifact type except release notes, so it's normally always present, holding only the placeholder pointer line and no table before this command's first run. Release notes are the one exception (their own template's client-facing rule keeps this section fully dynamic, per that template's own note) — there, the section simply doesn't exist at all until the first run.
 
-1. The one matching practitioner-guide chapter resolved in Step 1 — in full.
-2. The one target artifact from `$ARGUMENTS` — in full.
+- **No table yet** (section holds only the placeholder line, or doesn't exist at all for release notes) **, or every row's Outcome column is filled in** (Confirmed as-is / Revised / Acknowledged tradeoff) — there is nothing open. Continue to **Step 3 (Analysis Mode)**.
+- **At least one row's Outcome column still reads `Open`** — something from a prior run was never closed out. Skip Step 3 entirely and go straight to **Step 4 (Resolve Mode)**.
 
-Do not read any other practitioner-guide chapter. Do not read `00-orientation.md` unless the target chapter's own text explicitly directs you to a specific part of it for a specific test (most chapters link to it for background only — that is not a directive to read it here). Do not follow every cross-reference the chapter makes to a decision record, another `.example.md` file, or another chapter — pull in a secondary file only when a specific test you are about to apply explicitly depends on it (e.g. the BRD chapter's Section 5.21-vs-15 test genuinely requires the exact wording in `FW-024`, which is short; reading `FW-024` for that one test is fine — reading every ADR the chapter happens to cite is not). Do not read other artifacts in the same project (other epics, the BRD an epic traces to, etc.) even if the chapter's own "Harborview in practice" section references them — this command checks the one artifact in front of it, not the whole pipeline.
+These two modes are mutually exclusive per invocation, always. A run that surfaces new findings never also resolves them in the same breath, and a run that resolves old findings never also looks for new ones in the same breath — that's what keeps this command from ever piling a second batch of findings on top of an unaddressed first batch. To fully close the loop on one artifact, the PO always invokes this command at least twice: once to surface, once (or more, if a finding drags) to resolve.
 
 ---
 
-## Step 3 — Apply the chapter's tests
+## Step 3 — Analysis Mode: apply the chapter's tests
+
+Reached only when Step 2 found nothing open. Read exactly three files, nothing more — context is a finite resource:
+
+1. `practitioner-guide/00-orientation.md` — in full, every time, regardless of chapter. It's short (barely 60 lines), and every chapter without exception builds on its terminology map (Scope vs. Priority vs. Layer, and the other base pairs) and its "scores and thresholds you can't reproduce" caution rather than restating either — a chapter's own "Terminology recap" section always says some form of "go there for the base definitions, not here." Skipping it isn't cheap-vs-thorough; it's applying a test without the definitions the chapter itself assumes you already have.
+2. The one matching practitioner-guide chapter resolved in Step 1 — in full.
+3. The one target artifact from `$ARGUMENTS` — already read once in Step 2; no need to re-read it.
+
+Do not read any other practitioner-guide chapter. Do not follow every cross-reference the chapter makes to a decision record, another `.example.md` file, or another chapter — pull in a secondary file only when a specific test you are about to apply explicitly depends on it (e.g. the BRD chapter's Section 5.21-vs-15 test genuinely requires the exact wording in `FW-024`, which is short; reading `FW-024` for that one test is fine — reading every ADR the chapter happens to cite is not). Do not read other artifacts in the same project (other epics, the BRD an epic traces to, etc.) even if the chapter's own "Harborview in practice" section references them — this command checks the one artifact in front of it, not the whole pipeline.
 
 Work through the chapter's decision heuristics, density-guidance sections, and "Common mistakes" list, in the order they appear in the chapter. For each one that is genuinely checkable against this specific artifact's actual content (not every heuristic in a chapter applies to every artifact — a chapter's "when to run X live vs. skip it" guidance, for instance, is a process decision made before this artifact existed, not something checkable against the finished document):
 
@@ -76,75 +100,88 @@ Work through the chapter's decision heuristics, density-guidance sections, and "
 
 Do not invent a test the chapter doesn't state. Do not apply a test from memory of a different chapter. If a chapter section doesn't map to anything checkable in this artifact, skip it silently — do not manufacture a finding to have something to report.
 
----
-
-## Step 4 — Walk the PO through findings, one at a time
-
-If Step 3 produced no findings:
+**If this produced no findings:**
 
 > "No findings — this {artifact type} doesn't raise anything against {chapter name}'s tests. This isn't the same as a clean bill of health on everything the chapter covers; it means nothing checkable against this artifact's actual content stood out. Continue with `/review-{artifact-type}` as normal."
 
-Stop here if there are no findings — do not write empty sections to the artifact.
+Stop here — do not write anything to the artifact; leave the placeholder pointer line exactly as it is.
 
-If Step 3 produced findings, present each one:
+**If this produced findings:** do not present them to the PO in this invocation — logging and resolving are always two separate invocations, per Step 2's branch. Continue to Step 5 to log them, then Step 6 to report.
 
-> "Finding {N} of {total} — {one-line summary}:
+---
+
+## Step 4 — Resolve Mode: walk the PO through open findings, one at a time
+
+Reached only when Step 2 found something open. Present only the rows whose Outcome column still reads `Open` — never a row that already carries a resolution outcome, even one from an older block:
+
+> "Finding {N} of {total open} — {one-line summary}:
 >
-> {the quoted test from the chapter}
->
-> {the specific spot in the artifact this applies to}
->
-> {the question, per Step 3}
+> {the finding, exactly as logged}
 >
 > **(a) Confirmed as-is** — this is intentional, no change needed
 > **(b) Revise** — tell me what should change and I'll update it now
 > **(c) Acknowledged tradeoff** — I see the concern, keeping it anyway, here's why"
 
-Wait for PO response. On **(b)**, make the described change to the artifact directly (the same way `/review-brd`'s walkthrough applies agreed changes immediately), then continue to the next finding. On **(a)** or **(c)**, record the response verbatim and continue.
+Wait for PO response. On **(b)**, make the described change to the artifact directly (the same way `/review-brd`'s walkthrough applies agreed changes immediately). On any of **(a)**/**(b)**/**(c)**, immediately write that one finding's Outcome and Detail cells per Step 5's mechanics before moving to the next finding — do not batch writes until the whole walkthrough finishes, the same discipline `/review-brd`'s own Requirement Log already follows ("update the corresponding row immediately. Do not wait until the end of the session"). This is what makes an interrupted session safe: if the PO stops partway — session ends, connection drops, anything — every finding already answered is already saved, and the next invocation's Step 2 check finds exactly the rows still open and resumes Resolve Mode against only those, nothing repeated, nothing lost.
+
+Once every open row from this invocation has an outcome, continue to Step 6 to report. Do not run Step 3's analysis in this same invocation, even once everything currently open is resolved — the next fresh pass happens on the PO's next invocation of this command.
 
 ---
 
-## Step 5 — Write the two sections
+## Step 5 — Write the Density & Judgment Log
 
-**Density & Judgment Findings** (regenerated in full every run — this is this run's output, not a durable record):
+The section itself is reserved by the artifact's own template at generation time, at the number given there (this command does not renumber a template on the fly), and normally always exists — holding only the template's placeholder pointer line before this command's first run. Release notes are the one exception: the section doesn't exist at all until this step first creates it, per that template's own note.
 
-```markdown
-## {N}. Density & Judgment Findings
-
-*Generated by `/judgment-check` against `{chapter path}` on {date}. Findings are questions raised by the guide's own tests, not verdicts — see the Resolution section below for how each was actually handled.*
-
-| # | Test (chapter source) | Location | Finding |
-|---|---|---|---|
-| 1 | {short test name} | {artifact location} | {one-line finding} |
-```
-
-If this section already exists from a prior run, replace it wholesale with this run's output — do not append to a stale list.
-
-**Density & Judgment Resolution** (append-only, every run adds to this, never replaces it — mirrors `Document Control`'s and `Change History`'s append-only discipline elsewhere in this framework):
+**Analysis Mode (Step 3 produced findings) — append a new dated block:**
 
 ```markdown
-## {N+1}. Density & Judgment Resolution
+*Generated by `/judgment-check` against `{chapter path}` on {date}. Findings are questions raised by the guide's own tests, not verdicts.*
 
-| Date | Finding | PO Response | Detail |
-|------|---------|-------------|--------|
-| {date} | {short test name} | Confirmed as-is / Revised / Acknowledged tradeoff | {the PO's own words from Step 4} |
+| # | Test (chapter source) | Location | Finding | Outcome | Detail |
+|---|---|---|---|---|---|
+| 1 | {short test name} | {artifact location} | {the finding, as raised} | Open | — |
 ```
 
-Append one row per finding from this run beneath any existing rows. Never delete or overwrite a prior run's rows, even if a later run's finding covers the same spot in the artifact — a changed circumstance is a new row, not an edit to the old one.
+If the section holds only the placeholder line, replace that line with this one block. If the section doesn't exist yet at all (release notes only), create it fresh with this one block, at the number its template reserves. If earlier blocks already exist (from prior analysis passes, all fully resolved by now per Step 2's gate), append this as a new block below them — its own dated header line, its own `#` numbering starting again at 1. Never touch an earlier block's header or rows.
 
-Write both sections to the artifact file at the section numbers reserved for this artifact type (see each artifact's own template for the exact reserved numbers — this command does not renumber a template on the fly).
+**Resolve Mode (per finding, immediately after the PO answers it in Step 4 — never batched) — fill in that row's Outcome and Detail columns:**
+
+Update the finding's **Outcome** cell to the Product Owner's choice (`Confirmed as-is` / `Revised` / `Acknowledged tradeoff`) and its **Detail** cell to the Product Owner's own words — do not add a new row, do not touch the Finding cell, do not touch the block's dated header line, do not touch any other row.
+
+A row, once its Outcome is filled in, is permanently closed. A later run that flags a new issue at the same spot in the document gets its own new row in its own new block — never a re-edit of this one.
 
 ---
 
 ## Step 6 — Report to the PO
+
+**After Analysis Mode:**
 
 ```
 JUDGMENT CHECK — {artifact type}
 ─────────────────────────────────────────
 Artifact:      {path}
 Chapter:       {chapter path}
-Findings:      {N} raised, {N} resolved this session
+New findings:  {N} logged as Open
 ─────────────────────────────────────────
 ```
 
+> "{N} new findings logged as Open in the Density & Judgment Log. Run `/judgment-check {path}` again to review and close them before `/review-{artifact-type}` — this run only surfaced them, it didn't ask you about them yet."
+
+**After Resolve Mode:**
+
+```
+JUDGMENT CHECK — {artifact type}
+─────────────────────────────────────────
+Artifact:      {path}
+Chapter:       {chapter path}
+Findings:      {N} resolved this session{, M still Open if the session ended early}
+─────────────────────────────────────────
+```
+
+If every open row got an outcome:
+
 > "This reflects {chapter name}'s own tests, applied by the same kind of model that wrote the guide — treat these as things you've now weighed, not as a certification. Continue with `/review-{artifact-type}` for the structural walkthrough."
+
+If the session ended with rows still Open (the PO stopped partway):
+
+> "{N} resolved, {M} still Open — nothing lost, they're saved as answered so far. Run `/judgment-check {path}` again any time to pick up exactly where this left off."

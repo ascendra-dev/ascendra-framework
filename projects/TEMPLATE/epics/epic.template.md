@@ -137,15 +137,13 @@
 
 ---
 
-### 9. Density & Judgment Findings
+### 9. Density & Judgment Log
 
-> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-epics` time, and left out of the document entirely until that command has actually run once. This section holds one run's worth of findings against `practitioner-guide/04-product-structuring-epics.md`'s own tests (the epic-cohesion test, the dependency-ordering test, the story-level interleaving criteria, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. It is replaced wholesale by each new run, never appended to — see Section 10 for the durable record of how each finding was actually resolved. If `/judgment-check` has not yet run against this epic, this section does not appear at all; do not pre-create it empty.
+> **[AI Guide]** Written only by `/judgment-check` — never filled at `/gen-epics` time, and left out of the document entirely until that command has actually run once. This section holds every run's findings against `practitioner-guide/04-product-structuring-epics.md`'s own tests (the epic-cohesion test, the dependency-ordering test, the story-level interleaving criteria, and the rest of that chapter) — questions raised for the Product Owner to weigh, never verdicts. Each invocation either logs a new dated block of findings (only when nothing from a prior run is still open) or resolves whatever is still open (amending that finding's own row in place with the Product Owner's outcome — Confirmed as-is / Revised / Acknowledged tradeoff — never a new row for the same finding, never edited again once resolved). The section header itself is reserved here at generation time — always present — but its table is not; if `/judgment-check` has not yet run against this epic, leave the placeholder pointer line below exactly as it is rather than inventing a table.
 
-### 10. Density & Judgment Resolution
+> **[AI Guide — numbering note]** Section 9 is per-epic, reserved for `/judgment-check` as shown here — unrelated to `epics/review-record.md`, which is a separate, project-wide file `/review-epics` maintains across all epics and does not use this numbering at all.
 
-> **[AI Guide]** Written only by `/judgment-check`, appended to on every run, never overwritten — the same append-only discipline as Document Control. Each row records one finding from Section 9's history and the Product Owner's actual response to it (Confirmed as-is / Revised / Acknowledged tradeoff), dated. A later run's finding covering the same spot in the document gets its own new row, never an edit to an earlier one. If `/judgment-check` has not yet run against this epic, this section does not appear at all; do not pre-create it empty.
-
-> **[AI Guide — numbering note]** Sections 9 and 10 are per-epic, reserved for `/judgment-check` as shown here — unrelated to `epics/review-record.md`, which is a separate, project-wide file `/review-epics` maintains across all epics and does not use this numbering at all.
+*Not yet run — see `/judgment-check` for what this checks and when to run it.*
 
 ---
 

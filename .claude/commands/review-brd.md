@@ -2,7 +2,7 @@
 
 You are running the BRD review for an Ascendra project. This is the mandatory quality gate between `/gen-brd` producing the Business Requirements Document and the Product Owner approving it. No epic generation begins until this review is complete and the BRD is Approved.
 
-The BRD review is a guided walkthrough — not a report. You walk through functional requirements feature area by feature area, framing each in plain business language so the Product Owner can confirm it matches what was agreed with the client. Changes are applied immediately on agreement. Progress is recorded in Section 18 (Review Record) of the BRD — this is the single source of truth for review state, resume points, and the permanent change record.
+The BRD review is a guided walkthrough — not a report. You walk through functional requirements feature area by feature area, framing each in plain business language so the Product Owner can confirm it matches what was agreed with the client. Changes are applied immediately on agreement. Progress is recorded in Section 17 (Review Record) of the BRD — this is the single source of truth for review state, resume points, and the permanent change record.
 
 ---
 
@@ -41,14 +41,14 @@ If no domain knowledge file is found, proceed — frame requirements from the BR
 
 ## Step 3 — Review Record: initialise or resume
 
-Check the BRD for **Section 18 (Review Record)**.
+Check the BRD for **Section 17 (Review Record)**.
 
-**Fresh session (Section 18 does not exist):**
+**Fresh session (Section 17 does not exist):**
 
-This is a new review. Create Section 18 at the end of the BRD with the following structure. Pre-populate the Requirement Log with every reviewable item from Sections 5, 6, 8, and 9, all set to `Pending`.
+This is a new review. Create Section 17 at the end of the BRD with the following structure. Pre-populate the Requirement Log with every reviewable item from Sections 5, 6, 8, and 9, all set to `Pending`.
 
 ```markdown
-## 18. Review Record
+## 17. Review Record
 
 **Review started:** {today's date}
 **Review status:** In Progress
@@ -75,7 +75,7 @@ This is a new review. Create Section 18 at the end of the BRD with the following
 *(Filled on completion)*
 ```
 
-After creating Section 18, continue with the pre-walkthrough checks below before starting Step 4.
+After creating Section 17, continue with the pre-walkthrough checks below before starting Step 4.
 
 **Pre-walkthrough checks (fresh session only):**
 
@@ -87,7 +87,7 @@ Read Section 13.5 (Verification Issues) of the BRD. If it has open or unresolved
 > [List each: ID, failed check, description]
 > I will surface these again when we reach the relevant requirements."
 
-Note each open issue — bring it up in context during the walkthrough when the relevant requirement is reached. If a verification issue remains unresolved by the end of the walkthrough, add it to the Flags table in Section 18.
+Note each open issue — bring it up in context during the walkthrough when the relevant requirement is reached. If a verification issue remains unresolved by the end of the walkthrough, add it to the Flags table in Section 17.
 
 If Section 13.5 is empty or all issues are marked Resolved: proceed.
 
@@ -112,7 +112,7 @@ If Section 15 (Parking Lot) has any rows, mention them once, briefly — they ar
 
 ---
 
-**Resumed session (Section 18 exists, status `In Progress`):**
+**Resumed session (Section 17 exists, status `In Progress`):**
 
 Read the Requirement Log to find the **first row with status `Pending`**. That is the resume point.
 
@@ -123,9 +123,9 @@ Jump directly to Step 4 at the resume point. Pre-walkthrough checks were complet
 
 ---
 
-**Review already complete (Section 18 exists, status `Complete`):**
+**Review already complete (Section 17 exists, status `Complete`):**
 
-> "The BRD review is already complete per Section 18. The BRD is ready for approval — type 'approved' to update the status, or raise any final concerns."
+> "The BRD review is already complete per Section 17. The BRD is ready for approval — type 'approved' to update the status, or raise any final concerns."
 
 ---
 
@@ -137,7 +137,7 @@ Walk through the BRD in this order:
 3. Section 8 — Integration Requirements (as a batch)
 4. Section 9 — Security Requirements (as a batch)
 
-**After every outcome** (confirmed, changed, removed, or flagged), update the corresponding row in the Section 18 Requirement Log immediately. Do not wait until the end of the session.
+**After every outcome** (confirmed, changed, removed, or flagged), update the corresponding row in the Section 17 Requirement Log immediately. Do not wait until the end of the session.
 
 ---
 
@@ -172,7 +172,7 @@ If the requirement is source-tagged `[Assumed]`, note this before presenting:
 
 **After presenting each requirement, wait for PO response:**
 
-| PO response | Action | Section 18 update |
+| PO response | Action | Section 17 update |
 |-------------|--------|-------------------|
 | Confirms | Move to next requirement | Status → `Confirmed` |
 | Requests a change | Discuss → agree → apply to BRD immediately → confirm in one line: "Updated: [REQ-XXX] now reads '[new text]'." | Status → `Changed` · Change Made → brief description of what changed |
@@ -192,7 +192,7 @@ Present all business rules as a batch:
 > "The BRD defines [N] business rule(s). I'll list each — confirm if it is correct, or tell me what needs to change.
 > [List each BR-ID and its rule text]"
 
-For any rule challenged: apply the agreed change inline, confirm in one line, update the Section 18 row, continue.
+For any rule challenged: apply the agreed change inline, confirm in one line, update the Section 17 row, continue.
 
 If Section 6 is empty: confirm and skip.
 
@@ -205,9 +205,9 @@ Present all integrations as a batch:
 > "The BRD lists [N] integration(s). Confirm each is still in scope, or flag what has changed.
 > [For each: name, direction, purpose in one line]"
 
-For any integration challenged or removed: apply inline, confirm, update Section 18, continue.
+For any integration challenged or removed: apply inline, confirm, update Section 17, continue.
 
-If an integration has no corresponding security requirement in Section 9: add to the Section 18 Flags table — this must be resolved before approval.
+If an integration has no corresponding security requirement in Section 9: add to the Section 17 Flags table — this must be resolved before approval.
 
 If Section 8 is empty or states "None identified": confirm and skip.
 
@@ -220,9 +220,9 @@ Present all security requirements as a batch:
 > "The BRD defines [N] security requirement(s). Confirm each is correct and complete, or flag what needs to change.
 > [List each SEC-ID and its requirement text]"
 
-For any requirement challenged: apply inline, confirm, update Section 18, continue.
+For any requirement challenged: apply inline, confirm, update Section 17, continue.
 
-Flag any integration from Section 8 that still has no corresponding security requirement — add to Section 18 Flags table.
+Flag any integration from Section 8 that still has no corresponding security requirement — add to Section 17 Flags table.
 
 If Section 9 is empty and Section 8 has integrations: flag it. Otherwise confirm and skip.
 
@@ -230,7 +230,7 @@ If Section 9 is empty and Section 8 has integrations: flag it. Otherwise confirm
 
 ## Step 5 — Verification summary
 
-After all sections are walked through, present the summary to the PO and update Section 18:
+After all sections are walked through, present the summary to the PO and update Section 17:
 
 ```
 BRD REVIEW — {PROJECT_CODE}
@@ -246,20 +246,20 @@ REVIEWED
 - Security requirements:   [N] confirmed, [N] changed
 
 FLAGS — UNRESOLVED
-[Numbered list of any items in the Section 18 Flags table still Open. If none: "None."]
+[Numbered list of any items in the Section 17 Flags table still Open. If none: "None."]
 
 OPEN QUESTIONS (Section 12)
 [List any scope blockers still unresolved. If none: "None."]
 ─────────────────────────────────────────
 ```
 
-Update the Section 18 Flags table to reflect current status of all flagged items.
+Update the Section 17 Flags table to reflect current status of all flagged items.
 
 **If FLAGS or unresolved scope blockers remain:**
 
 > "The BRD cannot be approved while these items are unresolved. Work through each one and I will apply the agreed changes. Type 'approved' when all are resolved."
 
-Work through each remaining item. Apply agreed changes inline. Update Section 18 Flags table as each is resolved.
+Work through each remaining item. Apply agreed changes inline. Update Section 17 Flags table as each is resolved.
 
 **If all items are resolved:**
 
@@ -271,7 +271,7 @@ Work through each remaining item. Apply agreed changes inline. Update Section 18
 
 When the PO types 'approved':
 
-1. **Update Section 18 (Review Record):**
+1. **Update Section 17 (Review Record):**
 
    - Set `**Review status:** Complete`
    - Add `**Review completed:** {today's date}`
@@ -295,7 +295,7 @@ When the PO types 'approved':
 
 3. **Add a row to the Document Control table:**
    ```
-   | {next version} | {today's date} | Ascendra AI | BRD review complete — see Section 18 for full review record. |
+   | {next version} | {today's date} | Ascendra AI | BRD review complete — see Section 17 for full review record. |
    ```
    Increment version: 1.0 → 1.1 if changes were made; leave at 1.0 if no changes.
 
@@ -306,7 +306,7 @@ BRD REVIEW COMPLETE
 ─────────────────────────────────────────
 Status:     Approved ✅
 Document:   {brd-path}
-Record:     Section 18 — full review log retained in document
+Record:     Section 17 — full review log retained in document
 ─────────────────────────────────────────
 Next step:
 Run /gen-epics {PROJECT_CODE} to generate epics from the approved BRD.
