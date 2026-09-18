@@ -11,9 +11,20 @@
 >
 > **No Ubiquitous Language exists yet.** The domain glossary this framework normally enforces conformance against doesn't exist until domain discovery establishes it. Capture the PO's own terms exactly as used — do not normalize, standardize, or silently pick one term over another. Where the same concept seems to get two different names across the conversation, record it in Section 7 as a flag, not a decision.
 >
+> **Flag types — the only recognized set, used consistently in every section below:**
+> - `AI Knowledge Correction` — source material diverges from generic domain understanding for a real, stated business reason.
+> - `Legacy Design Question` — source material diverges and looks like a legacy design flaw rather than a real constraint; framed as a negotiation, never resolved here.
+> - `Scope Risk` — something that could expand or threaten the scope as currently understood.
+> - A plain synonym/terminology note (Section 7 only) — the same concept getting two different names.
+> - `Conflicting Source` — two or more captured statements about the same topic disagree with each other, regardless of origin: two places in the same source file, two different source files, or the priming package disagreeing with something the PO says live. Never silently pick a side — record every conflicting statement in full, each attributed to where it came from.
+>
+> Every Flag, of any type, on any topic, means that topic is **not** a known/complete answer — see the "When reading this file" note below for what this means downstream.
+>
 > **When writing this file (`/run-priming-session`):** distil what the PO actually said into the matching section below. Do not write a transcript. Do not invent content to fill a gap — an honest `Pending` is always correct where nothing surfaced. Sessions can repeat: if this file already exists, merge new material into it rather than starting over or overwriting what's already captured.
 >
-> **When reading this file (`/anchor-project`):** this file is never read directly by `/run-intake`, `/gen-domain-knowledge`, `/run-brd-discovery`, or `/gen-brd` — none of them are modified to know it exists. When anchor reaches each of those phases, it decomposes the matching section below into that phase's own expected input (pre-filling `brief.md`'s fields, or `domain-discovery-state.md` / `brd-discovery-state.md` before invoking the command that reads them) at that moment — not speculatively ahead of time. A PO running any of those commands directly, without anchor, is entirely unaffected by whether this file exists.
+> **When reading this file (`/anchor-project`):** this file is never read directly by `/run-intake`, `/gen-domain-knowledge`, `/run-brd-discovery`, or `/gen-brd` — none of them are modified to know it exists. When anchor reaches each of those phases, it decomposes the matching section below into that phase's own expected input (pre-filling `brief.md`'s fields, or `domain-discovery-state.md` / `brd-discovery-state.md` before invoking the command that reads them) at that moment — not speculatively ahead of time. A PO running any of those commands directly, without anchor, is entirely unaffected by whether this file exists. Section 10 (Source-Specific Material) is handled differently — it is never pre-filled into a specific phase's field, only handed along as background reference material; see `conventions/priming-command-conventions.md` PC-041. **A topic carrying any unresolved Flag, of any type, is never pre-filled either, regardless of its own Status field** — Status and Flag are independent, and a Flag always means the topic surfaces as a live question when its owning phase command reaches it, never a silent substitution; see `conventions/priming-command-conventions.md` PC-054.
+>
+> **More than one command can write into this file.** `/run-priming-session` is the only one today, and maps everything it captures onto Sections 4-6. A future command reading a different source mechanic (e.g. legacy code) may also contribute to Section 10 — see `conventions/priming-command-conventions.md`, which governs every priming-producing command uniformly.
 
 ---
 
@@ -55,7 +66,7 @@
 >
 > **[Topic name]** — Status: Covered / Partial / Pending
 > PO stated: [distillation, the PO's own words where possible]
-> Flag (only if applicable): [a genuine ambiguity, risk, or contradiction worth the real discovery session's attention — never routine]
+> Flag (only if applicable): [use one of the recognized types from the document-level AI Guide above — never an untyped or improvised flag]
 >
 > Do not chase brief.template.md's own Correct/Incorrect examples for polished, measurable phrasing here — that rigor belongs to `/run-intake`, which will sharpen a vague goal into something testable. This session's job is to capture what the PO actually said, not to pre-write the brief.
 
@@ -173,7 +184,20 @@ PO stated: [Reports, notifications, dashboards the PO described]
 
 ---
 
-## 10. Resume Instructions
+## 10. Source-Specific Material
+
+> **[AI Guide]** This section holds facts a source-specific priming command routinely produces that never map onto Brief/Domain/BRD Material (Sections 4-6) — e.g. a code-reading command's existing API surface, schema-as-implemented, or technical-debt inventory. It is **not** a second overflow bucket alongside Section 9 (Open/Uncategorized) — Section 9 is for a genuine one-off with nowhere to go; this section is for an expected category of fact from a given source mechanic. See `conventions/priming-command-conventions.md` Section 3 (Mapping Priority) for the exact distinction, and Section 4 (The Source-Specific Section Mechanism) for how a contributing command adds its own subsection here.
+>
+> `/run-priming-session` owns no subsection here — prose, an SRS, raw notes, and live conversation always have a home in Sections 4-6. Leave this section at its default until a source-specific command (e.g. a future legacy-code-priming command) actually contributes.
+>
+> A contributed subsection uses this heading pattern, naming its owning command inline:
+> `### 10.N Source-Specific — [Descriptive Name] (owned by /command-name)`
+
+None — every fact captured this session mapped onto Sections 4-6.
+
+---
+
+## 11. Resume Instructions
 
 > **[AI Guide]** First thing to read when this session (or anchor, decomposing this file) resumes.
 
@@ -187,18 +211,19 @@ PO stated: [Reports, notifications, dashboards the PO described]
 **Topics still Pending (do not skip silently):**
 - [List, pulled from Sections 4–6]
 
-**Flags still needing a real discovery session (Sections 5–7):**
+**Flags still needing a real discovery session (Sections 4–7):**
 - [List]
 
 ---
 
-## 11. Pre-Handoff Verification
+## 12. Pre-Handoff Verification
 
 > **[AI Guide — Verification]** Run these checks before treating this file as ready to hand off. Failing a check does not mean the session failed — it means the corresponding gap gets carried into Resume Instructions or the real discovery session, not silently dropped.
 
 - [ ] Section 1 (Session Context): Client and Source material folder are filled, even if Project Code is still blank
 - [ ] Every topic marked `Covered` or `Partial` in Sections 4–6 has a substantive "PO stated" line — not a placeholder
-- [ ] Every Flag recorded in Sections 5–7 is tagged with a type (`AI Knowledge Correction` / `Legacy Design Question` / `Scope Risk` / synonym note) — no untyped flags
+- [ ] Every Flag recorded in Sections 4–7 is tagged with a type from the document-level canonical list (`AI Knowledge Correction` / `Legacy Design Question` / `Scope Risk` / `Conflicting Source` / synonym note) — no untyped flags
 - [ ] Section 8 (Source Material Index) lists every file actually referenced in Sections 4–6 — no orphaned citations to a file not indexed here
 - [ ] Section 9 (Open/Uncategorized) is populated or explicitly "None" — nothing discovered was silently dropped
-- [ ] Section 10 (Resume Instructions) names a real next step, or states "Handoff ready"
+- [ ] Section 10 (Source-Specific Material) is either "None" or every subsection present is attributed to its owning command per `conventions/priming-command-conventions.md` PC-031 — no unlabeled entries
+- [ ] Section 11 (Resume Instructions) names a real next step, or states "Handoff ready"

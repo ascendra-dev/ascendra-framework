@@ -68,6 +68,7 @@ PO stated: *(not raised — the Excel sheets implied a Draft → Sent → Paid f
 
 **Universal Business Rules** — Status: Partial
 PO stated: VAT gets added to everything — "20%, always, no exceptions I can think of." No mention of exemptions.
+Flag: `Conflicting Source` — James's statement ("always 20%, no exceptions") conflicts with `source-material/old-invoice-tracker.xlsx`, which shows at least one historical invoice (`INV-2025-000412`) at a 0% VAT line item. Not resolved in this session — James wasn't asked about the specific invoice, and the spreadsheet gives no reason for the difference. Carried forward for `/run-domain-discovery` to resolve directly (e.g. a zero-rated client, or a data-entry error in the old sheet) rather than assumed either way here.
 
 **Standard Validations** — Status: Pending
 PO stated:
@@ -122,7 +123,7 @@ PO stated:
 | File | Kind | Purpose | Reference When |
 |------|------|---------|-----------------|
 | `source-material/james-voice-note-transcript.txt` | Informal transcript | Primary source for everything above | Cross-reference during `/run-brd-discovery` if a captured answer here seems ambiguous — the original wording may resolve it |
-| `source-material/old-invoice-tracker.xlsx` | Legacy Excel sheet | Implies a Draft → Sent → Paid status flow and shows real invoice numbering in use (`INV-2025-001000` style) — not confirmed verbally, so not recorded as PO-stated fact above | Reference during Domain Discovery when confirming the lifecycle/status model and the reference-number format |
+| `source-material/old-invoice-tracker.xlsx` | Legacy Excel sheet | Implies a Draft → Sent → Paid status flow and shows real invoice numbering in use (`INV-2025-001000` style) — not confirmed verbally, so not recorded as PO-stated fact above. Also the source of a `Conflicting Source` flag on VAT (Section 5) — one line item (`INV-2025-000412`) shows 0% VAT against James's stated "always 20%" | Reference during Domain Discovery when confirming the lifecycle/status model, the reference-number format, and resolving the VAT conflict directly with James |
 
 ---
 
@@ -134,7 +135,13 @@ PO stated:
 
 ---
 
-## 10. Resume Instructions
+## 10. Source-Specific Material
+
+None — every fact captured this session mapped onto Sections 4-6. (This session ingested only prose material — a voice-note transcript and legacy Excel sheets — via `/run-priming-session`, which owns no Source-Specific subsection; see `conventions/priming-command-conventions.md` PC-033.)
+
+---
+
+## 11. Resume Instructions
 
 **Next session starts at:** Section 5 (Domain Material) — Lifecycle & Status Model, Standard Validations, Regulatory Baseline, Known Variations all still Pending; Section 6 (BRD Material) — Output Confirmation still Pending
 
@@ -151,16 +158,18 @@ PO stated:
 
 **Flags still needing a real discovery session:**
 - Stripe as a stated integration preference (Section 5)
+- VAT rate `Conflicting Source` — James's "always 20%" vs. `old-invoice-tracker.xlsx`'s 0% line item on `INV-2025-000412` (Section 5) — unresolved, needs `/run-domain-discovery` to address directly, not assumed
 - "clients" vs. domain-default "Payer" terminology (Section 7)
 - PU-001, accounting software (Section 9)
 
 ---
 
-## 11. Pre-Handoff Verification
+## 12. Pre-Handoff Verification
 
 - [x] Section 1: Project Code, Client, and Source material folder all filled
 - [x] Every `Covered`/`Partial` topic in Sections 4–6 has a substantive PO-stated line
-- [x] Every Flag in Sections 5–7 is typed (`AI Knowledge Correction`, or a plain terminology note)
+- [x] Every Flag in Sections 4–7 is typed (`AI Knowledge Correction`, `Conflicting Source`, or a plain terminology note)
 - [x] Section 8 lists both files actually referenced above — no orphaned citations
 - [x] Section 9 is populated, not left as a bare "None"
-- [x] Section 10 names a real next section to resume at
+- [x] Section 10 — None, correctly stated (no source-specific command run this session)
+- [x] Section 11 names a real next section to resume at

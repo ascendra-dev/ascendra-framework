@@ -1,6 +1,6 @@
 # Anchor Project — Working Design Document
 
-**Status:** Implemented and internally consistent as of 2026-09-17/18. `.claude/commands/anchor-project.md` (Step 7 rewritten to hand off to `/run-priming-session`, all cross-references re-verified after the reorder), `.claude/commands/run-priming-session.md`, `projects/TEMPLATE/priming/priming-package.template.md` + `.example.md`, and the `/init-project` `source-material/`/`priming/` folder additions all exist and match this document. Still pending: conversion into one or more `decisions/FW-XXX` ADRs, and validation against a real project (§12's remaining item).
+**Status:** Implemented and internally consistent as of 2026-09-19. `.claude/commands/anchor-project.md` (Step 7 rewritten to hand off to `/run-priming-session`, all cross-references re-verified after the reorder), `.claude/commands/run-priming-session.md`, `projects/TEMPLATE/priming/priming-package.template.md` + `.example.md`, `conventions/priming-command-conventions.md` (§5.15 and §5.16, both added 2026-09-19), and the `/init-project` `source-material/`/`priming/` folder additions all exist and match this document. Converted into `decisions/FW-049-anchor-project-and-priming-session.md` (amended 2026-09-19 for §5.15 and §5.16). Still pending: validation against a real project (§12's remaining item).
 **Working command name:** `/anchor-project`
 **Started:** 2026-09-16
 **Owner:** Zaka Shah (framework author)
@@ -88,7 +88,7 @@ The domain glossary this framework enforces conformance against (`CLAUDE.md`'s o
 The mechanism behind "top-down triage" is three distinct passes, not one undifferentiated read-and-write:
 
 1. **Map** — skim only, no deep reading. Build a lightweight outline of the source: what's in it and roughly where, one short gist per unit. Cheap even for a large document, since nothing is deep-read yet.
-2. **Triage** — against that map, and the Problem Domain sections the package needs to fill, mark each unit relevant / redundant (covered by another unit already) / irrelevant / ambiguous. Irrelevant units are dropped **without** being deep-read at all — this is what keeps a genuinely large or noisy source cheap to process. Redundant units are flagged so the same fact doesn't get extracted twice from two places.
+2. **Triage** — against that map, and the Problem Domain sections the package needs to fill, mark each unit relevant / redundant (covered by another unit already) / irrelevant / ambiguous. Irrelevant units are dropped **without** being deep-read at all — this is what keeps a genuinely large or noisy source cheap to process. Redundant units are flagged so the same fact doesn't get extracted twice from two places. Each relevant unit is also compared against whatever its target topic already holds — not only for redundancy but for disagreement — regardless of whether the existing content came from an earlier unit in the same source, a different source, or something the PO already stated this session; see §5.16.
 3. **Extract** — deep-read only what survived triage, and write it into the priming package (per §5.9) compressed and deduplicated — never a verbatim transcription, never the same fact restated because it appeared in two source units.
 
 **Structured vs. unstructured sources use the same three passes, but the Map step adapts to what's actually there:**
@@ -128,28 +128,69 @@ If a hard fact surfaces later than expected (example used in discussion: learnin
 
 `/run-priming-session` handles prose/document material — an SRS, freeform notes, any reference material, regardless of format — because all of it is read the same way (§5.5's pipeline, adapting technique for structured vs. unstructured, never the command itself). A **fundamentally different extraction mechanic** gets its own command instead of bloating this one. Legacy **code** is the concrete case: navigated structurally (modules, entry points, schema/ORM files), not read linearly, and it needs a reverse-engineering step this command doesn't — translating "what the code does" into "what business capability it reflects." That's a planned second command, deferred — chunking strategy for large codebases still needs its own design pass. A third genuinely-different mechanic later (an existing OpenAPI spec, a live DB schema) gets a third command when it actually arrives, not a rewrite of the first two.
 
+Each mechanic-specific command may also contribute its own **Source-Specific Section** to the shared package (governed by `conventions/priming-command-conventions.md`, added 2026-09-19) — see §5.15 for the concrete mechanism. This is the resolution to a gap this principle implied but hadn't yet solved: a different mechanic doesn't just mean a different way of reading, it can mean a different *kind* of fact, one that never had a home in the package's original Brief/Domain/BRD-mirrored taxonomy.
+
 ### 5.12 Where source material actually lives
 
 `/init-project` gains one small, additive change: a `source-material/` folder created as part of its normal skeleton, so there is somewhere to drop files before priming even runs. **Sequencing:** `/run-priming-session` runs *after* `/init-project`, not before — it needs that folder to exist. It reads from `source-material/` and also accepts material pasted directly into the conversation. Running it more than once on the same project is expected and supported — new material merges into the existing package rather than starting over or erroring.
 
-### 5.13 Section skeleton (working draft, not final)
+### 5.13 Section skeleton (as built, current as of the 2026-09-19 Source-Specific Sections amendment)
 
 ```
 priming-package.template.md
-├── Section 1: Brief material (mirrors brief.template.md's sections)
-├── Section 2: Domain material (mirrors domain-discovery-state.template.md
+├── Section 1: Session Context (Project Code, Client, source-material folder)
+├── Section 2: Session History (one row per session — date, who, sections touched)
+├── Section 3: Coverage Snapshot (Sections 4-6 at a glance — Not started /
+│              In progress / Substantially covered, no numeric score, see §5.3)
+├── Section 4: Brief material (mirrors brief.template.md's sections)
+├── Section 5: Domain material (mirrors domain-discovery-state.template.md
 │              Section 4's playbook-progress structure — Covered/Pending per topic)
-├── Section 3: BRD material (mirrors brd-discovery-state.template.md similarly)
-├── Section 4: Terms as used (the UL flag bucket from §5.4 — no normalization)
-├── Section 5: Source Material Index (which files were fed in, one-line purpose
+├── Section 6: BRD material (mirrors brd-discovery-state.template.md similarly)
+├── Section 7: Terms as used (the UL flag bucket from §5.4 — no normalization)
+├── Section 8: Source Material Index (which files were fed in, one-line purpose
 │              each, when to cross-reference later — not a full read)
-└── Section 6: Open / Uncategorized (Parking-Lot-style overflow — nothing
-               discovered gets dropped just because it doesn't fit above)
+├── Section 9: Open / Uncategorized (Parking-Lot-style overflow — a genuine
+│              one-off with nowhere to go, nothing dropped just because it
+│              doesn't fit above; see §5.15 for how this differs from Section 10)
+├── Section 10: Source-Specific Material (§5.15 — a mechanic-specific command's
+│               own attributed subsection(s) for an expected category of fact
+│               that never maps onto Sections 4-6; "None" by default)
+├── Section 11: Resume Instructions (penultimate — what to load, where the next
+│               session starts, what's still Pending, open flags)
+└── Section 12: Pre-Handoff Verification (final — blocking checks before handoff)
 ```
 
 ### 5.14 Relationship to anchor
 
 Fully standalone-runnable, like every other command (§2's principle extends here) — a PO can run `/run-priming-session` directly without ever touching anchor. When anchor is driving (its own ingestion step, now much lighter than the earlier draft): if the PO wants to feed material in and no priming package exists yet, anchor invokes `/run-priming-session` and resumes once it completes. Anchor no longer contains any triage logic of its own — that entire mechanism moved here.
+
+### 5.15 Source-Specific Sections — added 2026-09-19
+
+**The gap:** §5.1's "not a new schema, mirrors the templates" reasoning is sound for the command that existed when it was written — prose only, one mechanic. §5.11 already planned for further mechanic-specific commands (legacy code first, deferred; an OpenAPI spec or live DB schema later) but didn't yet address a consequence of that plan: a different mechanic doesn't only mean a different way of *reading*, it can mean a different *kind* of fact surfacing — an existing API surface, schema-as-implemented, business rules embedded in validation logic, a tech-debt inventory. None of that compresses into Brief/Domain/BRD vocabulary. Before this amendment, the only place for it was Section 9 (Open/Uncategorized) — built for a genuine one-off with nowhere to go, not for a whole expected output category from a class of source material.
+
+**The resolution:** two additions, kept deliberately separate from each other.
+
+1. **`conventions/priming-command-conventions.md`** (new file, rule prefix `PC-0NN`) — a shared contract binding every priming-producing command uniformly, present and future, mirroring the shape `conventions/command-conventions.md` and `conventions/template-conventions.md` already use for their own domains. It states: every such command still merges into the one project-level package (§5.9 unchanged); every command populates the shared spine (Covered/Pending, typed Flags, checkpointed volume, sensitive-content triage, the legacy-material posture of §5.6) the same way; every command maps onto Brief/Domain/BRD Material *first*, always; Section 9 and the new Section 10 are not interchangeable — Section 9 for a one-off, Section 10 for an expected class of fact a given mechanic routinely produces.
+2. **Section 10 — Source-Specific Material**, new in `priming-package.template.md` (old Sections 10-11 renumbered to 11-12). A mechanic-specific command that routinely surfaces non-mappable facts contributes its own subsection here, using the heading pattern `### 10.N Source-Specific — [Descriptive Name] (owned by /command-name)`, always naming its owning command inline so responsibility is never ambiguous. `/run-priming-session` owns no subsection today — everything it extracts has a home in Sections 4-6.
+
+**Naming decision:** deliberately *not* called "extension" anything. That word already governs a distinct, unrelated concept in this framework — Core/Extension methodology's architecture-level technical seams (`arch.template.md` §3.2 "Extension Points," reused by `conventions/template-conventions.md` T-023's "extension point table"). Reusing it here for a document-section concept would be exactly the kind of unrecorded synonym drift `CLAUDE.md`'s Ubiquitous Language rule exists to catch — so the framework's own design process is held to the same discipline it enforces on every project it produces. "Source-Specific Section" was chosen instead, reusing vocabulary this template already carries ("Source Material Index," the `source-material/` folder, §5.11's "source-agnostic"/"source mechanic" language) rather than importing a new term.
+
+**Forward note:** when the legacy-code-priming command (§5.11) is actually built, it documents its own Source-Specific Section(s) here — what it adds, and what each one captures — both in this design doc and in `priming-command-conventions.md`'s own registry table (Section 4), so a later third command can check it isn't colliding with a name already claimed.
+
+### 5.16 Conflicting Source facts — added 2026-09-19
+
+**The gap, found by tracing what happens when source material disagrees with itself** (not just with the PO): three concrete holes existed. First, Section 4's own AI Guide already invited "contradiction" as a Flag reason, but Sections 5-6 never repeated it, and Pre-Handoff Verification only required Flags to be typed in Sections 5-7 — Section 4 was silently exempt. Second, there was no recognized Flag type that actually fit "two sources disagree" — `AI Knowledge Correction` and `Legacy Design Question` both trigger on divergence from generic domain understanding, not on two PO-provided or source-provided facts disagreeing with each other. Third, and most consequential: the package's Status field and Flag field are independent — a topic can read `Covered` while carrying an unresolved Flag — and anchor's pre-fill decision (§3, §6) checks for a known answer in a way that in practice reads Status, not Flags. A flagged topic could be silently substituted into a downstream draft without the PO ever seeing the conflict.
+
+**The resolution, kept deliberately general over origin:** whether the disagreement is between two places in the same source file, two different source files, or the priming package and something the PO says live, it is the same underlying situation — a topic already has content, and new candidate content for it disagrees. One mechanism handles all three:
+
+- A new recognized Flag type, **`Conflicting Source`**, added to the closed list and now defined once, at the document level, rather than partially redefined per section.
+- Detection becomes a designed comparison step in Triage/Extract (§5.5) — compare new content against what a topic already holds, checking disagreement, not only redundancy.
+- When flagged, both (or all) conflicting statements are recorded in full, each attributed to its origin — never silently dropped or preferred.
+- If the PO is live in conversation at the moment a conflict is noticed, ask directly right then — cheapest resolution. A flag is for when that isn't possible in the moment (pure file triage, or two files disagreeing before the PO has weighed in on either).
+- Resolution reuses the existing decomposition routing, no new gate: a flagged topic in Sections 4-6 resolves when its owning phase command reaches it, exactly like a `Pending` topic already does; a flag in Section 9 routes via that section's own existing "where it probably belongs" column.
+- **The closing guarantee:** a topic carrying any unresolved Flag is never treated as a known answer for pre-fill purposes, regardless of its own Status field. This is a narrow, explicit addition to the "check state/reference material for a known answer first" logic §3 already describes — a Flag simply disqualifies a topic from that check succeeding.
+
+Full rule set: `conventions/priming-command-conventions.md` Section 6 (`PC-050`–`PC-054`).
 
 ## 6. PO Interaction Protocol
 
@@ -294,3 +335,5 @@ This design document's own status can now move from "in discussion" — the mech
 | 2026-09-17 | Resolved every remaining §12 open item: added §9.1 (Post-Handoff Role — release prep and Formal-tier assess-change only), rewrote §7.4 with the actual cross-folder-lineage mechanism (had been answered in discussion but never written in), added §8.1 (command-level friction is in scope) and §8.2 (the reporting-gap problem and a placeholder contact channel), confirmed validation plan/drift-check depth/escape-hatch persistence as already-written defaults, and recorded the FW-020 exception-handling discipline that will govern `anchor-project.md`'s eventual authoring. §12 kept as a resolution record rather than deleted |
 | 2026-09-17 | `.claude/commands/anchor-project.md` written in full and self-checked against every rule in `conventions/command-conventions.md`'s verification checklist. One real structural bug caught and fixed during self-check: an early draft's Step 9 (post-handoff scope) told the reader to consult it "before Step 8," breaking sequential step order — fixed by swapping step content so post-handoff scope now correctly runs before driving the phase. Two genuinely-needed conventions exceptions proposed centrally in `command-conventions.md` itself (under `C-011` and `C-013`) rather than improvised locally, per that document's own governing principle. `observations/TEMPLATE.md` and `observations/index.md` created as supporting scaffolding the command depends on. Status updated: implemented, pending validation and formal `decisions/FW-XXX` writeup |
 | 2026-09-17 | §5 rewritten in full: document ingestion is no longer a mode of `/anchor-project` — applying the composability principle to the finished design surfaced a real contradiction (a source-agnostic mechanism embedded in the one command that isn't source-agnostic), caught later than it should have been, now recorded as a third entry in §10 (Rejected Approaches). Ingestion becomes `/run-priming-session`, a standalone companion command scoped to Problem Domain only (Brief/Domain/BRD — Epics/Screen Design/Architecture are AI synthesis, nothing to front-load), producing `priming-package.template.md` (composed from existing templates' own sections, not a new schema). New content added, not previously specified: reproducibility via structural completeness rather than identical output (§5.3, reusing the same mechanism `/run-domain-discovery` already relies on), explicit handling for the absence of Ubiquitous Language at this stage (§5.4 — capture terms as used, flag apparent synonyms, never normalize), the staging/decomposition model (§5.9 — one consolidated package the PO reviews, split into each phase's real file only when anchor reaches it), the one-command-per-mechanic principle with legacy code named as the deferred second command (§5.11), and `/init-project`'s own small required addition — a `source-material/` folder (§5.12). `anchor-project.md` itself still needs a matching Step 7 rewrite (now a simple handoff) — not yet done, tracked as a next step, not re-added to §12 |
+| 2026-09-19 | Added §5.15 (Source-Specific Sections): a new `conventions/priming-command-conventions.md` (`PC-0NN` rules) governs every priming-producing command uniformly, and `priming-package.template.md` gained a new Section 10 (Source-Specific Material, "None" by default) for facts a mechanic-specific command routinely produces that never map onto the Brief/Domain/BRD-mirrored Sections 4-6 — distinct from Section 9 (Open/Uncategorized), which stays reserved for genuine one-off leftovers. Deliberately not named "extension" anything, to avoid colliding with the unrelated Core/Extension "Extension Points" vocabulary already used in `arch.template.md` §3.2. Old Sections 10-11 renumbered to 11-12; §5.11 and §5.13 updated to match; §5.13's skeleton — previously stale, showing 6 sections against the template's real (then-)11 — corrected to the current 12-section shape in the same pass. `decisions/FW-049-anchor-project-and-priming-session.md` amended to match |
+| 2026-09-19 | Added §5.16 (Conflicting Source facts): closed three gaps found by tracing source-internal contradiction handling — Section 4's Flag guidance mentioned "contradiction" but Sections 5-6 and Pre-Handoff Verification's typing rule (scoped to Sections 5-7 only) didn't; no recognized Flag type actually fit "two sources disagree"; and the package's Status/Flag field independence meant a flagged topic could be silently pre-filled by anchor despite an unresolved conflict. Resolved with one origin-agnostic mechanism: a new `Conflicting Source` flag type (defined once at the document level, not per-section), a designed disagreement-check in Triage/Extract (§5.5), and an explicit guarantee that any unresolved Flag disqualifies a topic from anchor's pre-fill regardless of Status. `conventions/priming-command-conventions.md` Section 6 (`PC-050`-`PC-054`), `priming-package.template.md`/`.example.md`, `run-priming-session.md`, and `anchor-project.md` all updated to match; `decisions/FW-049-anchor-project-and-priming-session.md` amended |

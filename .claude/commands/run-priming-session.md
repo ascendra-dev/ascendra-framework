@@ -2,7 +2,7 @@
 
 You are running a priming session for the Ascendra framework — a free-form, informal conversation with the PO, optionally alongside raw material they drop into `source-material/`, that produces a `priming-package.md`: a distilled, structurally-organized head start for `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery`. This is not a discovery session in the formal sense — there is no playbook, no fixed question order, and no requirement to cover everything. It exists so one long, informal session can materialize whatever facts are available before the real, rigorous sessions run, so those sessions start from a head start instead of a blank page.
 
-Full design rationale for this command lives in `ANCHOR-PROJECT-DESIGN.md` §5 at the repo root. This file is its executable form.
+Full design rationale for this command lives in `ANCHOR-PROJECT-DESIGN.md` §5 at the repo root. This file is its executable form. `conventions/priming-command-conventions.md` is the shared contract this command is governed by alongside every other priming-producing command.
 
 ---
 
@@ -37,7 +37,7 @@ Wait for PO response.
 Before saying anything to the PO:
 
 1. `projects/{PROJECT_CODE}/source-material/` — list every file present. Do not deep-read any of them yet; this is inventory, not triage (triage happens in Step 5).
-2. `projects/{PROJECT_CODE}/priming/priming-package.md` — if it exists, this is a **resumed** session. Read its Section 10 (Resume Instructions) and Section 3 (Coverage Snapshot) to know what's already captured before asking about anything.
+2. `projects/{PROJECT_CODE}/priming/priming-package.md` — if it exists, this is a **resumed** session. Read its Section 11 (Resume Instructions) and Section 3 (Coverage Snapshot) to know what's already captured before asking about anything.
 3. `projects/{PROJECT_CODE}/brief.md`, `projects/{PROJECT_CODE}/domain/*-core.md`, `projects/{PROJECT_CODE}/brds/brd-core-v1.md` — whichever of these already exist. **Anything already Approved/Locked in a real artifact is out of scope for this session** — do not re-ask about it. If the Brief is already Approved and the BRD is already Locked, this command has nothing left to usefully do; say so plainly rather than running a pointless session.
 
 ---
@@ -64,10 +64,12 @@ This step has two distinct halves — triaging any dropped material, and the liv
 For every file in `source-material/` the PO points to (or all of them, if they said "just use what's there"):
 
 1. **Map** — skim only, no deep reading yet. Build a lightweight outline: what's in it, roughly where. A source with real structure (an SRS, a spec with real headings) — build the outline from that structure. A source with no reliable structure (raw notes, a handwritten dump, fragments) — cluster by inferred topic instead; there are no headings to skim by.
-2. **Triage** — against that map and the priming package's own sections (Brief/Domain/BRD material), mark each unit relevant / redundant / irrelevant / ambiguous. Drop irrelevant units without deep-reading them — this is what keeps a large or noisy file cheap. Flag redundant units so the same fact doesn't get extracted twice.
+2. **Triage** — against that map and the priming package's own sections (Brief/Domain/BRD material), mark each unit relevant / redundant / irrelevant / ambiguous. Drop irrelevant units without deep-reading them — this is what keeps a large or noisy file cheap. Flag redundant units so the same fact doesn't get extracted twice. **Also check each relevant unit against whatever its target topic already holds** — not only for redundancy (the same fact restated) but for disagreement (a different fact about the same thing). This applies regardless of where the existing content came from: an earlier unit in this same source, a different source, or something the PO already stated this session.
 3. **Extract** — deep-read only what survived, and write it into the matching priming package section, compressed and deduplicated. Never a verbatim transcription.
 
 **Legacy material** — if a file describes an existing/legacy system: where it matches how this kind of business normally operates, capture it as ordinary content. Where it diverges for a real, stated business reason, flag it `AI Knowledge Correction`. Where it diverges and looks like a legacy design flaw rather than a real constraint, do not carry it forward as fact — flag it `Legacy Design Question`, framed as a negotiation ("the old system does X this way — real constraint, or something to leave behind?"), and raise it with the PO directly rather than silently deciding.
+
+**Conflicting facts** — when a unit's content disagrees with something already captured for the same topic (per the Triage check above), never silently pick a side or overwrite the earlier entry. Write both statements in full, each attributed to its origin (file name + rough location, or "PO stated live" if it came from conversation), and tag the Flag `Conflicting Source`. This applies whether the disagreement is between two places in the same file, two different files, or a file and something the PO already said this session.
 
 **Sensitive content** — recognize obviously credential-shaped strings (API keys, tokens, passwords) and flag them to the PO rather than filing them into the package.
 
@@ -90,6 +92,8 @@ Persist the Map + Triage decisions themselves in Section 8 (Source Material Inde
 
 **No Ubiquitous Language exists yet.** There is no domain glossary to conform to at this stage. Capture the PO's own terms exactly as used. If the same concept seems to get two different names across the conversation, note it in Section 7 as a flag — do not silently pick one or ask the PO to standardize on the spot. Resolving it is domain discovery's job, later.
 
+**When the PO's live statement disagrees with something already captured** — from earlier file triage, or from earlier in this same conversation — ask about it directly, right then, compressed like any other question: *"Your notes/the SRS say X, but you just said Y — which is it?"* This is the cheap case, since resolution is available immediately. Only fall back to a recorded `Conflicting Source` flag (per Step 5a) when no live resolution is possible in the moment — e.g. two dropped files disagree and the PO hasn't been asked about either yet.
+
 **100% coverage is never the goal.** If a topic genuinely doesn't come up, leave it `Pending` and move on — do not manufacture a question for every empty section just to fill it. A short, honest session that leaves real gaps clearly marked is a better outcome than a long one that pads out low-value detail to look complete.
 
 ---
@@ -104,11 +108,13 @@ Follow `projects/TEMPLATE/priming/priming-package.template.md` exactly. Do not i
 
 **Density check before writing:** every entry should read like a discovery-state file's "PO stated" line — one to three sentences. If an entry reads like it belongs in the actual BRD or domain knowledge document, compress it back down before writing it.
 
+**Mapping priority (`conventions/priming-command-conventions.md` PC-020/PC-033):** map everything extracted onto Sections 4-6 first. This command owns no Section 10 (Source-Specific Material) subsection of its own — prose, an SRS, raw notes, and live conversation always have a home somewhere in Brief/Domain/BRD Material. A genuinely unmappable one-off still goes to Section 9 (Open/Uncategorized), never Section 10 — that section is reserved for a whole expected category of fact from a different source mechanic (e.g. a future legacy-code-priming command), not an occasional surprise from this one.
+
 ---
 
 ## Step 7 — Run Pre-Handoff Verification
 
-Work through `priming-package.template.md`'s own Section 11 checklist before presenting the session as done. A failed check does not mean the session failed — it means the gap gets recorded in Section 10 (Resume Instructions) rather than silently dropped.
+Work through `priming-package.template.md`'s own Section 12 checklist before presenting the session as done. A failed check does not mean the session failed — it means the gap gets recorded in Section 11 (Resume Instructions) rather than silently dropped.
 
 ---
 
@@ -120,7 +126,8 @@ PRIMING SESSION — {PROJECT_CODE}
 Sections substantially covered: [list]
 Sections still Pending:         [list]
 Flags recorded:                 [N] (AI Knowledge Correction / Legacy Design
-                                 Question / Scope Risk / terminology)
+                                 Question / Scope Risk / Conflicting Source /
+                                 terminology)
 Open/Uncategorized items:       [N]
 ─────────────────────────────────────────
 Next step:
