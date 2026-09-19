@@ -21,7 +21,7 @@ This guide's first full pass across all twelve SDLC stages is now complete — e
 | 8 | [`08-development.md`](08-development.md) | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ✅ Live |
 | 9 | [`09-qa-uat.md`](09-qa-uat.md) | Stage 9–10 — QA, UAT | ✅ Live |
 | 10 | [`10-release-support-hotfix.md`](10-release-support-hotfix.md) | Stage 11–12 — release, support, hotfix | ✅ Live |
-| 11 | [`11-cross-cutting.md`](11-cross-cutting.md) | `/assess-change`, `/update-status`, `/project-status` | ✅ Live |
+| 11 | [`11-cross-cutting.md`](11-cross-cutting.md) | `/assess-change`, `/update-status`, `/project-status`, `/judgment-check` | ✅ Live |
 
 ## Case studies
 

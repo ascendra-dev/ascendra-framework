@@ -12,6 +12,8 @@ Read this document when: starting a new project, resuming a project mid-delivery
 
 **Repeatable / optional steps are called out explicitly** — most of this lifecycle runs once per project, but a few sections repeat (Phase 6 runs once per **wave**, not once per project) or are conditional (Domain Discovery, Mock Discovery, Screen Design are all skippable under stated conditions). See the "Repeats / Optional" column in the table below.
 
+**Two ways to run everything below — decide this before reading further.** The table and every phase section that follows are written against typing each command yourself, one gate at a time — that's the default path this document assumes throughout. `/anchor-project {PROJECT_CODE}` is a second, equally valid way to run the identical sequence: it resolves or bootstraps a project, sequences the same commands through the same gates with nothing about their behavior changed, and adds state continuity across sessions, a compression layer on PO-facing interaction, and cross-artifact drift checking on top. If you're driving by hand, the table below is your map. If you're using anchor, read "Running This Sequence via `/anchor-project`" further down before the table — it's a major alternative to everything else in this document, not a footnote at the end of it.
+
 ---
 
 ## Lifecycle at a Glance
@@ -772,7 +774,7 @@ Every command in `.claude/commands/` (33 total), with its domain region and phas
 | `update-status` | Cross-cutting | Any gate | Artifact path + new status | Updated artifact + index | — |
 | `/project-status` | Cross-cutting | Any time | Project path | Status dashboard | — |
 | `/judgment-check` | Cross-cutting | Before any `/review-X` (all artifact types) | Artifact path | Density & Judgment Log section in that artifact | — |
-| `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact) | — (invokes each phase's own template via that phase's own command) |
+| `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact), `journal.md`, and, at milestones, promotes into `observations/` and generates `testimonial.md` (`FW-050`) | — (invokes each phase's own template via that phase's own command) |
 
 ---
 
@@ -933,6 +935,13 @@ All statuses are set via `update-status` (or inline by the corresponding `review
 
 ```
 projects/{PROJECT_CODE}/
+├── journal.md                                # /anchor-project's continuous project record (FW-050)
+├── testimonial.md                            # Narrative synthesis, generated at Walking Skeleton
+│                                              # handoff / project close (FW-050) — not always present
+├── source-material/                          # Raw material dropped in before/during
+│                                              # /run-priming-session (FW-049) — not always present
+├── priming/
+│   └── priming-package.md                    # /run-priming-session output (FW-049) — not always present
 ├── brief.md                                  # Project brief (Intake)
 ├── domain/
 │   ├── domain-discovery-state.md             # Domain discovery session state (optional)
