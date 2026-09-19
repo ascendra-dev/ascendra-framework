@@ -174,7 +174,9 @@ For Section 12.3 (Factual Accuracy Log), list every fact that is time-sensitive 
 
 | Artifact | Location | Status |
 |----------|----------|--------|
-| Domain Knowledge | `projects/{PROJECT_CODE}/domain/{filename}.md` | Active |
+| Domain Knowledge | [`domain/{filename}.md`](domain/{filename}.md) | Active |
+
+Per `conventions/command-conventions.md` C-043: the Location column is a real markdown link, relative to `brief.md`'s own location — never plain backtick text.
 
 If `brief.md` does not exist, skip this step silently.
 

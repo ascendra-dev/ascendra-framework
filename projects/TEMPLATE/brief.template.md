@@ -220,11 +220,13 @@
 > Standard artifact types: BRD, Discovery State, Epic, Sprint Plan, Architecture Decision Record, Sprint Roadmap.
 >
 > Status options: Draft / Under Review / Approved / Locked / Superseded.
+>
+> Location is always a real markdown link, relative to this file's own location (`projects/{PROJECT_CODE}/brief.md`) — never a plain backtick-quoted path (`conventions/command-conventions.md` C-043).
 
 | Artifact | Location | Status |
 |----------|----------|--------|
-| Project Brief | `projects/{PROJECT_CODE}/brief.md` | [Status] |
-| BRD v1 | `projects/{PROJECT_CODE}/brds/brd-core-v1.md` | [Status] |
+| Project Brief | [`brief.md`](brief.md) | [Status] |
+| BRD v1 | [`brds/brd-core-v1.md`](brds/brd-core-v1.md) | [Status] |
 
 ---
 

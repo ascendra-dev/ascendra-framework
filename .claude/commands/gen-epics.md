@@ -160,7 +160,7 @@ When the trigger applies, add this subsection directly beneath the build order l
 
 If no epic pair meets the trigger, write the subsection anyway with "None — every dependency in this set resolves at the epic level" rather than omitting it. `/gen-stories` and `/review-stories` both read this subsection to decide whether a wave spans one epic or an interleaved pair.
 
-After writing the index, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) — add a row: `| Epic | projects/{PROJECT_CODE}/epics/index.md | Draft |`. If an Epic row already exists from a prior run, update its status instead of adding a duplicate.
+After writing the index, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) — add a row: `| Epic | [\`epics/index.md\`](epics/index.md) | Draft |`. Per `conventions/command-conventions.md` C-043, the Location column is a real markdown link relative to `brief.md`'s own location, never plain backtick text. If an Epic row already exists from a prior run, update its status instead of adding a duplicate.
 
 ---
 

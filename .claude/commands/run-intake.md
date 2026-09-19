@@ -190,8 +190,10 @@ Do not ask the PO a question for Section 9. Auto-populate it:
 
 | Artifact | Location | Status |
 |----------|----------|--------|
-| Project Brief | `projects/{PROJECT_CODE}/brief.md` | Active |
+| Project Brief | [`brief.md`](brief.md) | Active |
 ```
+
+Per `conventions/command-conventions.md` C-043: the Location column is always a real markdown link, relative to `brief.md`'s own location — never plain backtick text.
 
 Present it:
 > "Section 9 has been pre-populated with the brief as the first artifact. As the project advances, new artifacts — BRD, architecture, sprint plans — should be added to this table.

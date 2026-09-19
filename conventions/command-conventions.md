@@ -158,6 +158,12 @@ The separator line is always `────────────────�
 
 **C-042** After writing the primary artifact, the command explicitly updates all cross-reference files that track it (e.g. `brief.md` Section 9 Related Artifacts, `epics/index.md`, `stories/index.md`). This update step is stated in the command — not assumed.
 
+**C-043** Any cross-reference to another artifact's file path, written into a *generated project document* (not this framework's own authoring docs — those are governed separately), is a real markdown link (`[relative/path](relative/path)`), computed relative to the citing document's own location — never a plain backtick-quoted path. This applies to `brief.md` Section 9 (Related Artifacts) and any equivalent registry/index table a command populates.
+
+It does **not** apply to `.example.md` files: their citations reference a fictional project (`HARBORVIEW-INV-001`) that doesn't exist in this repo — a link there would be a guaranteed dead link, not an illustrative citation.
+
+A template's (`projects/TEMPLATE/**`) `[AI Guide]` prose citing another framework file for guidance purposes is also exempt (that prose is stripped from generated output and never resolves to a real path). But a template's own **generation skeleton** — the literal section content, using `{PROJECT_CODE}`-style substitution syntax, that gets copied directly into every real generated document — follows C-043 like any other generated content: it's not illustrative, it's the actual pattern every real document is built from, and it resolves to a real path the moment `{PROJECT_CODE}` is substituted for a real project. `brief.template.md` Section 9's own example rows are this case.
+
 ---
 
 ## Checklist for Verifying a Command
@@ -189,3 +195,4 @@ Use this before marking any new or modified command ready:
 - [ ] C-040  Final report in fixed-format code block; separator is `─────────────────────────────────────────` only
 - [ ] C-041  Next-step pointer in or after final code block
 - [ ] C-042  Cross-reference update step explicit in command
+- [ ] C-043  Cross-references written into a generated document are real markdown links, not backtick text — never applied to templates or `.example.md` files
