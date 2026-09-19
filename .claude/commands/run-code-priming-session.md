@@ -103,6 +103,8 @@ For every unit in `code-priming-state.md` Section 5 not yet `Extracted` (or, for
 
 **Sensitive content (`PC-013`)** — legacy code commonly has hardcoded credential-shaped strings (API keys, tokens, passwords, connection strings) in config files or old commits. Recognize these and flag them to the PO rather than filing them into the priming package.
 
+**Terms as used (`priming-package.md` Section 7)** — the codebase-reading equivalent of `/run-priming-session`'s "PO said both 'Client' and 'Customer'" case: if the same concept is named two different ways in different parts of the codebase (a table called `customers` alongside a service called `ClientService` for what looks like the same entity), note it in Section 7 as a flag, exactly the same treatment — do not silently pick one or normalize it yourself. Which term becomes canonical is domain discovery's decision, not this command's.
+
 **Honesty below the chunk level** — if a specific fact for an otherwise-processed unit can't be found with confidence after a reasonable search, mark it `Pending` in the matching `priming-package.md` topic (or note the gap in `code-priming-state.md` Section 5's `Notes` column) rather than fabricating precision. An honest gap is always preferable to invented content — the same standard `/run-priming-session` already holds itself to.
 
 **Checkpoint after every unit finishes** — write the unit's row in `code-priming-state.md` Section 5 to `Extracted` (or `Triaged (infrastructure-likely)` plus a Section 6 row) immediately, before moving to the next unit. Do not hold more than one unit's extraction in working context at a time; the ledger, not conversation history, is what makes a large codebase resumable across sessions.
@@ -125,6 +127,8 @@ No dedicated tech-debt-inventory subsection — individual tech-debt-flavored fi
 
 **If `priming-package.md` already exists** (from a prior `/run-priming-session` run, or a prior code-priming session): merge new material into it. Update `Pending` topics that now have an answer. Never overwrite a `Covered` topic's existing content without the PO having actually revisited it — if code contradicts an already-`Covered` topic, that's a `Conflicting Source` flag, not a silent overwrite.
 
+**Populate the shared spine (`PC-010`) — same as `/run-priming-session`, not a parallel tracking scheme:** add a Session History (Section 2) row for this session. Add **one** Source Material Index (Section 8) row for the codebase as a whole — not one row per file walked, since a codebase is hundreds of files where an SRS is one; `code-priming-state.md`'s own Entity Ledger is already the file-by-file detail, so the Section 8 row's "Reference When" column should point there (e.g. "see `code-priming-state.md` Section 5 for the entity-by-entity source breakdown") rather than duplicate it. Terms as used (Section 7) rows come from Step 6's own callout above, added as they're noticed, not aggregated here.
+
 **Density check:** every entry reads like a discovery-state file's "PO stated" line — one to three sentences. Compress before writing.
 
 ---
@@ -135,7 +139,7 @@ Work through both checklists before presenting the session as done:
 1. `priming-package.template.md`'s own Section 12 checklist, for everything merged into the shared deliverable.
 2. `code-priming-state.md`'s own Section 9 (Pre-Handoff Verification), for the working ledger itself.
 
-A failed check does not mean the session failed — it means the gap gets recorded in the matching Resume Instructions section rather than silently dropped.
+A failed check does not mean the session failed — it means the gap gets recorded in Resume Instructions rather than silently dropped: a failed check from list 1 goes into `priming-package.md` Section 11, a failed check from list 2 goes into `code-priming-state.md` Section 8. A session with any Extracted units at all updates both, not just one — the shared deliverable's own resume pointer matters even when the codebase walk itself has nothing left pending.
 
 ---
 
