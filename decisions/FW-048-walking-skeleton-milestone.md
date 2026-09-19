@@ -63,7 +63,7 @@ Populated by `/gen-stories` from the parent REQ's tag. A single REQ can produce 
 
 **`stories/index.md`:**
 - Story registry table (Section 1) gains a `Walking Skeleton` column: `Story ID, Epic, Title, Layer, Target, Size, Status, Sprint, Walking Skeleton`.
-- Sprint plan section (Section 8) gains a `Walking Skeleton Complete: Yes / No` field per relevant sprint, written by `/update-status` and flipping to `Yes` only once every WS-tagged story project-wide reaches `Done` — QA-verified, not merely `Merged`. This is a load-bearing field beyond documentation — it is the exact mechanical signal the in-progress `/anchor-project` design (`ANCHOR-PROJECT-DESIGN.md`) needs to know when its Problem-Domain-through-first-slice involvement is complete and execution can hand off to normal developer-led sprints.
+- Sprint plan section (Section 8) gains a `Walking Skeleton Complete: Yes / No` field per relevant sprint, written by `/update-status` and flipping to `Yes` only once every WS-tagged story project-wide reaches `Done` — QA-verified, not merely `Merged`. This is a load-bearing field beyond documentation — it is the exact mechanical signal `/anchor-project` (`FW-049`) needs to know when its Problem-Domain-through-first-slice involvement is complete and execution can hand off to normal developer-led sprints.
 
 **`/assess-change`:** a change touching a `Walking Skeleton: Yes` REQ or story is flagged for higher scrutiny than an ordinary scope change — it affects the foundational proof-of-architecture milestone, not routine scope. Not a new formality tier; a named flag inside the existing patterns.
 
@@ -81,7 +81,7 @@ Populated by `/gen-stories` from the parent REQ's tag. A single REQ can produce 
 
 - **FW-024** (Parking Lot) — structural precedent for adding a new table/column cleanly to `brd.template.md` without disturbing existing sections.
 - **FW-026** (Screen Design Phase) — structural precedent for a decision that threads one concept through multiple templates and commands rather than a single-file patch; this decision follows the same shape.
-- **`ANCHOR-PROJECT-DESIGN.md`** (in-progress, not yet a decision) — §9 (Solution Domain Boundary — The Walking Skeleton Handoff) now references the real `Walking Skeleton Complete: Yes/No` field in `stories/index.md` Section 8 as the actual, mechanical handoff trigger, replacing the placeholder language an earlier draft had.
+- **`FW-049`** (Anchor Project and Priming Session) — its Solution Domain Boundary (the Walking Skeleton handoff) references the real `Walking Skeleton Complete: Yes/No` field in `stories/index.md` Section 8 as the actual, mechanical trigger for when anchor's active involvement ends, rather than a placeholder judgment call.
 
 ---
 

@@ -5,7 +5,7 @@
 | **ID** | FW-050 |
 | **Date** | 2026-09-19 |
 | **Status** | Decided — implemented, pending validation against a real project |
-| **Area** | `.claude/commands/anchor-project.md`, `.claude/commands/init-project.md`, `projects/TEMPLATE/journal.template.md` + `.example.md`, `conventions/template-conventions.md` (one exception: `T-042`), `observations/index.md` + `TEMPLATE.md`, `CLAUDE.md`, `ANCHOR-PROJECT-DESIGN.md` §8 |
+| **Area** | `.claude/commands/anchor-project.md`, `.claude/commands/init-project.md`, `projects/TEMPLATE/journal.template.md` + `.example.md`, `conventions/template-conventions.md` (one exception: `T-042`), `observations/index.md` + `TEMPLATE.md`, `CLAUDE.md` |
 | **Depends on** | `FW-049` (Anchor Project and Priming Session) — this redesigns the self-improvement logging mechanism `FW-049` originally shipped, using the same one-agent orchestration model |
 
 ---
@@ -34,7 +34,7 @@ A related problem: the original design had no place for the PO's own real-time r
 
 ---
 
-## Key Mechanisms (summarized — see `ANCHOR-PROJECT-DESIGN.md` §8 for full detail)
+## Key Mechanisms
 
 - **Two layers, two different bars.** The journal takes anything real, generously; extraction applies the high bar the original design could only apply in the moment, now with the benefit of hindsight and multiple data points.
 - **A closed category vocabulary, not free text** — the same discipline the framework already applies to Flag types elsewhere (`Conflicting Source` and friends in `priming-command-conventions.md`), extended here to journal entries.

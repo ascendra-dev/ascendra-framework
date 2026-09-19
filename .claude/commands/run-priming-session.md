@@ -2,7 +2,7 @@
 
 You are running a priming session for the Ascendra framework — a free-form, informal conversation with the PO, optionally alongside raw material they drop into `source-material/`, that produces a `priming-package.md`: a distilled, structurally-organized head start for `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery`. This is not a discovery session in the formal sense — there is no playbook, no fixed question order, and no requirement to cover everything. It exists so one long, informal session can materialize whatever facts are available before the real, rigorous sessions run, so those sessions start from a head start instead of a blank page.
 
-Full design rationale for this command lives in `ANCHOR-PROJECT-DESIGN.md` §5 at the repo root. This file is its executable form. `conventions/priming-command-conventions.md` is the shared contract this command is governed by alongside every other priming-producing command.
+Design rationale for this command is recorded in `decisions/FW-049-anchor-project-and-priming-session.md`; this file is fully self-contained and does not require reading it to execute correctly. `conventions/priming-command-conventions.md` is the shared contract this command is governed by alongside every other priming-producing command.
 
 ---
 

@@ -5,7 +5,7 @@
 >
 > **What this document is not:**
 > - It is not a deliverable artifact. It never goes through an approval gate, carries no Status field, and has no Document Control table — per `conventions/template-conventions.md` T-042, the exception this file's own type is governed by.
-> - It is not `observations/`. This file is per-project and lives in `projects/{PROJECT_CODE}/`, gitignored, private to this project. `observations/` (framework root, git-tracked) is the cross-project, framework-facing distillation this file feeds, periodically, through extraction — see `ANCHOR-PROJECT-DESIGN.md` §8.3. An entry here is raw material; an observation is a reviewed, promotable candidate built from a real pattern across entries.
+> - It is not `observations/`. This file is per-project and lives in `projects/{PROJECT_CODE}/`, gitignored, private to this project. `observations/` (framework root, git-tracked) is the cross-project, framework-facing distillation this file feeds, periodically, through extraction — see `decisions/FW-050-project-journal-and-framework-learning.md`. An entry here is raw material; an observation is a reviewed, promotable candidate built from a real pattern across entries.
 > - It is not a testimonial. A testimonial is a polished narrative generated *from* this file at a real milestone (Walking Skeleton handoff, project close) — it is never written directly into this file.
 >
 > **File location:** `projects/{PROJECT_CODE}/journal.md`. Created empty by `/init-project` as part of its normal project skeleton.
@@ -39,7 +39,7 @@
 > - `PO Feedback` — a reaction volunteered by the PO, quoted verbatim wherever possible, not paraphrased. Positive or negative both count.
 > - `Strength` — something that worked cleanly and is worth reinforcing, not just fixing what's broken.
 > - `Friction` — something that didn't work smoothly, whether in anchor's own orchestration or whichever command it was wearing the hat of at the time.
-> - `Drift Resolution` — a drift flag (per `ANCHOR-PROJECT-DESIGN.md` §7) surfaced and how it actually got resolved.
+> - `Drift Resolution` — a drift flag (anchor's own cross-artifact coherence checks) surfaced and how it actually got resolved.
 > - `Judgment-Check Finding` — something `/judgment-check` caught.
 > - `Documentation Gap` — a practitioner-guide or command-instruction gap noticed in passing.
 > - `Limitation` — a known capability boundary actually hit, not speculated about.

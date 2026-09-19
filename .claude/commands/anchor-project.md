@@ -2,7 +2,7 @@
 
 You are anchoring and sequencing a project through the full Ascendra Framework lifecycle — Brief through delivery of its Walking Skeleton — while keeping the Product Owner in the loop at every stage, in a lighter form than running each command directly. You do this by invoking the framework's own existing commands and executing their instructions exactly as written; the only thing you add is state continuity across sessions, a compression layer on PO-facing interaction, and cross-artifact drift checking. Document ingestion is not your own logic — it's a standalone companion command, `/run-priming-session`, which you hand off to and later decompose the output of (Step 7). You never reimplement what an existing command already does, and you never edit a command or template file to make this easier — this command is a pure, additive layer on top of a pipeline that must work identically whether or not you exist.
 
-Full design rationale, and the reasoning behind every mechanism below, lives in `ANCHOR-PROJECT-DESIGN.md` at the repo root — read it once if you have not already; this file is its executable form, not a restatement of it.
+The design rationale behind every mechanism below is recorded in `decisions/FW-049-anchor-project-and-priming-session.md` and `decisions/FW-050-project-journal-and-framework-learning.md`, for background if you want the "why" — this file is fully self-contained and does not require reading either to execute correctly.
 
 ---
 
@@ -162,7 +162,7 @@ This step is a standing behavioral rule, not a one-time action — every PO-faci
 
 **6.5 — The same compression applies to review output**, not just discovery questions — when Step 9 is driving a `/review-*` command, surface only what's flagged or uncertain, one line each; batch every "no issue found" check into a single summary line rather than reciting it. Full detail on the same escape hatch as 6.4, per check or for the whole review.
 
-**Mechanically, how this actually works:** you are not proxying between the PO and a separate command — per `ANCHOR-PROJECT-DESIGN.md` §3, you invoke the target command in Step 9 and execute its instructions yourself, in full. The only deviation happens at the single moment those instructions direct you to ask the PO something: check state/reference material for a known answer first; if unknown or partial, apply 6.1–6.4 before surfacing it; once an answer exists (known or freshly given), continue the invoked command's own logic exactly as if the PO had answered directly and at full length, including its own file-writing rules, unmodified.
+**Mechanically, how this actually works:** you are not proxying between the PO and a separate command — you invoke the target command in Step 9 and execute its instructions yourself, in full. The only deviation happens at the single moment those instructions direct you to ask the PO something: check state/reference material for a known answer first; if unknown or partial, apply 6.1–6.4 before surfacing it; once an answer exists (known or freshly given), continue the invoked command's own logic exactly as if the PO had answered directly and at full length, including its own file-writing rules, unmodified.
 
 **A topic carrying any unresolved Flag — of any type, from any source — never counts as a known answer for this check, regardless of its own Status field.** Status and Flag are independent in the priming package; a Flag always disqualifies a topic from silent substitution and forces it to surface as a live question when its owning phase command reaches it (see Step 7's `Conflicting Source` handling below for the concrete case).
 
@@ -250,7 +250,7 @@ Rewrite `projects/{PROJECT_CODE}/.anchor-state.md`:
 
 ## Step 11 — Project journal and framework learning
 
-This is a standing rule with two distinct halves, not sequential to Step 10 — either can trigger during Step 9 (wearing an invoked command's hat), during Step 4 (drift), during Step 6 (a PO reaction), or anywhere else in this command's own orchestration, not only here. Full design rationale: `ANCHOR-PROJECT-DESIGN.md` §8.
+This is a standing rule with two distinct halves, not sequential to Step 10 — either can trigger during Step 9 (wearing an invoked command's hat), during Step 4 (drift), during Step 6 (a PO reaction), or anywhere else in this command's own orchestration, not only here. Design rationale: `decisions/FW-050-project-journal-and-framework-learning.md`.
 
 ### 11a — Writing the journal (continuous, low bar)
 
