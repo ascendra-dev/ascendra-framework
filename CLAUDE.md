@@ -53,7 +53,7 @@ ascendra-framework/
 ├── .claude/commands/       # 33 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
-├── conventions/            # Framework-authoring meta-rules — command, template, and artifact-naming conventions
+├── conventions/            # Framework-authoring meta-rules — command, template, artifact-naming, and cross-reference conventions
 ├── reference/              # Fixed, universal content every project consults directly (estimation models, Core/Extension methodology, defect severity) — not templated or filled in per project
 ├── decisions/              # Framework-level ADRs — see decisions/index.md for the index
 └── projects/
