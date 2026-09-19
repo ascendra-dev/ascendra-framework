@@ -18,6 +18,8 @@ Get the git logic in the third one wrong and the fix you deployed can vanish fro
 
 ## `/close-sprint`'s forward-looking learnings check
 
+*(This is about `sprints/sprint-{NN}.md` content, not `releases/*.md` — the only artifact type that actually routes to this chapter. Not checkable when this chapter is reached via a release notes file.)*
+
 `/close-sprint` does two structurally different things, and it's easy to read them as one. Step 6 fills in the retrospective — what went well, what to improve, carry-forward stories. That's a **backward-looking, process-only record**. Nothing in Step 6 touches a requirement, an epic, or a not-yet-generated story. Step 8 is the separate, forward-looking check, and it exists because nothing else in the pipeline re-examines earlier epics in light of what a later sprint just learned:
 
 > "Before starting the next wave: did anything from this sprint's delivery, verification, or UAT reveal a gap, defect, or scope issue relevant to an epic or requirement that hasn't had stories written yet?"
@@ -62,6 +64,8 @@ The output path is `projects/{PROJECT_CODE}/releases/v{version}-release-notes.md
 
 ## The Hotfix Cycle, explained clearly
 
+*(Git process and branch mechanics — not content that lives in a release notes document to check.)*
+
 This is the part of the chapter worth reading twice. `PROJECT-LIFECYCLE.md`'s Hotfix Cycle step 8 was rewritten specifically because the old wording described a git object — "the current sprint's working branch" — that doesn't exist anywhere in this framework's actual git model. The model, per `git-standards.md` and `implement-story.md`, is trunk-based: one branch per story, cut from `main`, merged directly back into `main`. There is no persistent sprint-integration branch sitting between a story branch and `main` at any point. Once you hold that fact fixed, the corrected hotfix logic is genuinely simple — but only if you walk it through step by step, because the risk it's protecting against is easy to state wrong.
 
 ### The walkthrough
@@ -98,6 +102,8 @@ That's the entire mechanism. It isn't about the hotfix "not reaching" the rest o
 
 ## What triggers a hotfix vs. what gets batched
 
+*(A triage decision, tracked in the Support Log — not release notes content to check.)*
+
 [`reference/defect-severity.md`](../reference/defect-severity.md)'s SLA table gives you the urgency numbers directly — worth having in view here even though the deferral mechanics themselves belong to the QA/UAT chapter:
 
 | Severity | SLA | In production |
@@ -114,6 +120,8 @@ One rule from `defect-severity.md` matters specifically for Stage 12: **a defect
 ---
 
 ## Support's two end states
+
+*(About `brief.md`'s Status field, a different artifact — not checkable from a release notes document.)*
 
 Stage 12 is entered once per project — not once per sprint — after the final sprint's production deployment, and it runs for a monitoring window (default 30 days, overridable by BRD Section 10 or explicit client agreement). It ends one of two ways, and the practical trigger for choosing between them is simple:
 

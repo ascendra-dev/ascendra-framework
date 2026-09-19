@@ -4,3 +4,4 @@ Raw findings about the framework itself — commands, templates, conventions —
 
 | ID | Title | Status | Date | Area |
 |----|-------|--------|------|------|
+| OBS-001 | [`/judgment-check`'s chapter mapping can't reach `/close-sprint`'s own content](OBS-001-judgment-check-chapter-mapping-gap.md) | New | 2026-09-19 | `judgment-check.md`, `07-sprint-planning.md`, `10-release-support-hotfix.md` |

@@ -16,6 +16,8 @@ Two decisions in this phase are made once and then live with the project for its
 
 ## Choosing an estimation model
 
+*(The chosen model lives in `standards/estimation.md`, a different file — not checkable from a story or sprint-plan file's own content alone.)*
+
 `/gen-stories` Step 1.6 presents three options — T-Shirt Sizing, Fibonacci Story Points, Time-Based — as a menu with a one-line description each, and asks the PO to type a, b, or c. Read as a menu, all three look equally legitimate. Read the reference files themselves, and one of them almost always isn't.
 
 ### Time-Based is disqualified in the normal case
@@ -43,6 +45,8 @@ One more thing worth being honest about: even when Fibonacci is the right call b
 ---
 
 ## The wave-vs-epic boundary, using the real mechanism
+
+*(The interleaving note this section checks lives in `epics/index.md` Section 3, a different file — not checkable from a single story or sprint-plan file alone.)*
 
 A **wave** is the unit `/gen-stories` generates against in one run — normally one epic. `/gen-stories` reads exactly one epic file (Step 1), plans stories against exactly that epic's In Scope bullets (Step 4), and reports on exactly that epic's story set (Step 8). One command run, one wave, one epic — that's the default and it holds almost all the time.
 

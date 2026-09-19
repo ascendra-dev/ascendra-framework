@@ -14,6 +14,8 @@ Two commands, two jobs, same as Epics: `/gen-architecture` derives and proposes;
 
 ## What to prepare beforehand — and what the command figures out on its own
 
+*(A process decision made before `/gen-architecture` runs — not something checkable against the finished architecture document.)*
+
 State this plainly, because [`CLAUDE.md`](../CLAUDE.md)'s Workspace Setup step 5 reads as a prerequisite and isn't one: **pre-authoring `standards/` is optional, not required.** `/gen-architecture` works from a completely empty `standards/` folder by default — Steps 4 through 7 derive the tech stack, the architecture pattern, and every standards file conversationally, presenting what it derived and asking only what it genuinely can't infer. A first-time PO who reads CLAUDE.md literally and tries to hand-write `api-standards.md`, `database-standards.md`, and `security-standards.md` from the bare template before running the command is doing work the command will do for you, against a template with no worked instance to calibrate against.
 
 Pre-authoring earns its keep in exactly one situation: you have a **hard, non-negotiable mandate** — an existing cloud vendor contract, a database the client has already paid for, a compliance requirement that rules out an option the AI might otherwise recommend — and you want it locked in *before* the AI proposes something else and you have to walk back a recommendation mid-conversation. If that's your situation, write only the file carrying that mandate (usually `system-architecture.md`, sometimes one Tier 1 standard); `/gen-architecture` reads whatever exists in Step 2 and Step 5 explicitly asks "should I proceed with this stack, or change anything?" rather than silently overwriting it.
@@ -135,6 +137,8 @@ For a worked instance of applying it to a real, non-Harborview project, see [`ca
 ---
 
 ## The honest limit: ongoing conformance is manual
+
+*(About ongoing conformance between the Locked document and real code in another repo — requires reading artifacts outside this one document, not checkable from the architecture document's own content.)*
 
 Say this plainly, because nothing in the framework says it outright: **"no undocumented deviations" is enforced by your own review, not by a standing structural gate.** Locking the architecture document makes it binding in principle. It does not create any command that continuously checks real running code against it.
 

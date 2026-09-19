@@ -57,6 +57,8 @@ You don't have to catch this yourself line by line — it's one of the things `/
 
 ## The asymmetric recovery loop — and what to actually do when something fails
 
+*(Operational guidance for what to do when a command fails — not a check against a story-plan or PR description's own written content.)*
+
 `/implement-story` and `/verify-story` fail in genuinely different ways, and the framework only gives you a clean procedure for one of them.
 
 **Implementation failure has a clear, bounded rule.** Step 5: *"If you cannot fix a failure after two attempts, report it explicitly — state exactly what failed and why — rather than suppressing or skipping it."* Two tries, then stop and tell the PO. You always know where you stand.
@@ -80,6 +82,8 @@ The framework's generating commands and their templates are supposed to agree. T
 ---
 
 ## What "stack-agnostic" actually means when you're reading `/implement-story`'s output
+
+*(About interpreting the command's own reasoning output at run time — not something present in a story-plan or PR description file to check.)*
 
 `/implement-story` determines this project's confirmed stack from the architecture document's Section 2 before doing anything else — it never assumes NestJS/Next.js universally, even though that's the framework's common default and the stack Harborview itself confirms. Per FW-029, the NestJS/Next.js syntax you see fully worked out in Steps 3 and 4 is a **reference path for the common case**, not a hardcoded universal rule; every stack-specific instruction is explicitly conditioned ("if the confirmed backend is NestJS...") with a stated fallback to "apply the same underlying principle using whatever framework this project's own `arch-v1.md` documents." Per FW-030, the same agnosticism applies to project-specific domain content — guard names, role names, tenancy rules are read from the architecture document, never assumed as framework law.
 

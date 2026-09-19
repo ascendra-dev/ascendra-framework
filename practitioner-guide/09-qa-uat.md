@@ -45,6 +45,8 @@ The difference between the two isn't the severity label — both are High. It's 
 
 ## When the full test execution report is warranted
 
+*(A process decision about which artifact gets produced at all — not a check against content already on the page.)*
+
 Stage 9's own guidance says the fuller [`test-execution-report.md`](../projects/TEMPLATE/test-reports/test-execution-report.template.md) is "required for client-facing projects" and the template says "generate this fuller report only when the sprint needs a formal, client-facing QA record." Neither states a crisp trigger, and the framework's own audit flagged this as the one real gap in an otherwise well-explained relationship (the aggregation relationship between the report and individual `/verify-story` reports, and the report's optionality, are all consistently stated elsewhere — it's specifically the *when* that's missing an explicit permission-to-skip).
 
 **The trigger test:** ask two questions.

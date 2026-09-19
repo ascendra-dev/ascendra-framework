@@ -14,6 +14,8 @@ One correction to how `SDLC.md` frames this, worth flagging up front: the AI-kno
 
 ## The central decision: do you need the sub-flow?
 
+*(A process decision made before the domain document is generated — not something checkable by reading the finished document.)*
+
 `/gen-domain-knowledge` will happily generate a document from AI training knowledge alone, and for a lot of domains that's the right call — running a discovery session on something the AI already knows cold just burns a session for no gain. But the command's own warning only names two example buckets — "well-known" (invoicing, payroll, school fees, HR) and "niche/regulated/unfamiliar" — and most real domains don't announce which bucket they're in. "HR" sounds well-known right up until it's *HR leave accrual with jurisdiction-specific statutory entitlements*, which is a different animal entirely.
 
 Use this test instead of the bucket list. Ask yourself three questions about the domain in front of you:

@@ -16,6 +16,8 @@ This is also why the two commands that produce the BRD — discovery and draftin
 
 ## The discovery-mode decision: live session, AI-synthesis, or skip to `/gen-brd`
 
+*(A process decision made before discovery starts — not something checkable against the finished BRD.)*
+
 [`SDLC.md`](../SDLC.md) (Stage 2) already names two modes: a live requirement discovery session run via `/run-brd-discovery`, and — for projects with no external client — "AI-synthesis-and-review," where the AI proposes an answer grounded in the domain knowledge document's defaults and the PO reviews, corrects, or overrides it. That second mode is real and sanctioned. What's missing is that `run-brd-discovery.md` itself has no coded branch for it — no step that says "if there's no client, do X instead of Y." The command assumes a two-role interview: an AI asking questions and a client answering them. If you have no client, you have to *enact* AI-synthesis-and-review yourself, inside the same command, rather than expect the command to switch modes for you.
 
 **The decision test:**

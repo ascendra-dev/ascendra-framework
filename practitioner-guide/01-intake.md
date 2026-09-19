@@ -12,6 +12,8 @@ Two commands run this stage: [`/init-project`](../.claude/commands/init-project.
 
 ### Project boundary — one product, one project
 
+*(A process decision made at project creation, before `brief.md`'s content exists — not something checkable by re-reading the finished document.)*
+
 `/init-project` Step 2 asks a single question before it creates anything: *"In one sentence, what is this project — what product or capability does it deliver, and who uses it?"* If your answer names more than one distinct product or user group, the command stops you before a folder is even created. The built-in test is already good: **a web app and its API are one project (technical components); separate portals for different user groups are separate projects.** Three edge cases you'll actually hit that the one-line rule doesn't spell out on its own:
 
 - **Teacher portal + parent portal, same school system.** Two projects. Even though they share a backend, a domain, and probably a client, a teacher (recording attendance and grades) and a parent (viewing them and paying fees) are different user groups solving different problems. Each gets its own brief, its own BRD, its own lifecycle — even if the architecture later decides they share one API.
@@ -53,6 +55,8 @@ Practical effect: if you mark a project `Extension` and it really isn't, `/gen-d
 **The decision test:** *would someone who has never seen the other project be able to fully understand, discover, and build this one from its own brief and BRD alone?* If yes — even if it shares a client, a similar domain name, or reuses some of the same code — it's Standalone. If no — if a reviewer would have to open the other project's domain knowledge or BRD to make sense of a requirement here — it's an Extension, and you name the direct parent only; the AI resolves the rest of the chain (with cycle detection) by reading each brief transitively.
 
 ### Interactive vs. hand-filled — sizing the intake session
+
+*(A process decision about how the session is run, not something visible in the finished document's own content.)*
 
 `/run-intake` and manually editing `brief.md` against its `[AI Guide]` notes are both fully supported paths — `/init-project`'s own Step 6 note says so. The value `/run-intake` adds over hand-filling isn't the writing, it's two mechanisms hand-filling doesn't replicate: the **per-section follow-up loop** (Step 5C asks one targeted question at a time when your answer is missing something the guide requires), and the **automatic Verification checklist** that gates "Brief complete" and that you'd otherwise have to run against yourself, honestly, under time pressure. Size the decision on how much those two things are worth to you:
 

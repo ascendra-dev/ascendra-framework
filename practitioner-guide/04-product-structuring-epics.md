@@ -52,6 +52,8 @@ If 5.2 had **not** been split — imagine a hypothetical `EPIC-BAD: Invoice Mana
 
 ## The two-pass review model: don't do `/review-epics`'s job at Step 4
 
+*(About the pre-file planning table at `/gen-epics` Step 4 — that table doesn't exist as a document by the time `/judgment-check` ever runs, so this section has nothing to check against.)*
+
 `/gen-epics` Step 4 gives you a planning table — Epic ID, proposed title, REQ IDs, dependencies, notes — and one prompt: *"Does this epic breakdown look right?"* `/review-epics` gives you 13 structural checks per epic, run one epic at a time, against the actual generated file, the BRD, and the domain knowledge document all loaded in full. These are not the same kind of pass, and treating them as the same kind of pass wastes your attention at exactly the point where you have the least material to work with.
 
 At Step 4, you do not yet have epic files. You have REQ IDs and titles in a table — no Section 3.1 In Scope bullets, no Section 8 Notes, no verbatim REQ text sitting next to the epic that's supposed to cover it. There is no way to rigorously cross-check REQ-by-REQ accuracy at this point even if you tried, because the thing you'd be checking against doesn't exist yet.
