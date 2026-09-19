@@ -1,4 +1,4 @@
-# QA & UAT
+# Testing, QA & UAT
 
 Covers Stage 9 (Testing & QA) and Stage 10 (UAT) in [`SDLC.md`](../SDLC.md): QA confirmation, [`/gen-uat-checklist`](../.claude/commands/gen-uat-checklist.md), and defect handling via [`reference/defect-severity.md`](../reference/defect-severity.md). Read [`00-orientation.md`](00-orientation.md) first if you haven't. This chapter picks up exactly where [`08-development.md`](08-development.md) leaves off — every sprint story `Merged`, every PR closed — and covers the two gates between "code is merged" and "sprint is Complete."
 

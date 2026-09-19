@@ -36,45 +36,47 @@ Defines the twelve stages of every software project delivered by Ascendra. Stage
 
 ---
 
-## Stage 2 — Discovery
+## Stage 2 — Domain Discovery
 
 **Entry:** Brief Approved.
 
-**Executed by:** Product Owner (with AI assistance via `/gen-domain-knowledge`, `/gen-brd-playbook`, `/run-brd-discovery`, and — optionally — `/gen-domain-playbook`, `/run-domain-discovery`, `/run-mock-discovery`)
+**Executed by:** Product Owner (with AI assistance via `/gen-domain-knowledge`, and — optionally — `/gen-domain-playbook`, `/run-domain-discovery`)
 
 **What happens:**
 - **Domain knowledge** is generated via `/gen-domain-knowledge`: universal facts about the business domain, standard entities, lifecycle models, business rules, and known variations that must be asked during discovery. For well-known domains (invoicing, payroll, school fees, HR), AI training knowledge is sufficient on its own. For niche, regulated, or unfamiliar domains, an **optional** dedicated sub-flow runs first: `/gen-domain-playbook` produces a playbook that guides a domain-education session, then `/run-domain-discovery` conducts it (tracking its own Domain Confidence Score) and writes a discovery-state file that `/gen-domain-knowledge` uses as its primary input (`FW-013` — this optionality is specific to domain knowledge; Screen Design, later, has no equivalent skip).
-- **BRD discovery playbook** is generated via `/gen-brd-playbook` from the domain knowledge document: structured questions, scope risk flags, and journey walkthroughs tailored to this domain — the active document used live during the real requirement-discovery session below. Not the same command as `/gen-domain-playbook` above — the two produce different playbooks for different sessions.
-- **Optionally**, `/run-mock-discovery` simulates both sides of a discovery session internally (AI-as-facilitator and AI-as-simulated-client) to catch playbook/domain-knowledge gaps before real client cost — recommended, not required.
-- **Requirement discovery session** is conducted interactively via `/run-brd-discovery`, using the BRD playbook — AI asks questions, records answers, tracks its own Requirement Confidence Score, flags scope risks in real time. For projects with no external client, this runs as AI-synthesis-and-review: the AI proposes an answer grounded in the domain knowledge document's defaults, and the Product Owner reviews/corrects/overrides.
-- At session end, discovery state is saved to `brd-discovery-state.md`; if confidence ≥ 85%, AI immediately offers to generate the BRD in the same session (recommended — full context is live)
 
 **Exit criteria:**
-- Requirement confidence score ≥ 85% (from `/run-brd-discovery`, distinct from domain discovery's own confidence score if that optional sub-flow ran)
-- All BRD playbook sections covered
-- Discovery state file written
+- Domain knowledge document written
+- Domain Confidence Score at the required threshold, if the optional sub-flow ran
 
-**Artifacts produced:** `projects/{CODE}/domain/{domain}-core.md`, `projects/{CODE}/domain/{domain}-domain-playbook.md` and `domain-discovery-state.md` (if the optional sub-flow ran), `projects/{CODE}/brds/{domain}-brd-playbook.md`, `projects/{CODE}/brds/brd-discovery-state.md`
+**Artifacts produced:** `projects/{CODE}/domain/{domain}-core.md`, `projects/{CODE}/domain/{domain}-domain-playbook.md` and `domain-discovery-state.md` (if the optional sub-flow ran)
 
 ---
 
 ## Stage 3 — BRD & Scope Lock
 
-**Entry:** Discovery complete.
+**Entry:** Domain Discovery complete.
 
-**Executed by:** AI (via `/gen-brd` or as continuation of `/run-brd-discovery`, then `/review-brd`), Product Owner (approves)
+**Executed by:** Product Owner (with AI assistance via `/gen-brd-playbook`, `/run-brd-discovery`, and — optionally — `/run-mock-discovery`), AI (via `/gen-brd` or as continuation of `/run-brd-discovery`, then `/review-brd`), Product Owner (approves)
 
 **What happens:**
+- **BRD discovery playbook** is generated via `/gen-brd-playbook` from the domain knowledge document: structured questions, scope risk flags, and journey walkthroughs tailored to this domain — the active document used live during the real requirement-discovery session below. Not the same command as `/gen-domain-playbook` from Stage 2 — the two produce different playbooks for different sessions.
+- **Optionally**, `/run-mock-discovery` simulates both sides of a discovery session internally (AI-as-facilitator and AI-as-simulated-client) to catch playbook/domain-knowledge gaps before real client cost — recommended, not required.
+- **Requirement discovery session** is conducted interactively via `/run-brd-discovery`, using the BRD playbook — AI asks questions, records answers, tracks its own Requirement Confidence Score, flags scope risks in real time. For projects with no external client, this runs as AI-synthesis-and-review: the AI proposes an answer grounded in the domain knowledge document's defaults, and the Product Owner reviews/corrects/overrides.
+- At session end, discovery state is saved to `brd-discovery-state.md`; if confidence ≥ 85%, AI immediately offers to generate the BRD in the same session (recommended — full context is live)
 - BRD is produced from discovery notes, following `projects/TEMPLATE/brds/brd.template.md`: user roles, user journeys, functional requirements, business rules, data requirements, integrations, security requirements
 - `/review-brd` walks the Product Owner through the BRD feature-area by feature-area in plain business language — not a report to read cold. Changes are applied immediately on agreement; progress is tracked in the BRD's own review record, resumable across sessions.
 - **The review command sets approval inline:** when the Product Owner types `'approved'`, `/review-brd` itself sets BRD status to `Approved` — there is no separate manual status-setting step in the normal path
 - On approval, scope is locked — no changes without a formal change request via `/assess-change`
 
 **Exit criteria:**
+- Requirement confidence score ≥ 85% (from `/run-brd-discovery`, distinct from Domain Discovery's own confidence score)
+- All BRD playbook sections covered
+- Discovery state file written
 - BRD status set to `Approved`
 - All open questions in BRD Section 12 have owners or are resolved
 
-**Artifacts produced:** `projects/{CODE}/brd-v1.md`
+**Artifacts produced:** `projects/{CODE}/brds/{domain}-brd-playbook.md`, `projects/{CODE}/brds/brd-discovery-state.md`, `projects/{CODE}/brd-v1.md`
 
 ---
 

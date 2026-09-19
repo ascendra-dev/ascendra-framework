@@ -1,6 +1,6 @@
-# BRD Discovery & Scope Lock
+# BRD & Scope Lock
 
-Covers the BRD half of Stage 2 (Discovery) and Stage 3 (BRD & Scope Lock) in [`SDLC.md`](../SDLC.md): `/gen-brd-playbook`, `/run-brd-discovery`, `/gen-brd`, `/review-brd`, and the BRD document itself. Read [`00-orientation.md`](00-orientation.md) first if you haven't — this chapter assumes you already have its terminology table (Scope vs. Priority vs. Layer) in hand and builds on it rather than re-explaining it from scratch.
+Covers Stage 3 (BRD & Scope Lock) in [`SDLC.md`](../SDLC.md): `/gen-brd-playbook`, `/run-mock-discovery`, `/run-brd-discovery`, `/gen-brd`, `/review-brd`, and the BRD document itself. Read [`00-orientation.md`](00-orientation.md) first if you haven't — this chapter assumes you already have its terminology table (Scope vs. Priority vs. Layer) in hand and builds on it rather than re-explaining it from scratch.
 
 If you haven't yet turned domain knowledge into a validated playbook, that's the previous chapter's job — see [`02-domain-discovery.md`](02-domain-discovery.md) for the Domain Confidence Score treatment this chapter's Requirement Confidence Score section leans on for comparison.
 
@@ -18,7 +18,7 @@ This is also why the two commands that produce the BRD — discovery and draftin
 
 *(A process decision made before discovery starts — not something checkable against the finished BRD.)*
 
-[`SDLC.md`](../SDLC.md) (Stage 2) already names two modes: a live requirement discovery session run via `/run-brd-discovery`, and — for projects with no external client — "AI-synthesis-and-review," where the AI proposes an answer grounded in the domain knowledge document's defaults and the PO reviews, corrects, or overrides it. That second mode is real and sanctioned. What's missing is that `run-brd-discovery.md` itself has no coded branch for it — no step that says "if there's no client, do X instead of Y." The command assumes a two-role interview: an AI asking questions and a client answering them. If you have no client, you have to *enact* AI-synthesis-and-review yourself, inside the same command, rather than expect the command to switch modes for you.
+[`SDLC.md`](../SDLC.md) (Stage 3 — BRD & Scope Lock) already names two modes: a live requirement discovery session run via `/run-brd-discovery`, and — for projects with no external client — "AI-synthesis-and-review," where the AI proposes an answer grounded in the domain knowledge document's defaults and the PO reviews, corrects, or overrides it. That second mode is real and sanctioned. What's missing is that `run-brd-discovery.md` itself has no coded branch for it — no step that says "if there's no client, do X instead of Y." The command assumes a two-role interview: an AI asking questions and a client answering them. If you have no client, you have to *enact* AI-synthesis-and-review yourself, inside the same command, rather than expect the command to switch modes for you.
 
 **The decision test:**
 

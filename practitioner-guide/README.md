@@ -12,14 +12,14 @@ This guide's first full pass across all twelve SDLC stages is now complete — e
 |---|---------|--------|--------|
 | — | [`00-orientation.md`](00-orientation.md) | How to use this guide; the terminology map | ✅ Live |
 | 1 | [`01-intake.md`](01-intake.md) | Stage 1 — `/init-project`, `/run-intake`, the brief | ✅ Live |
-| 2 | [`02-domain-discovery.md`](02-domain-discovery.md) | Stage 2 (domain half) — `/gen-domain-knowledge` and the optional discovery sub-flow | ✅ Live |
-| 3 | [`03-brd-discovery-and-scope-lock.md`](03-brd-discovery-and-scope-lock.md) | Stage 2 (BRD half) + Stage 3 — BRD discovery, scope lock | ✅ Live |
-| 4 | [`04-product-structuring-epics.md`](04-product-structuring-epics.md) | Stage 4 — `/gen-epics`, epic boundaries and sizing | ✅ Live |
+| 2 | [`02-domain-discovery.md`](02-domain-discovery.md) | Stage 2 — `/gen-domain-knowledge` and the optional discovery sub-flow | ✅ Live |
+| 3 | [`03-brd-and-scope-lock.md`](03-brd-and-scope-lock.md) | Stage 3 — BRD playbook, BRD discovery, scope lock | ✅ Live |
+| 4 | [`04-product-structuring.md`](04-product-structuring.md) | Stage 4 — `/gen-epics`, epic boundaries and sizing | ✅ Live |
 | 5 | [`05-screen-design.md`](05-screen-design.md) | Stage 5 — `/gen-screen-design`, `/gen-ui-mocks` | ✅ Live |
 | 6 | [`06-architecture.md`](06-architecture.md) | Stage 6 — `/gen-architecture`, the 35-check review | ✅ Live |
 | 7 | [`07-sprint-planning.md`](07-sprint-planning.md) | Stage 7 — `/gen-stories`, wave vs. sprint, sizing | ✅ Live |
 | 8 | [`08-development.md`](08-development.md) | Stage 8 — `/gen-story-plan`, `/implement-story`, `/verify-story` | ✅ Live |
-| 9 | [`09-qa-uat.md`](09-qa-uat.md) | Stage 9–10 — QA, UAT | ✅ Live |
+| 9 | [`09-testing-qa-and-uat.md`](09-testing-qa-and-uat.md) | Stage 9–10 — QA, UAT | ✅ Live |
 | 10 | [`10-release-support-hotfix.md`](10-release-support-hotfix.md) | Stage 11–12 — release, support, hotfix | ✅ Live |
 | 11 | [`11-cross-cutting.md`](11-cross-cutting.md) | `/assess-change`, `/update-status`, `/project-status`, `/judgment-check` | ✅ Live |
 

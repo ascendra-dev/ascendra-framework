@@ -1,8 +1,8 @@
-# Product Structuring — Epics
+# Product Structuring
 
 Covers Stage 4 (Product Structuring) in [`SDLC.md`](../SDLC.md): [`/gen-epics`](../.claude/commands/gen-epics.md) and [`/review-epics`](../.claude/commands/review-epics.md). Read [`00-orientation.md`](00-orientation.md) first if you haven't — this chapter assumes you already have its terminology table (Scope vs. Priority vs. Layer) in hand.
 
-This chapter picks up exactly where [`03-brd-discovery-and-scope-lock.md`](03-brd-discovery-and-scope-lock.md) left off. That chapter established that each BRD Section 5.N feature-area heading becomes an epic boundary, and that you're already drawing epic boundaries the moment you draft Section 5 headings. This chapter is about what happens once the AI actually turns those headings into epic files: where the 1:1 mapping holds, where it correctly doesn't, and the judgment calls in between.
+This chapter picks up exactly where [`03-brd-and-scope-lock.md`](03-brd-and-scope-lock.md) left off. That chapter established that each BRD Section 5.N feature-area heading becomes an epic boundary, and that you're already drawing epic boundaries the moment you draft Section 5 headings. This chapter is about what happens once the AI actually turns those headings into epic files: where the 1:1 mapping holds, where it correctly doesn't, and the judgment calls in between.
 
 ---
 

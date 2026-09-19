@@ -2,7 +2,7 @@
 
 Covers Stage 7 in [`SDLC.md`](../SDLC.md): [`/gen-stories`](../.claude/commands/gen-stories.md), [`/review-stories`](../.claude/commands/review-stories.md), and [`/gen-sprint-plan`](../.claude/commands/gen-sprint-plan.md). Read [`00-orientation.md`](00-orientation.md) first if you haven't — this chapter owns the full depth of its Wave vs. Sprint vs. Epic row, which the orientation table only summarizes.
 
-This chapter picks up where [`04-product-structuring-epics.md`](04-product-structuring-epics.md) left off. That chapter covered epic sizing, dependency ordering, and the story-level interleaving mechanism `/gen-epics` Step 6 now writes into `epics/index.md` Section 3 — this chapter uses that mechanism as a given, rather than re-explaining it. What happens after a story is Reviewed and sprint-assigned — `/gen-story-plan`, `/implement-story`, `/verify-story` — is the next chapter's territory, not this one's.
+This chapter picks up where [`04-product-structuring.md`](04-product-structuring.md) left off. That chapter covered epic sizing, dependency ordering, and the story-level interleaving mechanism `/gen-epics` Step 6 now writes into `epics/index.md` Section 3 — this chapter uses that mechanism as a given, rather than re-explaining it. What happens after a story is Reviewed and sprint-assigned — `/gen-story-plan`, `/implement-story`, `/verify-story` — is the next chapter's territory, not this one's.
 
 ---
 
@@ -50,7 +50,7 @@ One more thing worth being honest about: even when Fibonacci is the right call b
 
 A **wave** is the unit `/gen-stories` generates against in one run — normally one epic. `/gen-stories` reads exactly one epic file (Step 1), plans stories against exactly that epic's In Scope bullets (Step 4), and reports on exactly that epic's story set (Step 8). One command run, one wave, one epic — that's the default and it holds almost all the time.
 
-It's legitimately more than one epic only when the pair carries a documented **story-level interleaving note**. [`04-product-structuring-epics.md`](04-product-structuring-epics.md#the-story-level-interleaving-note) already covers where this note comes from and the trigger test `/gen-epics` Step 6 applies to write it — this chapter doesn't re-derive that mechanism, it uses it. What matters here is what happens on the sprint-planning side once that note exists in `epics/index.md` Section 3:
+It's legitimately more than one epic only when the pair carries a documented **story-level interleaving note**. [`04-product-structuring.md`](04-product-structuring.md#the-story-level-interleaving-note) already covers where this note comes from and the trigger test `/gen-epics` Step 6 applies to write it — this chapter doesn't re-derive that mechanism, it uses it. What matters here is what happens on the sprint-planning side once that note exists in `epics/index.md` Section 3:
 
 `/gen-stories` Step 2 reads that section as part of its required inputs, specifically to decide what to print at Step 8. If the epic you just generated stories for carries an interleaving note with another epic, the report doesn't say "run `/review-stories` now" — it says *"Generate stories for its paired epic now... their cross-epic dependencies mean they must be reviewed together."* If it doesn't, it says review now. Two branches, and until recently a PO had nothing to check the branch against except trusting the AI read the note correctly. Now you do.
 
@@ -157,7 +157,7 @@ Harborview's BRD (Section 3, User Roles) defines two roles relevant here:
 
 This chapter builds on [`00-orientation.md`](00-orientation.md)'s Wave vs. Sprint vs. Epic row — this chapter is the "full depth" that row points to, not a duplicate of it. Two things specific to this phase, not in the orientation table:
 
-- **Story-level interleaving note** — defined and worked through in [`04-product-structuring-epics.md`](04-product-structuring-epics.md#the-story-level-interleaving-note); this chapter shows what to check with it at `/gen-stories` Step 8, not what it is.
+- **Story-level interleaving note** — defined and worked through in [`04-product-structuring.md`](04-product-structuring.md#the-story-level-interleaving-note); this chapter shows what to check with it at `/gen-stories` Step 8, not what it is.
 - **Sprint Assignment (`/review-stories` Part F)** — the three-branch mechanism (at/near target, below target, above target) that actually decides sprint boundaries. Nothing upstream of Part F commits to a sprint number — not the epic, not the wave, not `stories/index.md`'s `TBD` placeholder.
 
 ---

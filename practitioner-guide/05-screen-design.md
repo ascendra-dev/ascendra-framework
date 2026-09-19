@@ -2,7 +2,7 @@
 
 Covers Stage 5 (Screen Design) in [`SDLC.md`](../SDLC.md): `/gen-screen-design`, `/review-screen-design`, and `/gen-ui-mocks` — base mode in full here, since that's the pass this stage owns; patch mode only far enough to be honest about why the two-pass split exists, since its invocation from `/gen-architecture` belongs to the future architecture chapter. Read [`00-orientation.md`](00-orientation.md) first if you haven't — this chapter is responsible for the full depth of its Portal/Screen/Surface/UI Pattern row, which the orientation table only summarizes in one line.
 
-If you haven't yet moved an approved BRD through epic generation, that's the previous chapter's job — see [`04-product-structuring-epics.md`](04-product-structuring-epics.md) for epic boundaries and sizing. This chapter picks up once every epic is `Approved`, which is `/gen-screen-design`'s own gate.
+If you haven't yet moved an approved BRD through epic generation, that's the previous chapter's job — see [`04-product-structuring.md`](04-product-structuring.md) for epic boundaries and sizing. This chapter picks up once every epic is `Approved`, which is `/gen-screen-design`'s own gate.
 
 ---
 

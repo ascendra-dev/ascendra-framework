@@ -26,13 +26,13 @@ Resolve the artifact's type from its path and filename, then its matching practi
 |---|---|
 | `brief.md` | `practitioner-guide/01-intake.md` |
 | `domain/*.md` (domain knowledge) | `practitioner-guide/02-domain-discovery.md` |
-| `brds/brd-*.md` | `practitioner-guide/03-brd-discovery-and-scope-lock.md` |
-| `epics/EPIC-*.md` | `practitioner-guide/04-product-structuring-epics.md` |
+| `brds/brd-*.md` | `practitioner-guide/03-brd-and-scope-lock.md` |
+| `epics/EPIC-*.md` | `practitioner-guide/04-product-structuring.md` |
 | `screens/screen-design.md` | `practitioner-guide/05-screen-design.md` |
 | `architecture/arch-v1.md` | `practitioner-guide/06-architecture.md` |
 | `stories/EPIC-*/US-*.md`, `sprints/sprint-*.md` | `practitioner-guide/07-sprint-planning.md` |
 | `story-plans/*.md`, `pr/*.md` | `practitioner-guide/08-development.md` |
-| `sprints/*-uat-checklist.md`, `test-reports/*.md` | `practitioner-guide/09-qa-uat.md` |
+| `sprints/*-uat-checklist.md`, `test-reports/*.md` | `practitioner-guide/09-testing-qa-and-uat.md` |
 | `releases/*.md` | `practitioner-guide/10-release-support-hotfix.md` |
 
 Every row above is live — the pilot on BRD/Epics/Architecture validated the mechanism (see the simulation record referenced in `practitioner-guide/README.md`), and it has since been extended to the remaining seven rows, each with the reserved template section and a worked example. Every corresponding template and `.example.md` pair carries the one Density & Judgment Log section this command writes to.

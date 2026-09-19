@@ -33,7 +33,7 @@ Nothing in the framework enforces any of this beyond a bare 70% gate. On a domai
 
 ## Case 2 — An extension project: Ascendra Pay's Pakistan extension
 
-**Supports:** [`01-intake.md`](../01-intake.md) (Standalone vs. Extension, project codes) and [`03-brd-discovery-and-scope-lock.md`](../03-brd-discovery-and-scope-lock.md) (Layer, in full working contact with the Core/Extension architecture methodology).
+**Supports:** [`01-intake.md`](../01-intake.md) (Standalone vs. Extension, project codes) and [`03-brd-and-scope-lock.md`](../03-brd-and-scope-lock.md) (Layer, in full working contact with the Core/Extension architecture methodology).
 
 This reuses the framework's own existing worked example — `reference/architecture/layered-domain-architecture.example.md` already models **Ascendra Pay** with two extension dimensions (Market/Country: Pakistan; Sector: School) — rather than inventing an unrelated project. Read that file alongside this one; this case walks through the Intake and BRD-level decisions that would produce the inputs that file's architecture-level example assumes already exist.
 
@@ -52,7 +52,7 @@ This reuses the framework's own existing worked example — `reference/architect
 
 ## Case 3 — Multi-portal RBAC: Ascendra Pay's School extension
 
-**Supports:** [`05-screen-design.md`](../05-screen-design.md) (portal boundaries, in a case where the simple rule genuinely isn't enough) and [`04-product-structuring-epics.md`](../04-product-structuring-epics.md) (dependency ordering across portals).
+**Supports:** [`05-screen-design.md`](../05-screen-design.md) (portal boundaries, in a case where the simple rule genuinely isn't enough) and [`04-product-structuring.md`](../04-product-structuring.md) (dependency ordering across portals).
 
 Same project family as Case 2, but now the Sector extension: `ASCENDRA-PAY-SCH-001`, `Extends: ASCENDRA-PAY-001`, adding the School domain's `Student`, `AcademicYear`, and `FamilyAccount` entities (per `layered-domain-architecture.example.md`). Where Harborview's Screen Design is genuinely simple — one portal, two personas, sharing a standing session — this project has to actually work through the boundary test that Harborview never stresses.
 

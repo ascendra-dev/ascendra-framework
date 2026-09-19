@@ -8,15 +8,15 @@ Read this document when: starting a new project, resuming a project mid-delivery
 
 **Relationship to [`SDLC.md`](SDLC.md):** [`SDLC.md`](SDLC.md) describes the twelve delivery *stages* and the responsible *agents*. This document describes the specific *slash commands* that implement those stages and the exact sequence of execution. They are complementary — read both.
 
-**Relationship to [`decisions/FW-022-problem-solution-domain-boundary.md`](decisions/FW-022-problem-solution-domain-boundary.md):** every phase below is explicitly tagged with its domain region. **Problem Domain** (Phases 1–4: Intake, Discovery, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Phase 5: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Phases 6–8: Sprint Delivery, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, `project-status`, and `judgment-check` are cross-cutting utilities that operate across all three regions and belong to none of them. `/anchor-project` is different in kind from all four — it doesn't add a utility alongside the sequence below, it drives the sequence itself; see "Running This Sequence via `/anchor-project`" directly below.
+**Relationship to [`decisions/FW-022-problem-solution-domain-boundary.md`](decisions/FW-022-problem-solution-domain-boundary.md):** every stage below is explicitly tagged with its domain region, and the stages here now match [`SDLC.md`](SDLC.md)'s twelve stages one-for-one — same numbers, same boundaries, same names, in both documents. **Problem Domain** (Stages 1–5: Intake, Domain Discovery, BRD & Scope Lock, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Stage 6: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Stages 7–12: Sprint Planning, Development, Testing & QA, UAT, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, `project-status`, and `judgment-check` are cross-cutting utilities that operate across all three regions and belong to none of them. `/anchor-project` is different in kind from all four — it doesn't add a utility alongside the sequence below, it drives the sequence itself; see "Running This Sequence via `/anchor-project`" directly below.
 
-**Repeatable / optional steps are called out explicitly** — most of this lifecycle runs once per project, but a few sections repeat (Phase 6 runs once per **wave**, not once per project) or are conditional (Domain Discovery, Mock Discovery, Screen Design are all skippable under stated conditions). See the "Repeats / Optional" column in the table below.
+**Repeatable / optional steps are called out explicitly** — most of this lifecycle runs once per project, but a few sections repeat: Stage 7's story-generation steps run once per **wave**, not once per project, while its sprint-plan step and Stages 8–11 repeat per sprint, in sequence, until all epics are done and the project enters Stage 12. Some steps are conditional (Domain Discovery, Mock Discovery, Screen Design are all skippable under stated conditions). See the "Repeats / Optional" column in the table below.
 
 ---
 
 ## Running This Sequence via `/anchor-project`
 
-**There are two ways to run this framework, and deciding between them belongs here — before the step-by-step table below, not as something discovered partway through it.** The table and every phase section that follows this one are written against the default assumption that you type each command yourself, one gate at a time. `/anchor-project {PROJECT_CODE}` is the other way: one command that anchors the entire journey, resolving or bootstrapping a project, then invoking the right command for the current stage and executing its instructions exactly as written — nothing about a command's own behavior, file formats, or gates changes depending on whether it was invoked directly or through anchor.
+**There are two ways to run this framework, and deciding between them belongs here — before the step-by-step table below, not as something discovered partway through it.** The table and every stage section that follows this one are written against the default assumption that you type each command yourself, one gate at a time. `/anchor-project {PROJECT_CODE}` is the other way: one command that anchors the entire journey, resolving or bootstrapping a project, then invoking the right command for the current stage and executing its instructions exactly as written — nothing about a command's own behavior, file formats, or gates changes depending on whether it was invoked directly or through anchor.
 
 **For most Product Owners — especially anyone not already fluent in this document's full 28-step sequence — this is the recommended way to run a project.** It removes exactly the burden this document exists to manage: remembering what's next, where you left off, and how to answer each command's own dense questions well, without changing a single thing about what actually gets produced.
 
@@ -25,7 +25,7 @@ Read this document when: starting a new project, resuming a project mid-delivery
 - **A continuous thread across sessions.** Stop for a day, a week, come back — anchor reconciles its own state against whatever's actually on disk and tells you exactly where you left off, instead of you re-deriving it from this document by hand.
 - **A dramatically lighter conversation.** The framework's discovery and review commands are deliberately dense — that density is what makes their output good — but answering it consistently across roughly 15 gates is tiring even for an expert. Anchor compresses the questions and the review output without lowering the rigor behind either.
 - **Drift nobody else is watching for.** As a project moves through stages, anchor checks version lineage, constraint propagation, and Ubiquitous Language consistency across artifacts — proactive checks nothing else in the pipeline runs on its own.
-- **A head start folded in automatically.** Source material or facts captured via `/run-priming-session` get decomposed into each phase's own expected input the moment anchor actually reaches that phase — you never re-explain something you've already said.
+- **A head start folded in automatically.** Source material or facts captured via `/run-priming-session` get decomposed into each stage's own expected input the moment anchor actually reaches that stage — you never re-explain something you've already said.
 - **Its own running record.** Anchor keeps a project journal as it goes — PO feedback, friction, what worked — feeding both a narrative project testimonial at key milestones and real improvements back into the framework itself (`FW-050`).
 - **Nothing about the underlying commands changes.** Every artifact, every gate, every file format is identical to running commands by hand. Anchor is a sequencing and interaction layer on top of the framework, never a different or lesser way of producing the work.
 
@@ -39,78 +39,81 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ## Lifecycle at a Glance
 
-28 numbered steps plus lettered sub-steps for optional or non-linearly-inserted steps (a convention already established at 5a and 9a–9c, extended here to the Discovery phase's optional sub-flow). Table row order is the actual execution order — where a lettered step's position doesn't match its number sequentially (e.g. 2a/2b run *before* Step 2), the table position is authoritative, not the label.
+28 numbered steps plus lettered sub-steps for optional or non-linearly-inserted steps (a convention already established at 5a and 9a–9c, extended here to the Domain Discovery stage's optional sub-flow). Table row order is the actual execution order — where a lettered step's position doesn't match its number sequentially (e.g. 2a/2b run *before* Step 2), the table position is authoritative, not the label.
 
 | # | Step | Command | Repeats / Optional | Manual Gate | Template |
 |---|------|---------|---------------------|-------------|---------|
 | | **▼ PROBLEM DOMAIN — zero architecture dependency (`FW-022`)** | | | | |
-| **Phase 1 — Intake** |
+| **Stage 1 — Intake** |
 | 1 | Create project record | `/init-project` | Once | — | `brief.template.md` |
 | 1a | Complete the brief interactively | `/run-intake` | Once (re-run for amendments) | — | `brief.template.md` |
 | 1b | Approve the brief | `update-status` (brief → `Approved`) | Once | ✅ PO gate | — |
-| **Phase 2 — Discovery** |
+| **Stage 2 — Domain Discovery** |
 | 2a | Generate domain discovery playbook | `/gen-domain-playbook` | **Optional** — niche/complex domains only | — | `domain-playbook.template.md` |
 | 2b | Run domain discovery session | `/run-domain-discovery` | **Optional**, follows 2a | — | `domain-discovery-state.template.md` |
 | 2 | Generate domain knowledge | `/gen-domain-knowledge` | Once per domain (reusable across projects) | — | `domain.template.md` |
+| **Stage 3 — BRD & Scope Lock** |
 | 3 | Generate BRD discovery playbook | `/gen-brd-playbook` | Once | — | `brd-playbook.template.md` |
 | 3a | Run mock discovery session | `/run-mock-discovery` | **Optional but recommended** — validates 2/3 before real client cost | — | — (updates domain knowledge Section 12.6) |
 | 4 | Run discovery session → write state → offer BRD | `/run-brd-discovery` | Once | — | `brd-discovery-state.template.md` → `brd.template.md` |
 | 5 | Generate BRD (if not done at step 4) | `/gen-brd` | Once | — | `brd.template.md` |
 | 5a/6 | Review BRD + approve | `/review-brd` (approves inline on PO typing 'approved') | Once | ✅ PO gate | — |
-| **Phase 3 — Product Structuring** |
+| **Stage 4 — Product Structuring** |
 | 7 | Generate epics | `/gen-epics` | Once (all epics, full BRD scope) | — | `epic.template.md` |
 | 8/9 | Review epics + approve | `/review-epics` (approves inline) | Once | ✅ PO gate | — |
-| **Phase 4 — Screen Design** |
+| **Stage 5 — Screen Design** |
 | 9a | Generate screen design | `/gen-screen-design` | Once — **skipped entirely** if BRD shows no UI in scope | — | `screen-design.template.md` |
 | 9b/9c | Review screen design + approve | `/review-screen-design` (approves inline) | Once | ✅ PO gate | — |
 | | **▼ BRIDGE — first hard architecture dependency (`FW-022`)** | | | | |
-| **Phase 5 — Architecture** |
+| **Stage 6 — Architecture** |
 | 10 | Generate architecture document | `/gen-architecture` | Once (invokes `/gen-ui-mocks` base mode internally) | — | `arch.template.md` |
 | 11/12 | Review architecture + lock | `/review-architecture` (locks inline; invokes `/gen-ui-mocks` patch mode) | Once | ✅ PO gate | — |
 | | **▼ SOLUTION DOMAIN — everything below requires Locked architecture (`FW-022`)** | | | | |
-| **Phase 6 — Sprint Delivery** | *(repeats per **wave**, not per epic 1:1 — see Phase 6 intro)* |
+| **Stage 7 — Sprint Planning** | *(story-generation steps repeat per **wave**, not per epic 1:1 — see Stage 7 intro; sprint-plan step repeats per sprint)* |
 | 13 | Generate stories for a wave | `/gen-stories` | **Repeats per wave** | — | `story.template.md` |
 | 14/15 | Review stories + approve + sprint-assign | `/review-stories` (approves inline; Sprint Assignment decides sprint boundary) | **Repeats per wave** | ✅ PO gate | — |
 | 16 | Generate sprint plan | `/gen-sprint-plan` | **Repeats per sprint** | — | `sprint-plan.template.md` |
 | 17 | Activate sprint | `update-status` (sprint → `Active`) | Repeats per sprint | ✅ PO gate | — |
-| | *↳ Steps 17a–21 repeat for every story in the sprint, in delivery sequence order.* | | | | |
+| **Stage 8 — Development** | *(repeats for every story in the sprint, in delivery sequence order)* |
 | 17a | Generate story implementation plan | `/gen-story-plan` | **Repeats per story** | ✅ PO gate | `story-plan.template.md` |
 | 18 | Implement story | `/implement-story` | **Repeats per story** | — | Story plan (Confirmed) → `arch-v1-ref.md` → `arch-v1.md` (law) |
 | 19 | Verify story acceptance criteria | `/verify-story` | **Repeats per story** | — | Story plan Section 5 (Test Scenarios) — falls back to deriving from the story's own ACs if no plan exists |
 | 20 | Generate PR description + PO reviews PR | `/gen-pr-description` + Manual | **Repeats per story** | ✅ PO gate | `pr-description.template.md` |
 | 21 | Update story status | `update-status` (story → `Merged`/`Done`) | Repeats per story | — | — |
 | 22 | Handle scope changes mid-sprint | `/assess-change` | **As-needed, cross-cutting** | ✅ PO gate | — |
-| **Phase 7 — Sprint Closure & Release** | *(repeats per sprint)* |
+| **Stage 9 — Testing & QA** | *(repeats per sprint)* |
 | 23 | Sprint-wide QA confirmation | Manual confirmation | Repeats per sprint | — | `test-execution-report.template.md` (optional) |
+| **Stage 10 — UAT** | *(repeats per sprint)* |
 | 24 | Generate UAT checklist | `/gen-uat-checklist` | Repeats per sprint | — | `uat-checklist.template.md` |
 | 25 | PO runs UAT | Manual | Repeats per sprint | ✅ PO gate | — |
+| **Stage 11 — Sprint Closure & Release** | *(repeats per sprint)* |
 | 26 | Fill sprint retrospective | `/close-sprint` (helper) | Repeats per sprint | — | `sprint-plan.template.md` |
 | 27 | Close sprint | `update-status` (sprint → `Complete`) | Repeats per sprint | ✅ PO gate | — |
 | 28 | Generate release notes | `/gen-release-notes` | Repeats per release (not always 1:1 with sprint) | — | `release-notes.template.md` |
 | — | Deploy to production | Manual | Repeats per release | ✅ PO gate | — |
-| **Phase 8 — Support** | *(runs once, after the final sprint)* |
+| **Stage 12 — Support** | *(runs once, after the final sprint)* |
 | — | Monitor + triage production defects | Manual | Ongoing | — | `defect-severity.md` |
 | — | Hotfix (if Critical/High defect) | See Hotfix Cycle section | As-needed | ✅ PO gate per PR + deploy | — |
 | — | Close project or hand over | `update-status` (brief → `Complete`) | Once | ✅ PO gate | — |
 
-**Cross-cutting utilities — run at any time, in any phase:**
+**Cross-cutting utilities — run at any time, in any stage:**
 
-- `/assess-change` — assesses a described change's blast radius across the document pipeline and applies coordinated updates. Not tied to any one phase; used whenever scope needs to change after a gate has closed.
+- `/assess-change` — assesses a described change's blast radius across the document pipeline and applies coordinated updates. Not tied to any one stage; used whenever scope needs to change after a gate has closed.
 - `update-status` — the single mechanism that records every gate decision. Referenced throughout the table above.
 - `/project-status projects/{PROJECT_CODE}` — live dashboard showing all epic statuses, story completion by status and size, per-sprint progress bars, and an ATTENTION section flagging anything that needs action (stale statuses, unresolved dependencies, L-stories not split, sprints at risk of slipping). Run it to get a situational picture before any gate, at session start, or whenever you need to know where the project stands.
 - `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture, then extended to every other artifact type this table covers — no type reports "not yet extended" any more.
 
-**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any phase, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Design: [`decisions/FW-049-anchor-project-and-priming-session.md`](decisions/FW-049-anchor-project-and-priming-session.md).
+**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any stage, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Design: [`decisions/FW-049-anchor-project-and-priming-session.md`](decisions/FW-049-anchor-project-and-priming-session.md).
 
 ---
 
-## Phase 1 — Intake
+## Stage 1 — Intake
 
 *Domain: Problem Domain (`FW-022`) — no architecture dependency.*
 
 **Purpose:** Create the project record and a complete, approved brief that all subsequent commands read as context.
 
-**Entry condition:** None — this is the first phase for every new project.
+**Entry condition:** None — this is the first stage for every new project.
 
 ### Step 1 — `/init-project`
 
@@ -160,11 +163,11 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 2 — Discovery
+## Stage 2 — Domain Discovery
 
 *Domain: Problem Domain (`FW-022`) — no architecture dependency.*
 
-**Purpose:** Build the domain knowledge base (optionally via a dedicated discovery session for niche domains), structure the requirement-discovery session, run it with the client (or via AI-synthesis for internal/no-external-client projects), and produce the approved BRD.
+**Purpose:** Build the domain knowledge base — universal facts about the business domain, standard entities, lifecycle models, and business rules — optionally via a dedicated discovery session for niche or unfamiliar domains.
 
 **Entry condition:** Brief must be `Approved`.
 
@@ -220,6 +223,14 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 **Next step:** `/gen-brd-playbook`
 
 ---
+
+## Stage 3 — BRD & Scope Lock
+
+*Domain: Problem Domain (`FW-022`) — no architecture dependency.*
+
+**Purpose:** Structure and run the requirement-discovery session with the client (or via AI-synthesis for internal/no-external-client projects), then turn the discovery record into the approved Business Requirements Document and lock scope — no changes without a formal change request via `/assess-change` once approved.
+
+**Entry condition:** Domain Discovery complete — domain knowledge document written.
 
 ### Step 3 — `/gen-brd-playbook`
 
@@ -303,7 +314,7 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 3 — Product Structuring
+## Stage 4 — Product Structuring
 
 *Domain: Problem Domain (`FW-022`) — no architecture dependency.*
 
@@ -317,7 +328,7 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 - Reads the BRD and domain knowledge
 - Reads `projects/TEMPLATE/epics/epic.template.md`
 - Groups BRD requirements into epics — each a cohesive capability deliverable independently — **for all layers in the BRD at once** (Standalone projects); for Extension projects, only the new layer, cross-checked against the parent project's existing epics
-- Produces one epic file per epic, plus an epics index with the REQ coverage map and dependency graph (layers) that later phases (Phase 6's wave sequencing) read directly
+- Produces one epic file per epic, plus an epics index with the REQ coverage map and dependency graph (layers) that later stages (Stage 7's wave sequencing) read directly
 
 **Arguments:** `projects/{PROJECT_CODE}/brds/brd-core-v1.md`
 
@@ -344,7 +355,7 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 4 — Screen Design
+## Stage 5 — Screen Design
 
 *Domain: Problem Domain (`FW-022`) — no architecture dependency.*
 
@@ -387,13 +398,13 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 5 — Architecture
+## Stage 6 — Architecture
 
 *Domain: Bridge (`FW-022`) — the first hard architecture dependency point in the gate chain.*
 
 **Purpose:** Define the complete technical blueprint before any story is written or code is implemented.
 
-**Entry condition:** All epics must be `Approved`. Screen Design must be `Approved` (when the BRD has a UI in scope — Phase 4, Step 9c).
+**Entry condition:** All epics must be `Approved`. Screen Design must be `Approved` (when the BRD has a UI in scope — Stage 5, Step 9c).
 
 ### Step 10 — `/gen-architecture`
 
@@ -435,13 +446,13 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 6 — Sprint Delivery
+## Stage 7 — Sprint Planning
 
 *Domain: Solution Domain (`FW-022`) — requires Locked architecture, directly.*
 
-**Purpose:** Generate, review, sprint-assign, implement, verify, and merge — one **wave** at a time. A wave is normally one epic; it is more than one epic only when `epics/index.md` documents a story-level interleaving between them (their true build order doesn't reduce to a clean epic-level sequence), or when a small epic is deliberately combined with the next to fill sprint capacity. Sprint boundaries are decided during Step 14/15's Sprint Assignment, never upfront and never baked into a Story ID.
+**Purpose:** Generate, review, and sprint-assign stories — one **wave** at a time — then produce and activate the sprint plan. A wave is normally one epic; it is more than one epic only when `epics/index.md` documents a story-level interleaving between them (their true build order doesn't reduce to a clean epic-level sequence), or when a small epic is deliberately combined with the next to fill sprint capacity. Sprint boundaries are decided during Step 14/15's Sprint Assignment, never upfront and never baked into a Story ID.
 
-**Entry condition:** Architecture must be `Locked`. **Repeats for every wave** — not for every sprint 1:1, since a wave and a sprint are not always the same size.
+**Entry condition:** Architecture must be `Locked`. Story-generation steps (13–15) repeat for every **wave** — not for every sprint 1:1, since a wave and a sprint are not always the same size; the sprint-plan steps (16–17) repeat per sprint.
 
 ### Step 13 — `/gen-stories`
 
@@ -510,7 +521,13 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-> **Steps 17a–21 repeat for every story in the sprint, in delivery sequence order from the sprint plan.** Complete the full loop (plan → implement → verify → PR → merge) for one story before starting the next.
+## Stage 8 — Development
+
+*Domain: Solution Domain (`FW-022`) — requires Locked architecture, directly.*
+
+**Purpose:** Plan, implement, verify, and merge each sprint story against the Locked architecture.
+
+**Entry condition:** Sprint `Active`. **Repeats for every story in the sprint, in delivery sequence order from the sprint plan** — complete the full loop (plan → implement → verify → PR → merge) for one story before starting the next.
 
 ### Step 17a — `/gen-story-plan` (`FW-031`)
 
@@ -615,11 +632,11 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 ---
 
-## Phase 7 — Sprint Closure & Release
+## Stage 9 — Testing & QA
 
 *Domain: Solution Domain (`FW-022`) — requires Locked architecture, transitively.*
 
-**Purpose:** Confirm the sprint is technically sound, get UAT sign-off, close the sprint, and generate release artefacts. **Repeats per sprint.**
+**Purpose:** Confirm the sprint is technically sound as a whole before UAT begins. **Repeats per sprint.**
 
 **Entry condition:** All sprint stories must be `Merged`.
 
@@ -635,6 +652,14 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 If any Critical or High defect is open: return to Step 18 (fix), 19 (verify), 20 (PR), 21 (merge), then re-confirm here.
 
 ---
+
+## Stage 10 — UAT
+
+*Domain: Solution Domain (`FW-022`) — requires Locked architecture, transitively.*
+
+**Purpose:** Get Product Owner (or client) sign-off that every Must Have scenario passes. **Repeats per sprint.**
+
+**Entry condition:** QA confirmation recorded (Stage 9).
 
 ### Step 24 — `/gen-uat-checklist`
 
@@ -657,6 +682,14 @@ If any Critical or High defect is open: return to Step 18 (fix), 19 (verify), 20
 **Manual step.** PO works through the UAT checklist story by story, marking each AC Pass or Fail. Any Fail raises a defect, classified using `reference/defect-severity.md`. Critical/High defects return to implementation (18), re-verify (19), PR (20), merge (21), QA re-confirmation (23), then back here. Medium/Low defects are batched into a future sprint at PO's discretion.
 
 ---
+
+## Stage 11 — Sprint Closure & Release
+
+*Domain: Solution Domain (`FW-022`) — requires Locked architecture, transitively.*
+
+**Purpose:** Close the sprint and generate release artefacts. **Repeats per sprint.**
+
+**Entry condition:** UAT sign-off complete.
 
 ### Step 26 — `/close-sprint` *(helper)*
 
@@ -703,7 +736,7 @@ If any Critical or High defect is open: return to Step 18 (fix), 19 (verify), 20
 
 ---
 
-## Phase 8 — Support
+## Stage 12 — Support
 
 *Domain: Solution Domain (`FW-022`).*
 
@@ -745,7 +778,7 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 3. **Verify the fix** — run `/verify-story` targeting the hotfix story. Confirm the defect scenario passes and no regressions in the affected module.
 4. **PR against `main`** — Product Owner reviews and approves (same gate as Step 20).
 5. **Targeted test run** — full suite plus specifically the regression tests for the affected module. Full E2E suite not required.
-6. **Production deployment** — PO approves with rollback plan in hand (same gate as Phase 7's deployment).
+6. **Production deployment** — PO approves with rollback plan in hand (same gate as Stage 11's deployment).
 7. **Smoke tests** pass automatically after deployment.
 8. **Confirm the fix is preserved going forward.** Story branches are cut from and merged directly into `main` (no persistent sprint-integration branch exists in this framework's git model — see `implement-story.md`) — so merging the hotfix PR into `main` in step 4 already means every story branch cut from `main` afterward includes the fix automatically. The one case that needs a manual check: any story branch for the current sprint that was already cut from `main` *before* the hotfix merged. Merge or rebase `main` into that branch before its own PR merges, so the hotfix isn't silently reverted by an older branch's diff when it lands.
 
@@ -757,21 +790,21 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 
 ## Command Reference
 
-Every command in `.claude/commands/` (33 total), with its domain region and phase.
+Every command in `.claude/commands/` (33 total), with its domain region and stage.
 
-| Command | Domain | Phase | Inputs | Output | Template |
+| Command | Domain | Stage | Inputs | Output | Template |
 |---------|--------|-------|--------|--------|---------|
 | `/init-project` | Problem | Intake | Arguments | `brief.md` (placeholders), folder skeleton | `brief.template.md` |
 | `/run-priming-session` | Problem | Intake *(optional, repeatable)* | `source-material/` files and/or live conversation | `priming/priming-package.md` | `priming-package.template.md` |
 | `/run-intake` | Problem | Intake | `brief.md` (placeholders) | Completed `brief.md` | `brief.template.md` |
-| `/gen-domain-playbook` | Problem | Discovery *(optional)* | `brief.md` | `domain/{slug}-domain-playbook.md` | `domain-playbook.template.md` |
-| `/run-domain-discovery` | Problem | Discovery *(optional)* | Domain playbook, brief | `domain/domain-discovery-state.md` | `domain-discovery-state.template.md` |
-| `/gen-domain-knowledge` | Problem | Discovery | `brief.md` (Approved), discovery state (optional) | `domain/{slug}-core.md` | `domain.template.md` |
-| `/gen-brd-playbook` | Problem | Discovery | Domain knowledge | `brds/{slug}-brd-playbook.md` | `brd-playbook.template.md` |
-| `/run-mock-discovery` | Problem | Discovery *(optional)* | Domain knowledge, BRD playbook | Updated domain knowledge Section 12.6 | — |
-| `/run-brd-discovery` | Problem | Discovery | `brief.md`, domain knowledge, BRD playbook | `brds/brd-discovery-state.md` → optionally BRD | `brd-discovery-state.template.md` → `brd.template.md` |
-| `/gen-brd` | Problem | Discovery | Discovery state, domain knowledge | `brds/brd-core-v1.md` | `brd.template.md` |
-| `/review-brd` | Problem | Discovery | BRD (Draft/Under Review), domain knowledge | Updated BRD (Approved inline) | — |
+| `/gen-domain-playbook` | Problem | Domain Discovery *(optional)* | `brief.md` | `domain/{slug}-domain-playbook.md` | `domain-playbook.template.md` |
+| `/run-domain-discovery` | Problem | Domain Discovery *(optional)* | Domain playbook, brief | `domain/domain-discovery-state.md` | `domain-discovery-state.template.md` |
+| `/gen-domain-knowledge` | Problem | Domain Discovery | `brief.md` (Approved), discovery state (optional) | `domain/{slug}-core.md` | `domain.template.md` |
+| `/gen-brd-playbook` | Problem | BRD & Scope Lock | Domain knowledge | `brds/{slug}-brd-playbook.md` | `brd-playbook.template.md` |
+| `/run-mock-discovery` | Problem | BRD & Scope Lock *(optional)* | Domain knowledge, BRD playbook | Updated domain knowledge Section 12.6 | — |
+| `/run-brd-discovery` | Problem | BRD & Scope Lock | `brief.md`, domain knowledge, BRD playbook | `brds/brd-discovery-state.md` → optionally BRD | `brd-discovery-state.template.md` → `brd.template.md` |
+| `/gen-brd` | Problem | BRD & Scope Lock | Discovery state, domain knowledge | `brds/brd-core-v1.md` | `brd.template.md` |
+| `/review-brd` | Problem | BRD & Scope Lock | BRD (Draft/Under Review), domain knowledge | Updated BRD (Approved inline) | — |
 | `/gen-epics` | Problem | Product Structuring | BRD (Approved) | `epics/EPIC-{NNN}.md`, `epics/index.md` | `epic.template.md` |
 | `/review-epics` | Problem | Product Structuring | Epics, BRD | Updated epic files (Approved inline) | — |
 | `/gen-screen-design` | Problem | Screen Design | BRD, epics (Approved) | `screens/screen-design.md`, mock HTML | `screen-design.template.md` |
@@ -779,21 +812,21 @@ Every command in `.claude/commands/` (33 total), with its domain region and phas
 | `/gen-ui-mocks` | Problem/Bridge | Screen Design + Architecture *(invoked, not standalone)* | Screen design (base) / Architecture Section 6 (patch) | `mocks/{portal-slug}-mock.html` | `ui-mock.template.md` |
 | `/gen-architecture` | Bridge | Architecture | BRD, epics (Approved), screen design, domain knowledge | `architecture/arch-v1.md` + `arch-v1-ref.md` | `arch.template.md` |
 | `/review-architecture` | Bridge | Architecture | Architecture (Draft/Under Review), BRD, domain knowledge | Updated `arch-v1.md` (fixes + Locked inline) | — |
-| `/gen-stories` | Solution | Sprint Delivery | Epic (Approved), BRD, architecture (Locked) | `stories/EPIC-{NNN}/US-{epic}-{seq}.md` | `story.template.md` |
-| `/review-stories` | Solution | Sprint Delivery | Story files, BRD, epics | Updated story files (Reviewed inline), `stories/index.md` Section 8 | — |
-| `/gen-sprint-plan` | Solution | Sprint Delivery | `stories/index.md`, epics index | `sprints/sprint-{NN}.md` | `sprint-plan.template.md` |
-| `/gen-story-plan` | Solution | Sprint Delivery | Story (Reviewed), architecture (Locked) | `story-plans/US-{epic}-{seq}-plan.md` (Draft) | `story-plan.template.md` |
-| `/implement-story` | Solution | Sprint Delivery | Story (Reviewed), architecture (Locked), story plan (Confirmed) | Code + commit in target repo(s) | Story plan → `arch-v1-ref.md` → `arch-v1.md` |
-| `/verify-story` | Solution | Sprint Delivery | Story (In Progress), running app | Test execution report | Story plan Section 4 — falls back to deriving from ACs if none |
-| `/gen-pr-description` | Solution | Sprint Delivery | Story (In Progress/PR Created), passing verification report | `pr/US-{epic}-{seq}-pr-description.md` | `pr-description.template.md` |
-| `/gen-uat-checklist` | Solution | Sprint Closure | Sprint stories (Merged) | `sprints/sprint-{NN}-uat-checklist.md` | `uat-checklist.template.md` |
-| `/close-sprint` | Solution | Sprint Closure | Sprint plan, story statuses | Updated sprint plan (retro filled) | `sprint-plan.template.md` |
-| `/gen-release-notes` | Solution | Sprint Closure | Sprint (Complete), story files | `releases/v{version}-release-notes.md` | `release-notes.template.md` |
-| `/assess-change` | Cross-cutting | Any phase | Change description, project path | Updated artifacts | — |
+| `/gen-stories` | Solution | Sprint Planning | Epic (Approved), BRD, architecture (Locked) | `stories/EPIC-{NNN}/US-{epic}-{seq}.md` | `story.template.md` |
+| `/review-stories` | Solution | Sprint Planning | Story files, BRD, epics | Updated story files (Reviewed inline), `stories/index.md` Section 8 | — |
+| `/gen-sprint-plan` | Solution | Sprint Planning | `stories/index.md`, epics index | `sprints/sprint-{NN}.md` | `sprint-plan.template.md` |
+| `/gen-story-plan` | Solution | Development | Story (Reviewed), architecture (Locked) | `story-plans/US-{epic}-{seq}-plan.md` (Draft) | `story-plan.template.md` |
+| `/implement-story` | Solution | Development | Story (Reviewed), architecture (Locked), story plan (Confirmed) | Code + commit in target repo(s) | Story plan → `arch-v1-ref.md` → `arch-v1.md` |
+| `/verify-story` | Solution | Development | Story (In Progress), running app | Test execution report | Story plan Section 4 — falls back to deriving from ACs if none |
+| `/gen-pr-description` | Solution | Development | Story (In Progress/PR Created), passing verification report | `pr/US-{epic}-{seq}-pr-description.md` | `pr-description.template.md` |
+| `/gen-uat-checklist` | Solution | UAT | Sprint stories (Merged) | `sprints/sprint-{NN}-uat-checklist.md` | `uat-checklist.template.md` |
+| `/close-sprint` | Solution | Sprint Closure & Release | Sprint plan, story statuses | Updated sprint plan (retro filled) | `sprint-plan.template.md` |
+| `/gen-release-notes` | Solution | Sprint Closure & Release | Sprint (Complete), story files | `releases/v{version}-release-notes.md` | `release-notes.template.md` |
+| `/assess-change` | Cross-cutting | Any stage | Change description, project path | Updated artifacts | — |
 | `update-status` | Cross-cutting | Any gate | Artifact path + new status | Updated artifact + index | — |
 | `/project-status` | Cross-cutting | Any time | Project path | Status dashboard | — |
 | `/judgment-check` | Cross-cutting | Before any `/review-X` (all artifact types) | Artifact path | Density & Judgment Log section in that artifact | — |
-| `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact), `journal.md`, and, at milestones, promotes into `observations/` and generates `testimonial.md` (`FW-050`) | — (invokes each phase's own template via that phase's own command) |
+| `/anchor-project` | All three (orchestrates the full sequence) | Any time | `PROJECT_CODE` (optional — resolves or bootstraps) | Drives whichever command owns the current stage; also writes `.anchor-state.md` (not a project artifact), `journal.md`, and, at milestones, promotes into `observations/` and generates `testimonial.md` (`FW-050`) | — (invokes each stage's own template via that stage's own command) |
 
 ---
 
@@ -827,9 +860,9 @@ Every command in `.claude/commands/` (33 total), with its domain region and phas
 
 ## Status Values Reference
 
-All statuses are set via `update-status` (or inline by the corresponding `review-*` command, per Phases 2–6 above). Gates are enforced — commands check status before proceeding.
+All statuses are set via `update-status` (or inline by the corresponding `review-*` command, per Stages 3–7 above). Gates are enforced — commands check status before proceeding.
 
-### Brief — two distinct fields (see Phase 1, Step 1b)
+### Brief — two distinct fields (see Stage 1, Step 1b)
 
 **Content Status** (document readiness):
 | Status | Meaning |
