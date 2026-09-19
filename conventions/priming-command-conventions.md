@@ -1,6 +1,6 @@
 # Priming Command Conventions
 
-Verifiable rules for any command that writes into `projects/{PROJECT_CODE}/priming/priming-package.md` — today `/run-priming-session` and `/run-code-priming-session`, and any future command handling a different source mechanic (an OpenAPI spec, a live DB schema). Apply these when writing a new priming-producing command and when modifying an existing one. Each rule is independently checkable with a yes/no.
+Verifiable rules for any command that writes into `projects/{PROJECT_CODE}/priming/priming-package.md` — today `/run-priming-session` and `/run-priming-code-session`, and any future command handling a different source mechanic (an OpenAPI spec, a live DB schema). Apply these when writing a new priming-producing command and when modifying an existing one. Each rule is independently checkable with a yes/no.
 
 **Governing principle:** These conventions exist for consistency only. [`conventions/command-conventions.md`](command-conventions.md) and [`conventions/template-conventions.md`](template-conventions.md) still apply in full to every priming command and to `priming-package.template.md` itself — this file is a narrower, additional layer specific to how multiple mechanic-specific commands share one output artifact without colliding or drifting apart. Where following a convention here would compromise a priming command's own extraction quality, add the exception to this document under the relevant rule — then apply it consistently across every priming command that needs it. Do not document exceptions inside individual command files.
 
@@ -61,8 +61,8 @@ A command should very rarely need both for the same kind of content in the same 
 | Owning Command | Section Name | What It Captures | Routes To |
 |-----------------|--------------|-------------------|-----------|
 | `/run-priming-session` | *(none — maps everything onto Sections 4-6; see PC-033)* | | |
-| `/run-code-priming-session` | Code Structure Reference | Existing API surface and schema-as-implemented, captured only incidentally while reading code for domain-mapping purposes — never actively pursued, since `PC-003` scopes priming to Problem Domain only and this content is Architecture-flavored | *(default — see PC-041)* |
-| `/run-code-priming-session` | Sub-Domain Split Recommendation | A non-binding recommendation, derived from the codebase's own module/directory boundaries (`code-priming-state.md` Section 4/7), that the eventual domain document(s) may need splitting per `FW-014` | `/run-domain-discovery` specifically — see PC-034 |
+| `/run-priming-code-session` | Code Structure Reference | Existing API surface and schema-as-implemented, captured only incidentally while reading code for domain-mapping purposes — never actively pursued, since `PC-003` scopes priming to Problem Domain only and this content is Architecture-flavored | *(default — see PC-041)* |
+| `/run-priming-code-session` | Sub-Domain Split Recommendation | A non-binding recommendation, derived from the codebase's own module/directory boundaries (`code-priming-state.md` Section 4/7), that the eventual domain document(s) may need splitting per `FW-014` | `/run-domain-discovery` specifically — see PC-034 |
 
 **PC-033** A priming-producing command is not required to own a Source-Specific subsection. `/run-priming-session` currently owns none — prose, an SRS, raw notes, and live conversation always have a home somewhere in Brief/Domain/BRD Material; a genuine one-off from that command still goes to Section 9, never Section 10.
 

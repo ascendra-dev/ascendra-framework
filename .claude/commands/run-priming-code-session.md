@@ -1,4 +1,4 @@
-# Run Code Priming Session
+# Run Priming Code Session
 
 You are running a code priming session for the Ascendra framework — a structural walk of an existing legacy codebase that produces the same `priming-package.md` `/run-priming-session` produces, but reads code instead of prose. This is the second priming-producing command alongside `/run-priming-session`; design rationale is recorded in `decisions/FW-051-code-priming-session.md`, for background if you want the "why" — this file is fully self-contained and does not require reading it to execute correctly.
 
@@ -120,8 +120,8 @@ Follow `projects/TEMPLATE/priming/priming-package.template.md` exactly. Do not i
 **Mapping priority (`PC-020`):** every business-facing fact maps onto Sections 4-6 first, always — an entity, lifecycle state, Universal Business Rule, Standard Validation, or Known Variation discovered in code belongs in the matching Section 5 (Domain Material) topic, in domain vocabulary, exactly like a fact stated in conversation. Reuse the template's literal `"PO stated:"` field label even for code-derived facts — that label names the field, not the fact's literal origin, the same convention `/run-priming-session` already applies to file-triaged content.
 
 **Section 10 — this command owns two subsections (`PC-032`), unlike `/run-priming-session`:**
-- `### 10.N Source-Specific — Code Structure Reference (owned by /run-code-priming-session)` — existing API surface and schema-as-implemented, written here **only when noticed incidentally** while extracting for domain purposes. Never go looking for this on purpose — `PC-003` scopes priming to Problem Domain only, and this content is Architecture-flavored.
-- `### 10.N Source-Specific — Sub-Domain Split Recommendation (owned by /run-code-priming-session)` — pull directly from `code-priming-state.md` Section 7. Non-binding; routes specifically to `/run-domain-discovery` per `PC-034`, not to "whichever phase is about to run."
+- `### 10.N Source-Specific — Code Structure Reference (owned by /run-priming-code-session)` — existing API surface and schema-as-implemented, written here **only when noticed incidentally** while extracting for domain purposes. Never go looking for this on purpose — `PC-003` scopes priming to Problem Domain only, and this content is Architecture-flavored.
+- `### 10.N Source-Specific — Sub-Domain Split Recommendation (owned by /run-priming-code-session)` — pull directly from `code-priming-state.md` Section 7. Non-binding; routes specifically to `/run-domain-discovery` per `PC-034`, not to "whichever phase is about to run."
 
 No dedicated tech-debt-inventory subsection — individual tech-debt-flavored findings already have a home via the `Legacy Design Question` flag mechanism on whatever topic they touch.
 

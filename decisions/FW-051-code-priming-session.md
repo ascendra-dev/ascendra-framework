@@ -5,14 +5,14 @@
 | **ID** | FW-051 |
 | **Date** | 2026-09-19 |
 | **Status** | Decided — implemented, pending validation against a real legacy codebase |
-| **Area** | `.claude/commands/run-code-priming-session.md` (new), `projects/TEMPLATE/priming/code-priming-state.template.md` (new), [`conventions/priming-command-conventions.md`](../conventions/priming-command-conventions.md) (`PC-016`, `PC-032`, `PC-034` added), `projects/TEMPLATE/priming/priming-package.template.md` (audience block + Section 10 note), [`CLAUDE.md`](../CLAUDE.md) |
+| **Area** | `.claude/commands/run-priming-code-session.md` (new), `projects/TEMPLATE/priming/code-priming-state.template.md` (new), [`conventions/priming-command-conventions.md`](../conventions/priming-command-conventions.md) (`PC-016`, `PC-032`, `PC-034` added), `projects/TEMPLATE/priming/priming-package.template.md` (audience block + Section 10 note), [`CLAUDE.md`](../CLAUDE.md) |
 | **Depends on** | `FW-049` (Anchor Project and Priming Session) — this is the deferred second priming-producing command its own §5.11 named and left for later |
 
 ---
 
 ## Decision
 
-`/run-code-priming-session {PROJECT_CODE}` is the second priming-producing command, alongside `/run-priming-session` — same output (`priming-package.md`), same governing contract ([`conventions/priming-command-conventions.md`](../conventions/priming-command-conventions.md)), different extraction mechanic: it reads an existing legacy codebase (dropped into the same `source-material/` folder every priming command already gates on) instead of prose, and reverse-engineers business capability from code structure rather than reading linearly.
+`/run-priming-code-session {PROJECT_CODE}` is the second priming-producing command, alongside `/run-priming-session` — same output (`priming-package.md`), same governing contract ([`conventions/priming-command-conventions.md`](../conventions/priming-command-conventions.md)), different extraction mechanic: it reads an existing legacy codebase (dropped into the same `source-material/` folder every priming command already gates on) instead of prose, and reverse-engineers business capability from code structure rather than reading linearly.
 
 Chunking is entity-centric where a schema/ORM layer is directly discoverable (any language or framework — this is stack-agnostic by construction, since recognizing an annotated class, a models file, or a schema definition is ordinary pattern-reading, not something requiring per-stack rules), gracefully degrading to module/layer granularity via a Repository Map where it isn't (raw-SQL-heavy code, no formal ORM, or any codebase with no discoverable entity boundary). The walk never reads the full repository — every pass is structural-navigation- or targeted-search-driven — and progress is checkpointed per unit in a dedicated working-state file, `code-priming-state.md`, kept distinct from `priming-package.md` itself (`PC-016` — a working-state file is operational bookkeeping, not a second PO-facing deliverable, the same relationship `domain-discovery-state.md`/`brd-discovery-state.md` already have to their own artifacts).
 
@@ -57,10 +57,10 @@ No companion root-level `*-DESIGN.md` scratch file is kept for this decision. Th
 
 Built and self-checked, 2026-09-19:
 
-- [x] `.claude/commands/run-code-priming-session.md` — new command, self-checked against [`conventions/command-conventions.md`](../conventions/command-conventions.md)
+- [x] `.claude/commands/run-priming-code-session.md` — new command, self-checked against [`conventions/command-conventions.md`](../conventions/command-conventions.md)
 - [x] `projects/TEMPLATE/priming/code-priming-state.template.md` — new template, the per-unit Map/Triage/Extract checkpoint ledger
 - [x] [`conventions/priming-command-conventions.md`](../conventions/priming-command-conventions.md) — `PC-016` (working-state file clarification), `PC-032` registry entries, `PC-034` (routing exception) added
-- [x] `projects/TEMPLATE/priming/priming-package.template.md` — `/run-code-priming-session` audience block added ([`template-conventions.md`](../conventions/template-conventions.md) T-005a), Section 10 guide updated to name the real command
+- [x] `projects/TEMPLATE/priming/priming-package.template.md` — `/run-priming-code-session` audience block added ([`template-conventions.md`](../conventions/template-conventions.md) T-005a), Section 10 guide updated to name the real command
 - [x] [`CLAUDE.md`](../CLAUDE.md) — command table entry added
 
 Not yet done:
