@@ -67,6 +67,8 @@ Extract from the story file:
 
 The Confirmed plan (read in Step 1) already states *what* to build — which endpoints, tables, and screens, in what order. The files below are where you confirm *how* to build it in this project's confirmed stack idiom, and where you resolve any plan detail that's abbreviated or missing. Read all of these before writing a single line of code. Do not skip any.
 
+**Session pacing note:** the standards files and architecture reference below rarely change from one story to the next within the same epic, so reading them fresh every single story is the framework's biggest recurring token cost. For solo, serial delivery, batching a handful of same-epic stories into one continuous session lets that reload carry over instead of repeating per story — a real, legitimate saving. For team or parallel delivery, a fresh session per story is still the right call despite the reload cost: this command's file-scoped writes make concurrent sessions safe by construction (see `PROJECT-LIFECYCLE.md`'s multi-developer concurrency model), and that parallelism is worth more than the reload it costs. Neither mode changes anything below — this is a session-boundary choice, not an instruction to skip a read.
+
 1. **Architecture quick-reference (read first):** `projects/{PROJECT_CODE}/architecture/arch-v1-ref.md`
    - Primary source for all implementation decisions: module-to-table-to-endpoint mappings, column names and types, enum values, auth guards and roles, file naming conventions, and critical constraints
    - This file covers the vast majority of what implementation requires. Read it before opening the full architecture document.

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Command Token Economy — Ascendra Framework</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f6f7f9; --surface:#ffffff; --surface-2:#eef0f4; --border:#dce0e8;
+  --text:#1b1f27; --text-muted:#5b6472;
+  --accent:#4453c4; --accent-soft:#e7e9fb;
+  --good:#1f8a5a; --good-soft:#e4f5ec;
+  --warn:#b8791a; --warn-soft:#fbf0dd;
+  --risk:#c4433b; --risk-soft:#fbe7e5;
+  --mono-chip:#eef0f4;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12141b; --surface:#181b24; --surface-2:#20242f; --border:#2c313d;
+    --text:#e7e9ef; --text-muted:#9aa2b1;
+    --accent:#8b97f2; --accent-soft:#232a52;
+    --good:#4fcb94; --good-soft:#173425;
+    --warn:#e3a94a; --warn-soft:#3a2e15;
+    --risk:#f08579; --risk-soft:#3b201d;
+    --mono-chip:#20242f;
+  }
+}
+*{box-sizing:border-box;}
+html,body{background:var(--bg);}
+body{
+  color:var(--text);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  line-height:1.55;
+  margin:0;
+  padding-inline:20px;
+}
+.wrap{max-width:940px;margin:0 auto;padding-block:40px 80px;}
+h1,h2,h3{text-wrap:balance; font-weight:700; letter-spacing:-0.01em;}
+code,.mono,.cmd,.badge,.chip,.linecount{font-family:"IBM Plex Mono",ui-monospace,monospace;}
+
+.masthead{margin-bottom:20px;}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:0.72rem; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+}
+h1{font-size:2.05rem; margin:0 0 10px;}
+.dek{color:var(--text-muted); max-width:65ch; font-size:1.02rem;}
+.meta-row{display:flex; gap:18px; flex-wrap:wrap; margin-top:18px; font-size:0.85rem; color:var(--text-muted);}
+.meta-row b{color:var(--text);}
+
+.changelog{
+  background:var(--accent-soft); border:1px solid var(--accent); border-radius:12px;
+  padding:16px 20px; margin-bottom:32px; font-size:0.88rem;
+}
+.changelog b{color:var(--accent);}
+.changelog ul{margin:8px 0 0; padding-left:20px;}
+.changelog li{margin-bottom:4px;}
+
+.jumpnav{
+  position:sticky; top:0; z-index:5; background:var(--bg);
+  border-bottom:1px solid var(--border); padding-block:10px;
+  margin-bottom:32px; margin-inline:-20px; padding-inline:20px;
+  overflow-x:auto;
+}
+.jumpnav-inner{max-width:940px; margin:0 auto; display:flex; gap:6px; flex-wrap:nowrap;}
+.jumpnav a{
+  font-family:"IBM Plex Mono",monospace; font-size:0.72rem; white-space:nowrap;
+  color:var(--text-muted); text-decoration:none; padding:5px 10px;
+  border-radius:999px; border:1px solid var(--border); background:var(--surface);
+}
+.jumpnav a:hover, .jumpnav a:focus-visible{color:var(--accent); border-color:var(--accent); outline:none;}
+
+section{margin-bottom:44px;}
+.section-head{margin-bottom:16px;}
+.section-head h2{font-size:1.3rem; margin:0 0 4px;}
+.section-head p{color:var(--text-muted); font-size:0.92rem; margin:0; max-width:70ch;}
+
+.legend{
+  display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center;
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; font-size:0.8rem; color:var(--text-muted);
+}
+.legend b{color:var(--text); font-weight:600;}
+
+.badge{
+  display:inline-flex; align-items:center; gap:4px; font-size:0.7rem;
+  padding:2px 8px; border-radius:5px; font-weight:600; letter-spacing:0.01em;
+  white-space:nowrap;
+}
+.b-scoped{background:var(--good-soft); color:var(--good);}
+.b-exemplary{background:var(--good-soft); color:var(--good);}
+.b-hybrid{background:var(--warn-soft); color:var(--warn);}
+.b-full{background:var(--risk-soft); color:var(--risk);}
+.b-heavy{background:var(--risk-soft); color:var(--risk);}
+.b-fixed{background:var(--good-soft); color:var(--good);}
+.sess{
+  display:inline-flex; align-items:center; gap:4px; font-size:0.7rem;
+  padding:2px 8px; border-radius:5px; font-weight:600;
+  background:var(--surface-2); color:var(--text-muted); border:1px solid var(--border);
+}
+
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media (max-width:640px){.two-col{grid-template-columns:1fr;}}
+.finding-group{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px;
+}
+.finding-group h3{font-size:0.95rem; margin:0 0 12px; display:flex; align-items:center; gap:8px;}
+.finding-group.good h3{color:var(--good);}
+.finding-group.risk h3{color:var(--risk);}
+.finding{margin-bottom:14px; font-size:0.88rem;}
+.finding:last-child{margin-bottom:0;}
+.finding .who{
+  display:block; font-family:"IBM Plex Mono",monospace; font-size:0.72rem;
+  color:var(--text-muted); margin-bottom:2px;
+}
+
+.heuristic{
+  background:var(--accent-soft); border:1px solid var(--accent);
+  border-radius:12px; padding:18px 20px; margin-top:16px; font-size:0.9rem;
+}
+.heuristic b{color:var(--accent);}
+
+.phase{margin-bottom:40px;}
+.phase-head{
+  display:flex; align-items:baseline; gap:10px; margin-bottom:6px;
+  border-bottom:2px solid var(--accent); padding-bottom:8px;
+}
+.phase-num{
+  font-family:"IBM Plex Mono",monospace; font-size:0.8rem; color:var(--accent);
+  background:var(--accent-soft); border-radius:5px; padding:2px 8px; font-weight:700;
+}
+.phase-head h2{font-size:1.15rem; margin:0;}
+.phase-desc{color:var(--text-muted); font-size:0.86rem; margin:6px 0 16px; max-width:72ch;}
+
+.cardgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+@media (max-width:680px){.cardgrid{grid-template-columns:1fr;}}
+
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:16px 18px; display:flex; flex-direction:column; gap:10px;
+}
+.card.updated{border-color:var(--good);}
+.card-top{display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+.cmd{font-size:0.95rem; font-weight:600; color:var(--text);}
+.linecount{
+  font-size:0.68rem; color:var(--text-muted); background:var(--mono-chip);
+  padding:2px 7px; border-radius:5px;
+}
+.footprint{list-style:none; margin:0; padding:0; font-size:0.8rem; color:var(--text-muted);}
+.footprint li{padding-left:14px; position:relative; margin-bottom:3px;}
+.footprint li::before{content:"–"; position:absolute; left:0; color:var(--border);}
+.footprint .grows{color:var(--warn); font-weight:600;}
+.footprint .new{color:var(--good); font-weight:600;}
+.badgerow{display:flex; gap:6px; flex-wrap:wrap;}
+.verdict{font-size:0.85rem; color:var(--text); border-top:1px dashed var(--border); padding-top:9px;}
+.verdict .fix{color:var(--risk); font-weight:600;}
+.verdict .ok{color:var(--good); font-weight:600;}
+.verdict .done{color:var(--good); font-weight:600;}
+
+.fixtable-wrap{overflow-x:auto;}
+table.fixtable{width:100%; border-collapse:collapse; font-size:0.85rem; background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden;}
+table.fixtable th, table.fixtable td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top;}
+table.fixtable th{background:var(--surface-2); font-family:"IBM Plex Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);}
+table.fixtable tr:last-child td{border-bottom:none;}
+table.fixtable td.pri{font-family:"IBM Plex Mono",monospace; font-weight:700; color:var(--accent); white-space:nowrap;}
+table.fixtable td.status{white-space:nowrap;}
+
+footer{color:var(--text-muted); font-size:0.78rem; margin-top:50px; border-top:1px solid var(--border); padding-top:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="eyebrow">Ascendra Framework — Command Audit</div>
+    <h1>Token Economy, Command by Command</h1>
+    <p class="dek">How much context each of the 34 slash commands actually costs to run, whether that cost buys or costs correctness, and the recommended way to invoke each one — read against the real instruction files, phase by phase through the delivery lifecycle.</p>
+    <div class="meta-row">
+      <span><b>34</b> commands audited</span>
+      <span><b>13</b> lifecycle phases</span>
+      <span>Source: <code>.claude/commands/*.md</code>, read in full</span>
+    </div>
+  </div>
+
+  <div class="changelog">
+    <b>Since the first pass (2026-09-19):</b> five of the five flagged issues have been addressed and are marked <span class="badge b-fixed">fixed</span> below.
+    <ul>
+      <li><code>gen-stories.md</code> / <code>gen-epics.md</code> — BRD reads now prefer a new condensed reference and carry a same-session reuse caveat.</li>
+      <li><code>review-brd.md</code> now generates <code>brd-core-v{N}-ref.md</code> on approval; <code>assess-change.md</code> keeps it in sync on Pattern 4 changes. Recorded as <a href="../decisions/FW-052-brd-quick-reference-file.md"><code>decisions/FW-052</code></a>.</li>
+      <li><code>review-architecture.md</code> — a resumed session now reloads only the standards file(s) mapped to the concern being resumed, not the whole <code>standards/</code> folder.</li>
+      <li><code>implement-story.md</code> — added an explicit session-pacing note (batch same-epic stories solo/serial; fresh-per-story for team/parallel work).</li>
+      <li><code>gen-architecture.md</code> — added an explicit "run in a dedicated, otherwise-empty session" note naming the lost-in-the-middle risk directly. No structural fix exists for this one; documenting it is the mitigation.</li>
+    </ul>
+  </div>
+
+  <nav class="jumpnav" aria-label="Jump to phase">
+    <div class="jumpnav-inner">
+      <a href="#cross-cutting-findings">Findings</a>
+      <a href="#p0">0 Setup</a>
+      <a href="#p1">1 Priming</a>
+      <a href="#p2">2 Intake</a>
+      <a href="#p3">3 Domain</a>
+      <a href="#p4">4 BRD</a>
+      <a href="#p5">5 Epics</a>
+      <a href="#p6">6 Screens</a>
+      <a href="#p7">7 Architecture</a>
+      <a href="#p8">8 Stories</a>
+      <a href="#p9">9 Sprint</a>
+      <a href="#p10">10 Build</a>
+      <a href="#p11">11 Release</a>
+      <a href="#p12">12 Cross-cutting</a>
+      <a href="#fixlist">Fix list</a>
+    </div>
+  </nav>
+
+  <section id="legend">
+    <div class="legend">
+      <span><b>Strategy —</b> <span class="badge b-exemplary">exemplary</span> <span class="badge b-scoped">scoped</span> <span class="badge b-hybrid">hybrid</span> <span class="badge b-full">full-read</span></span>
+      <span><b>Session —</b> <span class="sess">fresh</span> <span class="sess">chain →</span> <span class="sess">either</span></span>
+      <span><span class="badge b-fixed">fixed</span> = changed since the first pass</span>
+      <span><span class="footprint"><li class="grows">grows</li></span> = cost scales with project maturity</span>
+    </div>
+  </section>
+
+  <section id="cross-cutting-findings">
+    <div class="section-head">
+      <h2>Cross-cutting findings</h2>
+      <p>The framework already had real, deliberate token-economy design in several places before this audit — and a handful of genuine, now-fixed inconsistencies where the same discipline wasn't extended. Read these before the phase tables below; most per-command verdicts point back here.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="finding-group good">
+        <h3>✓ Patterns already worth keeping</h3>
+        <div class="finding">
+          <span class="who">anchor-project · Step 3</span>
+          "Read lightly, not fully… use a targeted search rather than loading a whole BRD or architecture document into context to answer a one-field question." The clearest economy mission-statement in the framework — and it tiers drift checks into free / cheap / heavy-on-trigger, never running the expensive ones by default.
+        </div>
+        <div class="finding">
+          <span class="who">judgment-check · Step 3</span>
+          "Read exactly three files, nothing more." Explicitly refuses to follow chapter cross-references or sibling artifacts unless one specific test depends on it — the most disciplined single-invocation footprint of any command.
+        </div>
+        <div class="finding">
+          <span class="who">assess-change · Step 1</span>
+          The only command with a hard, stated ceiling: never more than 5 epic files or 15 story files in one session — split the session if the blast radius exceeds it. Everyone else audits reads qualitatively; this one puts a number on it.
+        </div>
+        <div class="finding">
+          <span class="who">arch-v1-ref.md pattern</span>
+          gen-story-plan, implement-story, verify-story all read a condensed architecture reference first and only fall back to the full document for specific, named gaps — with an explicit rule against silently skipping the disclosure when they do fall back. Extended to the BRD via <code>brd-core-v{N}-ref.md</code> (FW-052) since this pass.
+        </div>
+        <div class="finding">
+          <span class="who">review-epics / review-stories</span>
+          Three-tier loading: shared context once, then the current epic only, then the current story only — never all epics or all stories at once, even across a very long review session.
+        </div>
+        <div class="finding">
+          <span class="who">implement-story · Standards Self-Check</span>
+          Deliberately re-reads every relevant standards file a second time before finishing, "not from memory of what was written earlier in this same session" — the framework's own explicit acknowledgment that recalled rules degrade over a long session, mitigated by forcing a re-read instead of trusting recall.
+        </div>
+        <div class="finding">
+          <span class="who">run-priming-session / -code-session</span>
+          Map → triage → extract, checkpointed per file or per code unit, explicitly built so "one file can take more than one session" and the code variant "never reads the full repository" at all.
+        </div>
+      </div>
+
+      <div class="finding-group risk">
+        <h3>Gaps found — status since first pass</h3>
+        <div class="finding">
+          <span class="who">gen-stories <span class="badge b-fixed">fixed</span></span>
+          Re-read the full BRD and referenced domain docs on every per-epic invocation with no reuse caveat, one line below an identical exemption already granted to <code>estimation.md</code>. Both reads now prefer <code>brd-core-v{N}-ref.md</code> and carry the same-session reuse note.
+        </div>
+        <div class="finding">
+          <span class="who">gen-architecture / review-architecture <span class="badge b-fixed">fixed (partial)</span></span>
+          Both mandated reading every file in <code>standards/</code> with no ceiling. On reflection, <code>gen-architecture</code> genuinely needs the full set to write Sections 4–6 in one pass — a cap there would be a fix in search of a problem, so it was left as-is. <code>review-architecture</code>'s resumed-session read is now scoped to the concern being resumed instead of reloading everything.
+        </div>
+        <div class="finding">
+          <span class="who">No BRD-equivalent of arch-v1-ref.md <span class="badge b-fixed">fixed</span></span>
+          Six-plus commands each independently did a full-BRD read for REQ-level planning. <code>brd-core-v{N}-ref.md</code> (FW-052) now covers that — generated by <code>/review-brd</code> on approval, kept in sync by <code>/assess-change</code>.
+        </div>
+        <div class="finding">
+          <span class="who">review-architecture per-resume reload <span class="badge b-fixed">fixed</span></span>
+          Folded into the fix above — Section 12 already tracked which Concern was pending; the standards read is now scoped to match it.
+        </div>
+        <div class="finding">
+          <span class="who">gen-architecture — lost-in-the-middle risk <span class="badge b-fixed">documented</span></span>
+          No structural fix exists short of the cite-don't-restate discipline it already uses. The command now states outright that it should run in a dedicated, otherwise-empty session — turning the audit's recommendation into a load-bearing instruction rather than leaving it as an external note.
+        </div>
+      </div>
+    </div>
+
+    <div class="heuristic">
+      <b>Session-mode heuristic used throughout this audit —</b> chain two commands in one session when the downstream one needs the exact document the upstream one just produced or discussed, <i>and</i> the upstream session wasn't itself a long, heavily interactive one. Prefer a fresh session when the upstream command accumulated a lot of confirmation-gate dialogue that has no value to the next task (that dialogue is real token weight, not just the documents), when the two steps are naturally done by different people or on different days, or when parallel/team execution requires independent sessions by construction (implement-story, verify-story, gen-pr-description are safe to run in parallel precisely because each touches only its own story's files).
+    </div>
+  </section>
+
+  <!-- ===================== PHASE 0 ===================== -->
+  <div class="phase" id="p0">
+    <div class="phase-head"><span class="phase-num">0</span><h2>Setup</h2></div>
+    <p class="phase-desc">Runs exactly once per project. Cost is fixed and trivial regardless of how large the project later grows.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/init-project</span><span class="linecount">237 ln</span></div>
+        <ul class="footprint"><li>brief.template.md (full)</li></ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">No issue.</span> Smallest possible footprint for what it does — nothing exists yet to over-read.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 1 ===================== -->
+  <div class="phase" id="p1">
+    <div class="phase-head"><span class="phase-num">1</span><h2>Priming (optional)</h2></div>
+    <p class="phase-desc">Free-form ingestion of whatever material the PO already has, before formal discovery starts.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-priming-session</span><span class="linecount">150 ln</span></div>
+        <ul class="footprint">
+          <li>source-material/ — <span class="grows">map/skim only, never blind full-read</span></li>
+          <li>priming-package.md, brief/domain/BRD if they exist</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Model command.</span> Map→triage→extract keeps a large or noisy source file cheap by construction; large files are explicitly allowed to checkpoint across more than one session rather than forcing one giant read.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-priming-code-session</span><span class="linecount">173 ln</span></div>
+        <ul class="footprint">
+          <li>Codebase — <span class="grows">structural nav + targeted search only</span></li>
+          <li>code-priming-state.md checkpoint per unit</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Model command.</span> States outright it "never reads the full repository." Designed to run unattended across many short, checkpointed sessions.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 2 ===================== -->
+  <div class="phase" id="p2">
+    <div class="phase-head"><span class="phase-num">2</span><h2>Intake</h2></div>
+    <p class="phase-desc">Fills the project brief interactively. Brief stays small (9 sections) for the life of the project.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-intake</span><span class="linecount">276 ln</span></div>
+        <ul class="footprint">
+          <li>brief.md + brief.template.md (AI Guide only)</li>
+          <li>explicitly skips brief.example.md</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">No issue.</span> Deliberately excludes the worked example from context while keeping the guidance needed to ask good questions. Multi-session by design; each section writes to disk on approval so nothing is lost.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 3 ===================== -->
+  <div class="phase" id="p3">
+    <div class="phase-head"><span class="phase-num">3</span><h2>Domain Discovery</h2></div>
+    <p class="phase-desc">Optional for well-known domains. Builds universal, reusable domain knowledge — not yet client-specific.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-domain-playbook</span><span class="linecount">135 ln</span></div>
+        <ul class="footprint"><li>domain-playbook.template.md + brief.md</li></ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Fine.</span> Small, fixed-size inputs; nothing to economize.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-domain-discovery</span><span class="linecount">159 ln</span></div>
+        <ul class="footprint"><li>playbook + brief + domain-discovery-state.md, all in full</li></ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="sess">chain →</span></div>
+        <div class="verdict">Full reads are justified — a live teaching session needs the whole picture to catch contradictions. <b>Chain forward:</b> its own closing prompt recommends generating domain knowledge in the <i>same</i> session, "produces higher quality output than loading the state file in a new session."</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-domain-knowledge</span><span class="linecount">199 ln</span></div>
+        <ul class="footprint">
+          <li>domain.template.md + discovery-state.md (full)</li>
+          <li>brief.md — explicitly <i>not</i> re-read if already loaded</li>
+          <li>ancestor domain docs, for Extension projects</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">chain ←</span></div>
+        <div class="verdict"><span class="ok">Good hygiene.</span> One of only two commands that explicitly states "already loaded — do not re-read." Best run right after discovery in the same session.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-mock-discovery</span><span class="linecount">146 ln</span></div>
+        <ul class="footprint"><li>domain knowledge + BRD playbook, both in full</li></ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="sess">fresh</span></div>
+        <div class="verdict">A one-shot QA simulation — needs both documents whole to role-play a client convincingly. Standalone quality gate; no chaining benefit either direction.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 4 ===================== -->
+  <div class="phase" id="p4">
+    <div class="phase-head"><span class="phase-num">4</span><h2>BRD (Requirements)</h2></div>
+    <p class="phase-desc">Converts domain knowledge into structured client discovery, then a Business Requirements Document.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-brd-playbook</span><span class="linecount">154 ln</span></div>
+        <ul class="footprint"><li>domain knowledge (+ ancestor chain) + template + brief</li></ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">fresh</span></div>
+        <div class="verdict">Fine. Cost scales mildly with extension-chain depth, which is rarely more than one or two hops in practice.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/run-brd-discovery</span><span class="linecount">191 ln</span></div>
+        <ul class="footprint">
+          <li>brief + domain knowledge + playbook, in full</li>
+          <li>brd-discovery-state.md — <span class="grows">accumulates client answers across resumed sessions</span></li>
+        </ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="sess">chain →</span></div>
+        <div class="verdict">The one growth risk left in Problem Domain: Section 8's captured client answers can get large across a long, multi-session discovery, and every resumption re-reads it whole. Justified — the session genuinely needs full prior context — but worth watching past 4–5 sessions. <b>Chain forward</b> into /gen-brd, exactly as its own closing prompt recommends.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-brd</span><span class="linecount">205 ln</span></div>
+        <ul class="footprint">
+          <li>brd.template.md + brief + discovery-state.md (full)</li>
+          <li>every doc the playbook's own reading list names</li>
+          <li>parent BRD, for Extension projects</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-hybrid">hybrid</span><span class="sess">chain ←</span></div>
+        <div class="verdict">Heaviest read in this phase. Run in the same session as run-brd-discovery when possible — standalone, its cost is entirely the discovery-state file's size.</div>
+      </div>
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/review-brd</span><span class="linecount">313 ln</span></div>
+        <ul class="footprint">
+          <li>BRD (full) + domain knowledge (full), held for the whole walkthrough</li>
+          <li class="new">now generates brd-core-v{N}-ref.md on approval (FW-052)</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="badge b-fixed">updated</span><span class="sess">either</span></div>
+        <div class="verdict">Legitimately needs the whole BRD in view for a feature-area-by-feature-area walkthrough. <span class="done">Now also writes the condensed reference file downstream commands need</span>, timed at approval so review-time edits can't leave it stale.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 5 ===================== -->
+  <div class="phase" id="p5">
+    <div class="phase-head"><span class="phase-num">5</span><h2>Epics</h2></div>
+    <p class="phase-desc">Groups approved requirements into delivery-sized units — still technology-agnostic.</p>
+    <div class="cardgrid">
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/gen-epics</span><span class="linecount">192 ln</span></div>
+        <ul class="footprint">
+          <li>epic.template.md + brief</li>
+          <li class="new">BRD — ref file first (FW-052), full-BRD fallback stated explicitly</li>
+          <li>explicitly skips architecture even if it exists</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="badge b-fixed">fixed</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="done">Fixed.</span> Previously full-read the BRD with no reuse caveat; now prefers the condensed reference and reuses in-session content, alongside its existing (and correct) architecture exclusion.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/review-epics</span><span class="linecount">284 ln</span></div>
+        <ul class="footprint">
+          <li>shared: BRD + epics index + domain (loaded once)</li>
+          <li>then <b>one epic file at a time</b>, never all at once</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Exemplar.</span> Explicit shared-context-once / per-unit-just-in-time tiering — scales cleanly to a project with 15+ epics.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 6 ===================== -->
+  <div class="phase" id="p6">
+    <div class="phase-head"><span class="phase-num">6</span><h2>Screen Design</h2></div>
+    <p class="phase-desc">Derives portals, navigation, and a pattern-matched screen inventory — still no tech-stack dependency.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-screen-design</span><span class="linecount">138 ln</span></div>
+        <ul class="footprint">
+          <li>BRD sections + domain vocab + ui-reference.md (full, fixed size)</li>
+          <li>explicitly skips <code>standards/</code> entirely</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Good discipline.</span> The standards/ exclusion is stated outright and correct — nothing here depends on the confirmed stack. Reads the full BRD once per project (not per epic), so left as-is.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/review-screen-design</span><span class="linecount">245 ln</span></div>
+        <ul class="footprint"><li>screen-design.md + BRD + every generated mock file</li></ul>
+        <div class="badgerow"><span class="badge b-hybrid">hybrid</span><span class="sess">either</span></div>
+        <div class="verdict">Reasonable; mock-file count tracks portal count, which stays small (2–5) on virtually every real project.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 7 ===================== -->
+  <div class="phase" id="p7">
+    <div class="phase-head"><span class="phase-num">7</span><h2>Architecture — the bridge</h2></div>
+    <p class="phase-desc">The single hard dependency point between Problem and Solution Domain. By far the heaviest phase in the framework.</p>
+    <div class="cardgrid">
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/gen-architecture</span><span class="linecount">786 ln</span></div>
+        <ul class="footprint">
+          <li>template + 3 standards templates, full</li>
+          <li>BRD, epics index, screen design, domain — full</li>
+          <li><b>every file</b> in standards/ — <span class="grows">unbounded as a project matures, kept as-is (see below)</span></li>
+          <li>ascendra-commons READMEs, conditional</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-heavy">heaviest command</span><span class="badge b-fixed">documented</span><span class="sess">fresh</span></div>
+        <div class="verdict">Largest command file and largest combined context in the framework. The standards-folder read was left unbounded on purpose — this command genuinely needs the full set to write Sections 4–6 in one pass, so a cap would be a fix in search of a problem. What it did get: an explicit <span class="done">"run this in complete isolation"</span> instruction naming the lost-in-the-middle risk directly, since no structural fix exists for that part.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-ui-mocks</span><span class="linecount">161 ln</span></div>
+        <ul class="footprint">
+          <li>screen design + BRD sections + ui-reference.md</li>
+          <li>only the <b>matched</b> component sources — never the whole library</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">chain</span></div>
+        <div class="verdict"><span class="ok">Good discipline.</span> Invoked automatically by gen-screen-design/gen-architecture — chaining is baked into the pipeline.</div>
+      </div>
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/review-architecture</span><span class="linecount">494 ln</span></div>
+        <ul class="footprint">
+          <li>full architecture doc + BRD + domain + screen design</li>
+          <li class="new">standards/ — full set on a fresh session; on resume, only the file(s) mapped to the concern being resumed</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-heavy">heavy</span><span class="badge b-fixed">fixed</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="done">Fixed.</span> A resumed session picking up at, say, Concern D (Security) no longer reloads logging/CI-CD/every other standards file — only the one(s) that concern actually maps to. Fresh sessions still read everything, since every concern will be walked.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 8 ===================== -->
+  <div class="phase" id="p8">
+    <div class="phase-head"><span class="phase-num">8</span><h2>Stories</h2></div>
+    <p class="phase-desc">One epic's worth of stories at a time, gated on Locked architecture.</p>
+    <div class="cardgrid">
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/gen-stories</span><span class="linecount">215 ln</span></div>
+        <ul class="footprint">
+          <li>story.template.md + estimation.md (reuse-aware)</li>
+          <li class="new">BRD — ref file first (FW-052) + same-session reuse caveat, matching estimation.md's own exemption</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="badge b-fixed">fixed</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="done">Fixed.</span> The flagged inconsistency — estimation.md got a reuse exemption but the BRD/domain reads one line above it didn't — is closed. Its own "don't batch epics ahead of review" rule still bounds how often this repeats per session.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/review-stories</span><span class="linecount">375 ln</span></div>
+        <ul class="footprint">
+          <li>shared: BRD, epics index, domain, estimation — once</li>
+          <li>then <b>one epic</b>, then <b>one story</b> at a time</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Exemplar.</span> Three-tier loading (shared → epic → story) is the most disciplined pattern in the whole framework given this command can run across dozens of stories in one sitting.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-story-plan</span><span class="linecount">173 ln</span></div>
+        <ul class="footprint">
+          <li>one story file, full</li>
+          <li>arch-v1-ref.md first, full arch only on a named gap</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">chain →</span></div>
+        <div class="verdict"><span class="ok">Good.</span> Textbook use of the ref-file pattern. Worth chaining into /implement-story opportunistically, though the PO-confirmation gate between them often makes that impractical.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 9 ===================== -->
+  <div class="phase" id="p9">
+    <div class="phase-head"><span class="phase-num">9</span><h2>Sprint Planning</h2></div>
+    <p class="phase-desc">Turns reviewed, sprint-assigned stories into a kickoff document and a UAT sheet.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-sprint-plan</span><span class="linecount">149 ln</span></div>
+        <ul class="footprint">
+          <li>stories/index.md + epics/index.md + template only</li>
+          <li>explicitly: "do not read individual story or epic files"</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Exemplar.</span> States the index-only discipline outright — everything needed genuinely does live in the two indexes.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-uat-checklist</span><span class="linecount">100 ln</span></div>
+        <ul class="footprint"><li><b>every</b> sprint story file, full — needs real AC text, not index summaries</li></ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="sess">fresh</span></div>
+        <div class="verdict">Genuinely can't be index-only — UAT scenarios need real AC text the index doesn't carry. Self-limiting by the framework's own 8–10 story sprint-capacity convention.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 10 ===================== -->
+  <div class="phase" id="p10">
+    <div class="phase-head"><span class="phase-num">10</span><h2>Implementation</h2></div>
+    <p class="phase-desc">Runs once per story — the highest-frequency commands in the entire framework.</p>
+    <div class="cardgrid">
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/implement-story</span><span class="linecount">480 ln</span></div>
+        <ul class="footprint">
+          <li>story + Confirmed plan + arch-v1-ref.md first</li>
+          <li><b>every relevant standards file</b>, "always read, not a fallback"</li>
+          <li>then re-read <b>again</b> at the Standards Self-Check</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-heavy">highest frequency</span><span class="badge b-fixed">documented</span><span class="sess">either</span></div>
+        <div class="verdict">Not the biggest single read, but by far the most <i>repeated</i> one. Genuine tension, not a simple fix: batching would reuse stable content, but the framework's parallel-safety design means fresh-per-story sessions are often the <i>correct</i> choice, not a waste. <span class="done">Now states this tradeoff explicitly</span> — batch same-epic stories solo/serial, fresh sessions for team/parallel — rather than leaving it an unstated judgment call.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/verify-story</span><span class="linecount">225 ln</span></div>
+        <ul class="footprint">
+          <li>story + test-strategy + defect-severity (fixed)</li>
+          <li>arch-v1-ref.md first; plan's own test table, never re-derived</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">chain ←</span></div>
+        <div class="verdict">Reuse-over-recompute done right. Best chained right after /implement-story in the same session.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-pr-description</span><span class="linecount">133 ln</span></div>
+        <ul class="footprint">
+          <li>template + story sections + verification report</li>
+          <li>architecture Section 3.1 only, not the full document</li>
+          <li><code>git diff --stat</code>, not the full diff content</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">chain ←</span></div>
+        <div class="verdict"><span class="ok">Fine.</span> Lightweight by design; naturally chains after verify-story.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 11 ===================== -->
+  <div class="phase" id="p11">
+    <div class="phase-head"><span class="phase-num">11</span><h2>Close &amp; Release</h2></div>
+    <p class="phase-desc">Runs once per sprint, after UAT sign-off.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/close-sprint</span><span class="linecount">170 ln</span></div>
+        <ul class="footprint"><li>sprint plan (full) + stories index Section 1 only</li></ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Fine.</span> Mostly interactive Q&amp;A, not file-heavy.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/gen-release-notes</span><span class="linecount">158 ln</span></div>
+        <ul class="footprint"><li>sprint plan + brief + arch §7.3 + <b>every</b> sprint story file</li></ul>
+        <div class="badgerow"><span class="badge b-full">full-read</span><span class="sess">fresh</span></div>
+        <div class="verdict">Same shape as gen-uat-checklist and the same reasoning — self-limited by sprint capacity.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PHASE 12 ===================== -->
+  <div class="phase" id="p12">
+    <div class="phase-head"><span class="phase-num">12</span><h2>Cross-cutting</h2></div>
+    <p class="phase-desc">Available at any phase — orchestration, change management, status, and quality checks.</p>
+    <div class="cardgrid">
+      <div class="card">
+        <div class="card-top"><span class="cmd">/anchor-project</span><span class="linecount">315 ln</span></div>
+        <ul class="footprint">
+          <li>.anchor-state.md + targeted single-field reads only</li>
+          <li>journal: Index table only, "never the entries themselves"</li>
+          <li>then invokes whatever command owns the current stage, unmodified</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">The framework's own economy blueprint.</span> Small, explicitly tiered overhead, designed to be safe and cheap to resume in a brand-new session every time. Doesn't reduce whatever command it hands off to — a thin, cheap wrapper, not a discount on the phase it's driving.</div>
+      </div>
+      <div class="card updated">
+        <div class="card-top"><span class="cmd">/assess-change</span><span class="linecount">347 ln</span></div>
+        <ul class="footprint">
+          <li>Phase A: templates scanned, not read whole; BRD + both indexes, full</li>
+          <li>Phase B: only the specific files the classification names</li>
+          <li>hard ceiling: 5 epics / 15 stories, else split the session</li>
+          <li class="new">now regenerates brd-core-v{N}-ref.md on every Pattern 4 change (FW-052)</li>
+        </ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="badge b-fixed">updated</span><span class="sess">fresh</span></div>
+        <div class="verdict"><span class="ok">Best-in-class.</span> The only command with an explicit numeric ceiling paired with a "split into two sessions" instruction. <span class="done">Now keeps the new BRD reference file in sync</span> the same way it already did for the architecture reference.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/update-status</span><span class="linecount">363 ln</span></div>
+        <ul class="footprint"><li>per-artifact-type dispatch — reads only the one file (+ its one index) the type actually needs</li></ul>
+        <div class="badgerow"><span class="badge b-scoped">scoped</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Fine.</span> Length is almost entirely status-value tables and rationale-prompt copy, not data load.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/project-status</span><span class="linecount">160 ln</span></div>
+        <ul class="footprint"><li>epics/index.md + stories/index.md only</li></ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Exemplar.</span> "Do not read individual epic or story files" stated outright.</div>
+      </div>
+      <div class="card">
+        <div class="card-top"><span class="cmd">/judgment-check</span><span class="linecount">187 ln</span></div>
+        <ul class="footprint"><li>orientation doc (~60 ln) + one chapter + the one target artifact — "nothing more"</li></ul>
+        <div class="badgerow"><span class="badge b-exemplary">exemplary</span><span class="sess">either</span></div>
+        <div class="verdict"><span class="ok">Exemplar.</span> Refuses sibling artifacts and most cross-references by name. Its Analysis/Resolve split guarantees no invocation ever piles new findings on top of an unresolved backlog.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== FIX LIST ===================== -->
+  <section id="fixlist">
+    <div class="section-head">
+      <h2>Fix list — status</h2>
+      <p>Originally ordered by cost-if-left-unfixed; now shows what actually happened to each item.</p>
+    </div>
+    <div class="fixtable-wrap">
+      <table class="fixtable">
+        <thead>
+          <tr><th>#</th><th>Where</th><th>Fix</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pri">1</td>
+            <td>review-architecture</td>
+            <td>Scope a resumed session's standards read to only the concern being resumed, instead of reloading the whole folder.</td>
+            <td class="status"><span class="badge b-fixed">Fixed</span></td>
+          </tr>
+          <tr>
+            <td class="pri">1a</td>
+            <td>gen-architecture</td>
+            <td>Considered the same ceiling as assess-change's; rejected — this command genuinely needs every standards file to write Sections 4–6 in one pass.</td>
+            <td class="status"><span class="badge b-hybrid">Not applied — by design</span></td>
+          </tr>
+          <tr>
+            <td class="pri">2</td>
+            <td>gen-stories, gen-epics</td>
+            <td>Extend the existing "already loaded, skip re-read" caveat to the BRD and domain-knowledge reads.</td>
+            <td class="status"><span class="badge b-fixed">Fixed</span></td>
+          </tr>
+          <tr>
+            <td class="pri">3</td>
+            <td>review-brd, assess-change, gen-epics, gen-stories</td>
+            <td>New condensed <code>brd-core-v{N}-ref.md</code> (REQ IDs, verbatim text, priority, layer, walking-skeleton flag, personas, business rules), generated on BRD approval and kept in sync by /assess-change.</td>
+            <td class="status"><span class="badge b-fixed">Fixed — FW-052</span></td>
+          </tr>
+          <tr>
+            <td class="pri">4</td>
+            <td>implement-story</td>
+            <td>Document the session-batching-vs-parallel tradeoff explicitly rather than leaving it an unstated judgment call.</td>
+            <td class="status"><span class="badge b-fixed">Fixed</span></td>
+          </tr>
+          <tr>
+            <td class="pri">5</td>
+            <td>gen-architecture</td>
+            <td>No structural fix available for the lost-in-the-middle risk — flag it as a standing, named instruction instead.</td>
+            <td class="status"><span class="badge b-fixed">Fixed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Audit method: every command file in <code>.claude/commands/</code> read in full (not sampled), cross-checked against the actual read/write instructions each one states — not inferred from the command's stated purpose. First pass: 2026-09-19. Fixes applied and this document updated: 2026-09-19, same session. See <code>decisions/FW-052-brd-quick-reference-file.md</code> for the one design-level change's full rationale.
+  </footer>
+
+</div>
+</body>
+</html>

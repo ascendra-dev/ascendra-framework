@@ -308,7 +308,7 @@ Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`]
 
 **Gate check (before reviewing):** BRD status must be `Draft` or `Under Review` (not already `Approved`).
 
-**Output:** Updated BRD with Section 16 review record filled and, on approval, Status set to `Approved`
+**Output:** Updated BRD with Section 16 review record filled and, on approval, Status set to `Approved`, plus `brd-core-v{N}-ref.md` (compact quick-reference, generated on approval, `FW-052`)
 
 **Gate:** ✅ PO manual decision (typing `'approved'` inside the command). `update-status projects/{PROJECT_CODE}/brds/brd-core-v1.md Approved` remains available as a manual fallback if approval needs to happen outside the review session, but is not the primary path. Required before `/gen-epics` can run.
 
@@ -804,7 +804,7 @@ Every command in `.claude/commands/` (33 total), with its domain region and stag
 | `/run-mock-discovery` | Problem | BRD & Scope Lock *(optional)* | Domain knowledge, BRD playbook | Updated domain knowledge Section 12.6 | — |
 | `/run-brd-discovery` | Problem | BRD & Scope Lock | `brief.md`, domain knowledge, BRD playbook | `brds/brd-discovery-state.md` → optionally BRD | `brd-discovery-state.template.md` → `brd.template.md` |
 | `/gen-brd` | Problem | BRD & Scope Lock | Discovery state, domain knowledge | `brds/brd-core-v1.md` | `brd.template.md` |
-| `/review-brd` | Problem | BRD & Scope Lock | BRD (Draft/Under Review), domain knowledge | Updated BRD (Approved inline) | — |
+| `/review-brd` | Problem | BRD & Scope Lock | BRD (Draft/Under Review), domain knowledge | Updated BRD (Approved inline) + `brd-core-v{N}-ref.md` | — |
 | `/gen-epics` | Problem | Product Structuring | BRD (Approved) | `epics/EPIC-{NNN}.md`, `epics/index.md` | `epic.template.md` |
 | `/review-epics` | Problem | Product Structuring | Epics, BRD | Updated epic files (Approved inline) | — |
 | `/gen-screen-design` | Problem | Screen Design | BRD, epics (Approved) | `screens/screen-design.md`, mock HTML | `screen-design.template.md` |
@@ -975,7 +975,8 @@ All statuses are set via `update-status` (or inline by the corresponding `review
 
 **Context loading order (minimum):**
 - `projects/{PROJECT_CODE}/brief.md`
-- `projects/{PROJECT_CODE}/brds/brd-core-v1.md` (approved sections)
+- `projects/{PROJECT_CODE}/brds/brd-core-v1-ref.md` (if Approved — read this first, `FW-052`)
+- `projects/{PROJECT_CODE}/brds/brd-core-v1.md` (full document; only when the ref file is insufficient or doesn't exist yet)
 - `projects/{PROJECT_CODE}/architecture/arch-v1-ref.md` (if Locked — read this first)
 - `projects/{PROJECT_CODE}/architecture/arch-v1.md` (if Locked — full document; only when ref file is insufficient)
 - The current sprint plan (if Active)
@@ -1002,7 +1003,8 @@ projects/{PROJECT_CODE}/
 ├── brds/
 │   ├── {domain-slug}-brd-playbook.md         # BRD discovery playbook
 │   ├── brd-discovery-state.md                # BRD discovery session state
-│   └── brd-core-v1.md                        # Business Requirements Document
+│   ├── brd-core-v1.md                        # Business Requirements Document
+│   └── brd-core-v1-ref.md                    # Compact quick-reference (generated on approval)
 ├── epics/
 │   ├── index.md                              # Epic registry + REQ coverage + dependency graph
 │   ├── review-record.md                      # Review session tracking (not a deliverable)

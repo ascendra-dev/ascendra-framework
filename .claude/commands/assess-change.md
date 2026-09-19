@@ -211,6 +211,8 @@ After confirmation, apply every change in the correct order:
 6. Story files (new stories, updated ACs, updated Out of Scope, updated dependencies)
 7. Stories index (new entries, status updates, sprint plan updates)
 
+**BRD quick-reference sync rule (`FW-052`):** If the change is Pattern 4 (the BRD itself changes), `brd-core-v{N}-ref.md` must be regenerated in full immediately after the BRD is updated — never partially patched, same discipline as the architecture ref file below. Include it in the blast radius table whenever Pattern 4 applies. Patterns 1–3 never touch the BRD, so they never touch this file either.
+
 **Architecture file sync rule:** If any change touches `arch-v1.md` (new table, modified endpoint, new enum, module addition/removal), `arch-v1-ref.md` must be regenerated in full immediately after — never partially patched. Both files must be consistent before any story can be implemented. Include both in the blast radius table whenever architecture is affected.
 
 **Screen Design sync rule:** If any change touches `screens/screen-design.md` (new/modified/removed screen, portal, or nav item), and `architecture/arch-v1.md` exists (`Locked` or otherwise), its Section 3.1.3.1–3.1.3.3 must be updated to match — that section is carried over from `screen-design.md` as-is, never re-derived (`FW-026`). This does not require reopening the full `/review-architecture` gate or moving the document's `Status` off `Locked`: add a row to `arch-v1.md`'s Change History table recording the amendment, and apply the same addition to Section 3.1.3, scoped to exactly what changed. Regenerate or patch the affected mock via `/gen-ui-mocks` in the same session. `screen-design.md` itself does not need to leave `Approved` status or go through `/review-screen-design` again for an Informal (Pattern 2) gap-fill — a Document Control row there is sufficient (see the Pattern 2 formality notes above).
@@ -308,6 +310,7 @@ After all files are updated, run these cross-checks:
 - [ ] No `Merged` or `Done` story was edited in-place — any scope change to a completed story exists as a new superseding story with a `> Superseded by:` line on the original
 - [ ] Any story in `In Progress`, `PR Created`, or `Changes Requested` that received AC updates has a `> Last revised:` line and PO has been flagged that the active PR may need re-review
 - [ ] If `screen-design.md` changed, `arch-v1.md` Section 3.1.3.1–3.1.3.3 matches it exactly (same screens, same Portals/Nav Map rows) — no drift between the two carryover copies
+- [ ] If Pattern 4 changed the BRD, `brd-core-v{N}-ref.md` was regenerated in full and its Requirements/Personas & Roles/Business Rules tables match the updated BRD exactly
 
 Record any failure. Fix before reporting complete.
 

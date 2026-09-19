@@ -4,6 +4,8 @@ You are generating the Architecture Document for an Ascendra client project. Thi
 
 The architecture document defines: project repository naming, folder structure, tech stack, every backend module, every database table, every API endpoint, the security model, seed data, and all environment variables. `/implement-story` implements exactly what is defined here — nothing more, nothing less.
 
+**Run this command in a dedicated, otherwise-empty session.** This is the heaviest command in the framework — its own template, three standards templates, every existing project standards file, the BRD, and any conditional reference docs are all in context together before a single word of the document is written. Do not chain it after another heavy command (e.g. `/gen-brd`) or bundle other work into the same session first; the combined size is a real risk of a specific rule getting lost among everything else loaded, independent of whether the session ever nears a token ceiling.
+
 ---
 
 ## Arguments received
