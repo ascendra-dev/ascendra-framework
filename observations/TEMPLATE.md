@@ -10,7 +10,7 @@
 | **Date** | YYYY-MM-DD |
 | **Status** | New |
 | **Area** | [Which command(s), template(s), or framework concept this touches] |
-| **Found while** | [What was actually running — e.g. `/anchor-project` driving `/gen-brd` for PROJECT-CODE, or standalone `/review-stories`] |
+| **Found while** | [Which journal entries this was drawn from — e.g. "Entries 3, 6, 8 of HARBORVIEW-INV-001's journal.md, extracted at BRD gate close" — or, for a pre-journal observation, what was actually running] |
 
 > Status values: `New` (default) · `Under Review` · `Promoted → FW-XXX` · `Rejected` · `Won't Fix`
 

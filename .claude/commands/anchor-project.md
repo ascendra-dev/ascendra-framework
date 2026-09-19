@@ -80,6 +80,7 @@ A missing `brief.md` is expected for a brand-new project and is not a gate failu
 | File | Kind | Open Items |
 |------|------|-----------|
 | priming/priming-package.md | priming session output | 2 Pending topics, 1 open item |
+| journal.md | project journal | 9 entries, 3 unextracted |
 
 ## Open Drift Flags
 [None, or a short list — see Step 4]
@@ -100,6 +101,7 @@ A missing `brief.md` is expected for a brand-new project and is not a gate failu
 4. **Rebuild the Lineage Ledger** from each artifact's own Document Control / Document History table: for every artifact that has a documented upstream dependency (Domain→BRD, BRD→Epics, BRD/Epics→Screen Design, Screen Design/BRD/Epics→Architecture, Architecture→Stories), record the upstream version the downstream artifact's own content or history implies it was built against, and the upstream's actual current version. Where the downstream artifact gives no explicit indication, assume it was built against the upstream's version at the downstream's own creation date and note this as an assumption rather than a confirmed fact.
 5. **Extension projects:** if the brief's Extension Context names a base project, add its relevant artifact(s) to the Lineage Ledger too, with a path into that other project's folder (`projects/{BASE_CODE}/...`) rather than this one. Read the base artifact's Status/Document History directly — it does not need to be anchor-managed itself for this to work.
 6. **Reference Material Index:** if `projects/{PROJECT_CODE}/priming/priming-package.md` exists, list it here with a count of `Pending` topics and open items (Section 9's row count). Get the `Pending` count by scanning Sections 4-6's own per-topic Status lines directly — a short, targeted scan of one-line fields, not a full-document read. Section 3 (Coverage Snapshot) cannot be used for this: it only gives a coarse per-section rollup (Not started / In progress / Substantially covered for Sections 4-6 as a whole), not a per-topic count. This is what Step 7 checks before offering a priming session, and what Step 9 checks before decomposing into whichever phase it's about to invoke.
+7. **Journal:** if `projects/{PROJECT_CODE}/journal.md` exists, list it here with its own Index's entry count and how many entries sit past the "Extracted through" pointer. Read only the Index table (a handful of lines) for this — never the entries themselves. This is what Step 11b checks before an extraction pass runs, to know whether there's anything new to process.
 
 ---
 
@@ -170,7 +172,7 @@ This step is a standing behavioral rule, not a one-time action — every PO-faci
 
 ## Step 7 — Offer a priming session
 
-**Corrected 2026-09-17:** document ingestion is no longer anchor's own logic — it moved to a standalone companion command, `/run-priming-session`, scoped to Problem Domain (Brief/Domain/BRD). This step is now a handoff, not a pipeline.
+Document ingestion is not anchor's own logic — it is a standalone companion command, `/run-priming-session`, scoped to Problem Domain (Brief/Domain/BRD). This step is a handoff, not a pipeline.
 
 If the PO indicated they have source material or want to talk through raw facts (Step 5), or at any point asks to feed something in, and the current stage is still within Problem Domain (Brief, Domain, or BRD — not yet Locked/Approved past BRD):
 
@@ -246,21 +248,47 @@ Rewrite `projects/{PROJECT_CODE}/.anchor-state.md`:
 
 ---
 
-## Step 11 — Self-improvement logging
+## Step 11 — Project journal and framework learning
 
-This is a standing rule, not sequential to Step 10 — it can trigger during Step 9 (wearing an invoked command's hat) or your own orchestration logic anywhere in this command, not only here. Whenever you hit something that doesn't work as documented, is genuinely ambiguous, or represents a real, evidenced improvement to the framework itself — not the project — log it. This covers command-level friction (a gap in `gen-brd.md`, a check `review-stories.md` misses) at least as much as anything in this command's own logic; a shared-command gap affects every project that ever runs it, not just anchor sessions.
+This is a standing rule with two distinct halves, not sequential to Step 10 — either can trigger during Step 9 (wearing an invoked command's hat), during Step 4 (drift), during Step 6 (a PO reaction), or anywhere else in this command's own orchestration, not only here. Full design rationale: `ANCHOR-PROJECT-DESIGN.md` §8.
 
-`observations/index.md` and `observations/TEMPLATE.md` already exist — do not recreate them.
+### 11a — Writing the journal (continuous, low bar)
 
-Write `observations/OBS-{next-number}-{slug}.md` using `observations/TEMPLATE.md`'s shape, add a row to `observations/index.md`. Do this silently — do not stop and ask the PO's permission (this is about the framework, not their project) — but surface one line in the session output: `noted OBS-{NNN} — {one-line gist}`, so it is never invisible, just not gating.
+`projects/{PROJECT_CODE}/journal.md` already exists — `/init-project` creates it empty. Do not recreate it.
 
-The bar is genuinely high — a real, evidenced finding, not every passing stylistic thought, using the same restraint as Step 6.2's question budget.
+Append an entry (per `projects/TEMPLATE/journal.template.md`'s shape — numbered sequentially, dated, tagged with exactly one of its eight closed categories) whenever one of these happens, in real time, not batched for later:
+- The PO reacts to something, prompted or not, positive or negative — quote them verbatim (`PO Feedback`).
+- Something worked cleanly enough to be worth reinforcing, not just what broke (`Strength`).
+- Anchor's own orchestration or whichever command it's wearing the hat of hits friction (`Friction`).
+- A drift flag (Step 4) is found or resolved (`Drift Resolution`).
+- A `/judgment-check` pass returns a finding (`Judgment-Check Finding`).
+- A practitioner-guide or command-instruction gap surfaces in passing (`Documentation Gap`).
+- A real capability boundary gets hit, not speculated about (`Limitation`).
+- Anchor or the PO has to route around something to keep moving (`Workaround`).
 
-**The reporting gap:** `observations/` lives in this PO's own clone of the framework (per `README.md`'s clone-based setup) — it does not automatically reach the framework author. Whenever you write a new observation, add this line to the session output directly beneath the `noted OBS-{NNN}` line:
+**The bar here is deliberately low — this is not the old high-bar filter.** Capture anything real; do not pre-judge significance in the moment. Filtering happens at extraction (11b), with the benefit of hindsight and patterns across multiple entries, which a single in-the-moment incident can't provide. Do this silently, without asking the PO's permission — same as the original design's posture, since this is about the framework and the project's own history, not a decision that needs their sign-off.
+
+Update the journal's own Index (entry count) each time. Do not stop and surface each individual entry in the session output — that would reintroduce the density problem Step 6.5 already solves elsewhere. Step 12's session-close report covers this with one line instead.
+
+### 11b — Extraction (periodic, deliberate — never per-entry)
+
+**Runs automatically at milestones this command already recognizes** — a `/review-X` gate closing (inside Step 9), the Walking Skeleton handoff (Step 8's own trigger), and release preparation (`/close-sprint` / `/gen-release-notes`, Step 8's post-handoff role). Never continuously, and never in response to a single journal entry — the gap between writing and analyzing is deliberate, not an inefficiency to close.
+
+Read `projects/{PROJECT_CODE}/journal.md`'s entries strictly after its Index's "Extracted through" pointer — never the whole file. Look for a real, evidenced pattern across those entries (the same friction recurring, a limitation hit more than once, a documented gap corroborated by a `Friction` and a `Judgment-Check Finding` together) — a single entry, on its own, is rarely enough. This is a genuinely higher bar than the original design's in-the-moment call could actually apply, because it's informed by more than one data point.
+
+For each real pattern found: write `observations/OBS-{next-number}-{slug}.md` using `observations/TEMPLATE.md`'s shape (its "Found while" field now cites the journal entries the pattern was drawn from, e.g. "Entries 3, 6, 8 of HARBORVIEW-INV-001's journal"), add a row to `observations/index.md`. `observations/index.md` and `observations/TEMPLATE.md` already exist — do not recreate them.
+
+**At the two largest milestones only — Walking Skeleton handoff and project close — also generate a project testimonial:** a polished narrative synthesis of the journal so far (what the project was, what worked, what friction showed up), written for a human reader, not a framework-decision candidate. Write it to `projects/{PROJECT_CODE}/testimonial.md`. This never runs at an ordinary gate close — only the two milestones named here.
+
+Advance the journal's Index "Extracted through" pointer to the last entry this pass processed, and record the extraction date, whether or not it produced any observations.
+
+Surface one line in the session output per observation written — `noted OBS-{NNN} — {one-line gist}` — so it's never invisible, just not gating. If a testimonial was generated this pass, add one line for that too.
+
+**The reporting gap:** `observations/` lives in this PO's own clone of the framework (per `README.md`'s clone-based setup) — it does not automatically reach the framework author. Whenever an extraction pass writes a new observation, add this line to the session output directly beneath the `noted OBS-{NNN}` line:
 
 > "Found something worth improving in the framework itself? Share it with the maintainer: `[contact channel — TBD]`."
 
-This is a placeholder, deliberately — the real channel is the framework author's decision, not something to invent here. Leave the bracketed text exactly as shown until it is replaced with a real value.
+This is a placeholder, deliberately — the real channel is the framework author's decision, not something to invent here. Leave the bracketed text exactly as shown until it is replaced with a real value. Share the observation, not the raw journal — the journal carries real client-specific content (verbatim PO quotes, real project facts) that has no business leaving this PO's own clone; an observation has already been generalized away from any specific client by the time it's written.
 
 ---
 
@@ -272,7 +300,9 @@ ANCHOR SESSION — {PROJECT_CODE}
 Stage:          {current stage}
 This session:   {what actually happened — document written, gate closed, priming session run, etc.}
 Drift flags:    {count, or "None"}
-Observations:   {count logged this session, or "None"}
+Journal:        {entries added this session, or "None"}
+Observations:   {count promoted this session via extraction, or "None ran" if no milestone triggered one}
+Testimonial:    {"Generated" if this session hit a Walking Skeleton handoff or project close, otherwise omit this line}
 ─────────────────────────────────────────
 Next step:
 {The command Step 5 would now point to on the next resume. Give the exact slash-command syntax.}

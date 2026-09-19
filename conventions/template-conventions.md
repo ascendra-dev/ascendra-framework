@@ -174,6 +174,8 @@ Plain `[AI Guide]` is not valid in a verification section.
 3. What sections are still pending
 4. Any open issues or follow-ups the PO committed to
 
+**T-042** A continuous, append-only session-record template (`journal.template.md` is the first of this kind) is exempt from T-040's "penultimate section" placement — its resume-relevant pointer (what's been processed so far) goes in an Index table at the *top* of the file instead. Reason: this template type is never resumed-and-regenerated in full like a discovery-state file — it's read top-to-bottom, chronologically, and keeps growing indefinitely — so the pointer needs to be visible before scrolling past however many entries already exist, not buried after them. Also exempt from T-010/T-012 (no Document Control table, no Status field), for the same reason discovery-state files already are (T-011, T-014) — it is a working record, not a gated deliverable.
+
 ---
 
 ## Checklist for Verifying a Template
@@ -202,3 +204,4 @@ Use this before marking any new or modified template ready:
 - [ ] T-033  Verification items are `- [ ]` format; each names a section and a failure condition
 - [ ] T-040  Session-state documents include Resume Instructions as penultimate section
 - [ ] T-041  Resume Instructions include: files to load, next session start point, pending sections, open follow-ups
+- [ ] T-042  A continuous append-only session-record template keeps its resume pointer in a top-of-file Index instead of a penultimate section, and has no Document Control table or Status field

@@ -60,6 +60,9 @@ ascendra-framework/
     ├── index.md            # Project registry
     ├── TEMPLATE/           # ⚠ FRAMEWORK DEPENDENCY — do not delete or rename
     │   ├── brief.template.md
+    │   ├── journal.template.md
+    │   ├── priming/
+    │   │   └── priming-package.template.md
     │   ├── brds/
     │   │   ├── brd.template.md
     │   │   ├── brd-playbook.template.md
@@ -95,6 +98,8 @@ ascendra-framework/
     │   └── releases/
     │       └── release-notes.template.md
     └── {PROJECT_CODE}/     # ⚠ GITIGNORED — your private client project workspace
+        ├── journal.md           # /anchor-project's own continuous project record
+        ├── testimonial.md       # Generated at Walking Skeleton handoff / project close
         ├── source-material/     # PO-dropped raw material for /run-priming-session
         ├── priming/             # Generated: priming-package.md
         ├── brief.md

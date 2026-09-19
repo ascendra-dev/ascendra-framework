@@ -7,6 +7,7 @@
 | **Status** | Decided — implemented, pending validation against a real project |
 | **Area** | `.claude/commands/anchor-project.md`, `.claude/commands/run-priming-session.md`, `.claude/commands/init-project.md`, `projects/TEMPLATE/priming/priming-package.template.md` + `.example.md`, `conventions/command-conventions.md` (two exceptions: `C-011`, `C-013`), `conventions/priming-command-conventions.md`, `observations/index.md` + `TEMPLATE.md`, `CLAUDE.md`, `PROJECT-LIFECYCLE.md`, `practitioner-guide/00-orientation.md` |
 | **Depends on** | `FW-048` (Walking Skeleton Milestone) — `/anchor-project`'s Solution Domain handoff trigger is `FW-048`'s `Walking Skeleton Complete` field; this decision would not be checkable without it |
+| **Amended by** | `FW-050` (Project Journal and Framework Learning) — replaces this decision's original self-improvement logging mechanism (Step 11, the summary in "Key Mechanisms" below) with a two-layer journal + extraction model. The four "Amended 2026-09-19" sections below (priming-package sections and flags) are unaffected and remain current. |
 
 ---
 

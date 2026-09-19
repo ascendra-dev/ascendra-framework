@@ -53,6 +53,7 @@ Framework-level architecture decision records (ADRs). Each `FW-{NNN}` file is a 
 | FW-047 | [Optimistic Concurrency Generation Completeness](FW-047-optimistic-concurrency-generation-completeness.md) | Decided — implemented, amends `FW-045`/`FW-046` |
 | FW-048 | [Walking Skeleton Milestone](FW-048-walking-skeleton-milestone.md) | Decided — implemented |
 | FW-049 | [Anchor Project and Priming Session](FW-049-anchor-project-and-priming-session.md) | Decided — implemented, pending validation |
+| FW-050 | [Project Journal and Framework Learning](FW-050-project-journal-and-framework-learning.md) | Decided — implemented, pending validation, amends `FW-049` |
 
 ## Removed decisions
 
