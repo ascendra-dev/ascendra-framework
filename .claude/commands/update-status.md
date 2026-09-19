@@ -228,6 +228,8 @@ No rationale prompt required — the review session (`/review-epics`) is the rec
 **If a sprint plan document exists** at `projects/{PROJECT_CODE}/sprints/sprint-{NN}.md`:
 - Also update the `**Status:**` field in that document's header block to match the new status.
 
+**Sync `brief.md` Section 9 (Related Artifacts), if it exists (`FW-002`):** find the row whose Location matches `sprints/sprint-{NN}.md` and update its Status column to the new value. If no matching row exists, skip silently — do not fail, and do not create one (row creation is `/gen-sprint-plan`'s job, not this command's).
+
 ---
 
 ---
@@ -272,6 +274,8 @@ After receiving the rationale, add a row to the BRD Document Control table:
 ```
 Then update the Status field to `Approved`.
 
+**Sync `brief.md` Section 9 (Related Artifacts), if it exists (`FW-002`):** applies to every BRD status change, not only Approved. Find the row whose Location matches this BRD's path (`brds/brd-core-v{N}.md`) and update its Status column to the new value. If no matching row exists, skip silently — do not fail, and do not create one (row creation is `/gen-brd`'s job, not this command's).
+
 ---
 
 ### Architecture update
@@ -314,6 +318,8 @@ After receiving the rationale, add a row to the architecture Change History tabl
 | — | {today's date} | Product Owner | Locked: {rationale} |
 ```
 Fill in the `Locked on` field with today's date. Then update the Status to `Locked`.
+
+**Sync `brief.md` Section 9 (Related Artifacts), if it exists (`FW-002`):** applies to every architecture status change, not only Locked. Find the row whose Location matches `architecture/arch-v1.md` and update its Status column to the new value. If no matching row exists, skip silently — do not fail, and do not create one (row creation is `/gen-architecture`'s job, not this command's).
 
 ---
 

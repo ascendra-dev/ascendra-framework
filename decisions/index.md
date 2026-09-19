@@ -5,7 +5,7 @@ Framework-level architecture decision records (ADRs). Each `FW-{NNN}` file is a 
 | ID | Title | Status |
 |----|-------|--------|
 | FW-001 | [Document Versioning Rule](FW-001-document-versioning.md) | Decided |
-| FW-002 | [Related Artifacts Table (brief.md Section 9) Maintenance Strategy](FW-002-related-artifacts-maintenance.md) | Decided — partially implemented |
+| FW-002 | [Related Artifacts Table (brief.md Section 9) Maintenance Strategy](FW-002-related-artifacts-maintenance.md) | Decided — implemented |
 | FW-003 | [Template and Example File Conventions](FW-003-template-and-example-conventions.md) | Decided |
 | FW-004 | [\[AI Guide\] Label Convention](FW-004-ai-guide-label.md) | Decided |
 | FW-005 | [Brief as Intake State](FW-005-brief-as-intake-state.md) | Decided |

@@ -749,7 +749,15 @@ Project-specific (derive from BRD business rules and domain knowledge for this p
 
 ---
 
-**After writing both files**, report to the user:
+**After writing both files**, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) if the file exists — add a row:
+
+| Artifact | Location | Status |
+|----------|----------|--------|
+| Architecture v1 | [`architecture/arch-v1.md`](architecture/arch-v1.md) | Draft |
+
+Per `conventions/command-conventions.md` C-043, the Location column is a real markdown link relative to `brief.md`'s own location, never plain backtick text. If an Architecture row already exists from a prior run (a re-run against updated standards, not a version bump — architecture amendments live in `arch-v1.md`'s own Change History, the filename never changes), update its status instead of adding a duplicate. If `brief.md` does not exist, skip this step silently.
+
+Then report to the user:
 
 ## Step 15 — Report to the user
 

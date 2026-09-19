@@ -128,6 +128,14 @@ Work through all verification checks. Record any failure before writing the file
 
 Create the `releases/` directory if it does not exist.
 
+After writing the file, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) if the file exists — add a row:
+
+| Artifact | Location | Status |
+|----------|----------|--------|
+| Release v{version} | [`releases/v{version}-release-notes.md`](releases/v{version}-release-notes.md) | Published |
+
+Per `conventions/command-conventions.md` C-043, the Location column is a real markdown link relative to `brief.md`'s own location, never plain backtick text. Each release gets its own row — Section 9 accumulates one row per release, same as Sprint Plans. `Published` is fixed at creation, never updated afterward (`FW-002`: release notes carry no lifecycle status). If `brief.md` does not exist, skip this step silently.
+
 ---
 
 ## Step 8 — Report to the user

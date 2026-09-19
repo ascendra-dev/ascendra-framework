@@ -123,6 +123,14 @@ Fill in the following data from Steps 3–5:
 
 Create the `sprints/` directory if it does not exist.
 
+After writing the file, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) if the file exists — add a row:
+
+| Artifact | Location | Status |
+|----------|----------|--------|
+| Sprint {NN} | [`sprints/sprint-{NN}.md`](sprints/sprint-{NN}.md) | Planning |
+
+Per `conventions/command-conventions.md` C-043, the Location column is a real markdown link relative to `brief.md`'s own location, never plain backtick text. Each sprint gets its own row, never overwriting a prior sprint's — Section 9 accumulates one row per sprint, unlike BRD/Architecture which track a single current version. If a row for this exact sprint number already exists from a prior run, update it in place rather than duplicating. If `brief.md` does not exist, skip this step silently.
+
 After writing the file, report:
 
 ```

@@ -187,6 +187,14 @@ Wait for the user's response:
 
 If this is a revision, increment the version in Document Control and in the final section.
 
+**After writing the file**, update `projects/{PROJECT_CODE}/brief.md` Section 9 (Related Artifacts) if the file exists — add a row:
+
+| Artifact | Location | Status |
+|----------|----------|--------|
+| BRD v{N} | [`brds/brd-core-v{N}.md`](brds/brd-core-v{N}.md) | Draft |
+
+Per `conventions/command-conventions.md` C-043, the Location column is a real markdown link relative to `brief.md`'s own location, never plain backtick text. If a BRD row already exists from a prior version, update its label, Location, and Status in place rather than adding a duplicate — Section 9 tracks the current BRD, not a history of every version (`FW-001`/`FW-002`). If `brief.md` does not exist, skip this step silently.
+
 **After writing the file**, tell the user:
 1. The full path where the file was written
 2. Total number of functional requirements written (count of REQ-XXX IDs)

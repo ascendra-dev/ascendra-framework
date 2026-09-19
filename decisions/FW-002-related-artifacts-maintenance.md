@@ -4,7 +4,7 @@
 |-------|-------|
 | **ID** | FW-002 |
 | **Date** | 2026-06-27 |
-| **Status** | Decided — partially implemented. `/gen-domain-knowledge` adds its Section 9 row (verified 2026-07-11). `/gen-brd`, `/gen-architecture`, `/gen-sprint-plan`, `/gen-release-notes`, and `/update-status` do not yet — pending their Batch 2 command-upgrade passes. |
+| **Status** | Decided — fully implemented 2026-09-19. All seven creating commands (`/run-intake`, `/gen-domain-knowledge`, `/gen-brd`, `/gen-architecture`, `/gen-sprint-plan`, `/gen-release-notes`, `/gen-epics`) add their Section 9 row; `/update-status` syncs the Status column for BRD, Architecture, and Sprint Plan. Location values are real markdown links (`conventions/command-conventions.md` C-043), not plain text, per that rule's later addition. |
 | **Area** | `brief.md` Section 9, all artifact-creating commands, `/update-status` |
 
 ---
@@ -27,7 +27,7 @@ Section 9 is a navigation index for major deliverables, not a file listing. Maxi
 
 | Artifact | In Section 9 | Added by | Status updated by |
 |----------|-------------|----------|------------------|
-| Project Brief | ✅ | `/run-intake` (Step 7) ✅ already implemented | `/update-status` |
+| Project Brief | ✅ | `/run-intake` (Step 7) | N/A — the brief's own Status field is separate from its Section 9 self-row; no command syncs this row (corrected 2026-09-19 — this cell previously claimed `/update-status`, but the Implementation section below never actually specified that, and none was built) |
 | Domain Knowledge | ✅ | `/gen-domain-knowledge` | Manual (no lifecycle status) |
 | BRD | ✅ | `/gen-brd` | `/update-status` |
 | Architecture | ✅ | `/gen-architecture` | `/update-status` |
@@ -50,33 +50,35 @@ If `/update-status` added the row, Section 9 would only show an artifact after i
 
 ---
 
-## Implementation — what each command needs
+## Implementation — status as of 2026-09-19
 
 ### Creating commands — add row to Section 9
 
 After writing the artifact file, each command checks if `projects/{PROJECT_CODE}/brief.md` exists. If it does, append a row to the Section 9 table:
 
 ```markdown
-| {Artifact label} | `{artifact path}` | {initial status} |
+| {Artifact label} | [`{artifact path}`]({artifact path}) | {initial status} |
 ```
 
-If `brief.md` does not exist (e.g. command run without init-project), skip silently — do not fail.
+The Location column is a real markdown link, relative to `brief.md`'s own location — never plain backtick text (`conventions/command-conventions.md` C-043, added after this decision's original text; this file's row format is corrected to match). If `brief.md` does not exist (e.g. command run without init-project), skip silently — do not fail.
 
-Commands requiring this addition:
-- `/gen-domain-knowledge` — adds Domain Knowledge row, no lifecycle status → use `Active`
-- `/gen-brd` — adds BRD v1 row, initial status `Draft`
-- `/gen-architecture` — adds Architecture v1 row, initial status `Draft`
-- `/gen-sprint-plan` — adds Sprint N row, initial status `Planning`
-- `/gen-release-notes` — adds Release vX.X.X row, no lifecycle status → use `Published`
-- `/gen-epics` — adds one Epics index row (`epics/index.md`), no lifecycle status → use `Active` (confirmed already implemented — found during 2026-07-13 audit, this row was missing from the curated list even though `/gen-epics` already wrote it correctly)
+All six commands below are built and self-checked:
+- [x] `/gen-domain-knowledge` — adds Domain Knowledge row, no lifecycle status → use `Active`
+- [x] `/gen-brd` — adds BRD v{N} row, initial status `Draft`; on a revision, updates the existing row in place rather than duplicating
+- [x] `/gen-architecture` — adds Architecture v1 row, initial status `Draft`
+- [x] `/gen-sprint-plan` — adds Sprint {NN} row, initial status `Planning`; one row per sprint, never overwritten by a later sprint
+- [x] `/gen-release-notes` — adds Release v{version} row, no lifecycle status → use `Published`; one row per release
+- [x] `/gen-epics` — adds one Epics index row (`epics/index.md`), no lifecycle status → use `Active` (confirmed already implemented — found during 2026-07-13 audit, this row was missing from the curated list even though `/gen-epics` already wrote it correctly)
 
 ### `/update-status` — update status column in Section 9
 
-For BRD, Architecture, and Sprint Plan updates only, after updating the artifact file, also:
+**Built.** For BRD, Architecture, and Sprint Plan updates only, after updating the artifact file, also:
 1. Read `brief.md`
 2. Find the Section 9 table row whose Location matches the artifact path
 3. Update its Status column value to the new status
 4. If no matching row found, skip silently (do not fail — the PO may have removed it deliberately)
+
+Domain Knowledge, Release Notes, and Epics index rows are never synced by `/update-status` — each carries no lifecycle status of its own (`Active`/`Published` is fixed at creation), matching the curated table above.
 
 ---
 
