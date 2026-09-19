@@ -176,6 +176,8 @@ projects/{PROJECT_CODE}/
 
 **`journal.md` is a file, not an empty folder — pre-fill it from `projects/TEMPLATE/journal.template.md`:** copy its structure (Index, Entries heading, Pre-Extraction Verification), fill the Index's Project Code, set "Entries recorded" to `0`, "Extracted through" to "None yet", "Last extraction" to "Never", and leave the Entries section with no entries under it — `/anchor-project` appends the first one once it actually runs. A PO who never uses anchor simply never sees this file grow past its empty state, same as any other anchor-only mechanism.
 
+**Every one of the 15 subfolders above (everything except `journal.md`) gets an empty `.gitkeep` file inside it, created in the same step.** Git never tracks an empty directory — only files — so an empty folder with nothing in it silently disappears for anyone who clones fresh, until some later command happens to write into it. This has no effect for solo use, where `projects/*` is gitignored anyway (see `README.md`'s "Solo Use vs. Team Use"), but it's a real gap for a team that has deliberately made `projects/{PROJECT_CODE}/` shared and version-controlled — without `.gitkeep`, a teammate's fresh clone is silently missing whichever folders haven't been written into yet. Leave `.gitkeep` in place even after a folder gains real content; removing it once populated is unnecessary churn, not a requirement.
+
 Project identity (code, name, client, domain, created date) lives only in `projects/index.md` (Step 8 below) — per `FW-027`, no separate `project.json` is created. Extension relationships are captured in the brief's Extension Context fields during `/run-intake`. Repository topology and agent assignments are defined in the architecture document.
 
 ---
@@ -212,9 +214,11 @@ Files created:
   projects/{PROJECT_CODE}/brief.md
   projects/{PROJECT_CODE}/journal.md
 
-Folders scaffolded:
+Folders scaffolded (each holding a placeholder .gitkeep so it survives a
+fresh clone if your team version-controls projects/{PROJECT_CODE}/):
   source-material/  priming/  domain/  standards/  brds/  epics/  screens/
-  stories/  architecture/  mocks/  sprints/  test-reports/  pr/  releases/
+  stories/  story-plans/  architecture/  mocks/  sprints/  test-reports/
+  pr/  releases/
 
 Registry updated:
   projects/index.md
