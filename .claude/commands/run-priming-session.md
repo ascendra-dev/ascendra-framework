@@ -40,6 +40,8 @@ Before saying anything to the PO:
 2. `projects/{PROJECT_CODE}/priming/priming-package.md` — if it exists, this is a **resumed** session. Read its Section 11 (Resume Instructions) and Section 3 (Coverage Snapshot) to know what's already captured before asking about anything.
 3. `projects/{PROJECT_CODE}/brief.md`, `projects/{PROJECT_CODE}/domain/*-core.md`, `projects/{PROJECT_CODE}/brds/brd-core-v1.md` — whichever of these already exist. **Anything already Approved/Locked in a real artifact is out of scope for this session** — do not re-ask about it. If the Brief is already Approved and the BRD is already Locked, this command has nothing left to usefully do; say so plainly rather than running a pointless session.
 
+**"Out of scope" means don't ask, not don't notice.** If triage (Step 5a) or the live conversation (Step 5b) surfaces a genuine new fact that belongs to an already-Approved/Locked topic — not a re-ask, something the PO or source material volunteered on its own — do not silently drop it just because that topic is out of scope for this session. Record it in Section 9 (Open/Uncategorized) with a note that it affects an already-settled artifact and needs `/assess-change`, not this round's discovery. See `conventions/priming-command-conventions.md` PC-015.
+
 ---
 
 ## Step 4 — Open the session
@@ -71,6 +73,8 @@ For every file in `source-material/` the PO points to (or all of them, if they s
 
 **Conflicting facts** — when a unit's content disagrees with something already captured for the same topic (per the Triage check above), never silently pick a side or overwrite the earlier entry. Write both statements in full, each attributed to its origin (file name + rough location, or "PO stated live" if it came from conversation), and tag the Flag `Conflicting Source`. This applies whether the disagreement is between two places in the same file, two different files, or a file and something the PO already said this session.
 
+**A fact touching an already-settled topic** — if a unit maps to a Brief or Domain topic that's already Approved/Locked in the real artifact (per Step 3), do not discard it just because that topic is out of scope for this session's own questions. "Out of scope" means don't go asking about it — it doesn't mean ignore a fact that shows up on its own. Record it in Section 9 (Open/Uncategorized), noting which already-settled artifact it affects and that it needs `/assess-change` to actually land, not this round's discovery.
+
 **Sensitive content** — recognize obviously credential-shaped strings (API keys, tokens, passwords) and flag them to the PO rather than filing them into the package.
 
 **Volume** — for a genuinely large file, checkpoint progress in the priming package's own Section 2 (Session History) rather than holding the whole source in context across turns. It is entirely normal for one file to take more than one session to fully triage.
@@ -93,6 +97,8 @@ Persist the Map + Triage decisions themselves in Section 8 (Source Material Inde
 **No Ubiquitous Language exists yet.** There is no domain glossary to conform to at this stage. Capture the PO's own terms exactly as used. If the same concept seems to get two different names across the conversation, note it in Section 7 as a flag — do not silently pick one or ask the PO to standardize on the spot. Resolving it is domain discovery's job, later.
 
 **When the PO's live statement disagrees with something already captured** — from earlier file triage, or from earlier in this same conversation — ask about it directly, right then, compressed like any other question: *"Your notes/the SRS say X, but you just said Y — which is it?"* This is the cheap case, since resolution is available immediately. Only fall back to a recorded `Conflicting Source` flag (per Step 5a) when no live resolution is possible in the moment — e.g. two dropped files disagree and the PO hasn't been asked about either yet.
+
+**When the PO volunteers something that touches an already-settled Brief or Domain topic**, same treatment as Step 5a's file case — don't discard it as out of scope, record it in Section 9 with a note on which artifact it affects and that `/assess-change` is the real next step for it, not this session.
 
 **100% coverage is never the goal.** If a topic genuinely doesn't come up, leave it `Pending` and move on — do not manufacture a question for every empty section just to fill it. A short, honest session that leaves real gaps clearly marked is a better outcome than a long one that pads out low-value detail to look complete.
 

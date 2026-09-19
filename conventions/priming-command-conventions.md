@@ -28,6 +28,8 @@ Verifiable rules for any command that writes into `projects/{PROJECT_CODE}/primi
 
 **PC-014** The legacy-material posture — matches generic domain understanding → ordinary content; diverges for a stated business reason → `AI Knowledge Correction`; diverges and looks like a design flaw rather than a real constraint → `Legacy Design Question`, framed as a negotiation, never resolved unilaterally — applies to every priming-producing command reading anything that describes or embodies an existing system, not only to `/run-priming-session` reading legacy prose (`ANCHOR-PROJECT-DESIGN.md` §5.6).
 
+**PC-015** "Already Approved/Locked in a real artifact is out of scope" (PC-003's own mid-project case) means don't *ask* about it — it does not mean ignore a genuine new fact that touches it if one surfaces on its own, from a file or from the PO volunteering it live. A priming-producing command records such a fact in Section 9 (Open/Uncategorized) instead of discarding it, with "Where it probably belongs" naming the affected artifact and its status (e.g. "Domain — already Locked, needs `/assess-change`") rather than a phase to raise a live question in. This is a distinct case from an ordinary Section 9 leftover: the fact already has a real home, that home is just closed for this session, and the correct next step is `/assess-change`, not a discovery question.
+
 ---
 
 ## Section 3 — Mapping Priority
@@ -100,6 +102,7 @@ Use this before marking any new or modified priming-producing command ready:
 - [ ] PC-012  Volume handling is checkpointed for large sources
 - [ ] PC-013  Sensitive-content triage applied to whatever the command reads
 - [ ] PC-014  Legacy-material posture (AI Knowledge Correction / Legacy Design Question) applied where relevant
+- [ ] PC-015  A fact touching an already-Approved/Locked topic is recorded in Section 9, not silently discarded because that topic is out of scope
 - [ ] PC-020  Facts mapped onto Sections 4-6 first, always, before any Source-Specific routing is considered
 - [ ] PC-021  Section 9 vs. Section 10 usage matches their distinct purposes (one-off vs. routine class of fact)
 - [ ] PC-030  Any Source-Specific subsection uses the `### 10.N Source-Specific — [Name] (owned by /command-name)` heading pattern

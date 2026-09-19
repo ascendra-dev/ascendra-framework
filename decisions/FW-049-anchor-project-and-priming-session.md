@@ -61,6 +61,16 @@ Full rule set: `conventions/priming-command-conventions.md` PC-042/PC-043; desig
 
 ---
 
+## Amended 2026-09-19 — "Out of Scope" Was Silently Swallowing New Facts
+
+Walking through a real mid-project scenario — Brief and Domain already Approved/Locked, BRD still Draft, new source material dropped in — surfaced a fourth gap. `/run-priming-session`'s Step 3 says an already-Approved/Locked topic is "out of scope for this session — do not re-ask about it," meant to stop it wasting the PO's time re-confirming settled things. Read literally, it doesn't distinguish that from "ignore a new fact that shows up on its own" — so a genuinely new fact touching a locked topic (a new integration the Domain doc never captured, say) could be silently dropped before it ever reached the constraint-propagation drift check that exists specifically to catch a fact recorded after an artifact was approved. The check only fires on facts that got written down somewhere first.
+
+**Resolution:** "out of scope" now explicitly governs asking, not noticing. A fact touching an already-Approved/Locked topic still gets recorded — into Section 9 (Open/Uncategorized), but with "Where it probably belongs" naming the affected artifact and its status (e.g. "Domain — already Locked, needs `/assess-change`") rather than a phase to raise a live question in. `/anchor-project`'s Section 9 handling recognizes this phrasing and routes straight to `/assess-change`, since there's no open discovery session left to raise it in.
+
+Full rule set: `conventions/priming-command-conventions.md` PC-015; design rationale: `ANCHOR-PROJECT-DESIGN.md` §5.18.
+
+---
+
 ## Why This Was Needed
 
 Running a project through this framework end to end means the PO carries the entire sequence in their head — which of ~30 commands to run next, what state each artifact is in, how to answer each command's own dense discovery/review questions, repeated at every one of twelve stages. Nothing in the framework addressed the sequencing burden itself, only the quality of what happens at each individual stage once the PO gets there.
@@ -138,6 +148,14 @@ Amended 2026-09-19 (third pass, same day) — Section 7/8/9 Consumption Gap and 
 - [x] `projects/TEMPLATE/priming/priming-package.example.md` — Section 11 updated to match: PU-001 moved out of the Flags list (it was never a Flag) into its own new Open/Uncategorized list
 - [x] `.claude/commands/anchor-project.md` — Step 3 point 6's Reference Material Index fixed to cite the correct source for its Pending-topic count (not Section 3); Step 7 extended with explicit Section 7/8 handoff, explicit Section 9 live-question surfacing, and explicit `Partial`-status handling (previously only a binary Covered/Pending split)
 - [x] `ANCHOR-PROJECT-DESIGN.md` — new §5.17 added, status line and Document History updated
+
+Amended 2026-09-19 (fourth pass, same day) — "Out of Scope" Was Silently Swallowing New Facts, built and self-checked:
+
+- [x] `conventions/priming-command-conventions.md` — PC-015 added to Section 2 (Shared Spine Contract), checklist updated
+- [x] `.claude/commands/run-priming-session.md` — Step 3's "out of scope" line clarified (asking vs. noticing); Step 5a and Step 5b both extended so a fact touching a locked topic gets recorded into Section 9 rather than dropped
+- [x] `projects/TEMPLATE/priming/priming-package.template.md` — Section 9's AI Guide extended to distinguish this case from an ordinary leftover, with the "Domain — already Locked, needs `/assess-change`" phrasing
+- [x] `.claude/commands/anchor-project.md` — Section 9 handling extended to recognize that phrasing and route to `/assess-change` instead of a live-discovery question
+- [x] `ANCHOR-PROJECT-DESIGN.md` — new §5.18 added, status line and Document History updated
 
 Not yet done:
 
