@@ -29,11 +29,11 @@ Read this document when: starting a new project, resuming a project mid-delivery
 - **Its own running record.** Anchor keeps a project journal as it goes — PO feedback, friction, what worked — feeding both a narrative project testimonial at key milestones and real improvements back into the framework itself (`FW-050`).
 - **Nothing about the underlying commands changes.** Every artifact, every gate, every file format is identical to running commands by hand. Anchor is a sequencing and interaction layer on top of the framework, never a different or lesser way of producing the work.
 
-It stops driving once a project's Walking Skeleton (`FW-048`) is complete — see `ANCHOR-PROJECT-DESIGN.md` §9 — narrowing afterward to release prep and formal scope changes, with day-to-day story work reverting to direct command use.
+It stops driving once a project's Walking Skeleton (`FW-048`) is complete — see `decisions/FW-049-anchor-project-and-priming-session.md`'s Solution Domain Boundary — narrowing afterward to release prep and formal scope changes, with day-to-day story work reverting to direct command use.
 
 **Who should use which path:** if you're new to this framework, running your first few projects, or simply want less to hold in your head at once, start with anchor — that's exactly what it's built for. If you're an experienced practitioner who wants to type each command directly, control every question yourself, or already knows this sequence well enough not to need the compression, the table below is your path — fully available, with nothing about it diminished by anchor's existence. Every command remains usable standalone either way.
 
-Full design and rationale: `ANCHOR-PROJECT-DESIGN.md` at the repo root; the command itself: `.claude/commands/anchor-project.md`.
+Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` and `decisions/FW-050-project-journal-and-framework-learning.md`; the command itself: `.claude/commands/anchor-project.md`.
 
 ---
 
@@ -100,7 +100,7 @@ Full design and rationale: `ANCHOR-PROJECT-DESIGN.md` at the repo root; the comm
 - `/project-status projects/{PROJECT_CODE}` — live dashboard showing all epic statuses, story completion by status and size, per-sprint progress bars, and an ATTENTION section flagging anything that needs action (stale statuses, unresolved dependencies, L-stories not split, sprints at risk of slipping). Run it to get a situational picture before any gate, at session start, or whenever you need to know where the project stands.
 - `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture, then extended to every other artifact type this table covers — no type reports "not yet extended" any more.
 
-**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any phase, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Full design: `ANCHOR-PROJECT-DESIGN.md` §5.
+**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any phase, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Design: `decisions/FW-049-anchor-project-and-priming-session.md`.
 
 ---
 
@@ -546,7 +546,7 @@ Full design and rationale: `ANCHOR-PROJECT-DESIGN.md` at the repo root; the comm
 
 **Gate check (before implementing):** Story `Reviewed`; architecture `Locked`; dependencies `Merged`/`Done`; implementation plan `Confirmed`; no unresolved Open Decision (Section 8) in this story's capability area.
 
-**Output:** Code committed to the target repo(s) on the story branch. Status updated to `In Progress` automatically.
+**Output:** Code committed to the target repo(s) on the story branch. Status is **not** updated automatically — `/implement-story` never touches `stories/index.md`; the PO moves the story to `In Progress` via `update-status` once they choose to (see the Concurrency Model note after Step 21).
 
 ---
 
@@ -591,6 +591,12 @@ Full design and rationale: `ANCHOR-PROJECT-DESIGN.md` at the repo root; the comm
 **Command:** `update-status <story-file> Merged` or `update-status <story-file> Done`
 
 `Merged` = PR merged to main branch. `Done` = acceptance criteria verified, sprint complete.
+
+---
+
+**Concurrency model — Steps 18-21 with multiple developers working in parallel.** Once a project's Walking Skeleton is complete, different developers routinely run `/implement-story`, `/verify-story`, and `/gen-pr-description` on different stories at the same time. This is safe by construction, not by luck: each of the three writes only to files unique to its own story — a story branch in the target repo, `test-reports/US-{epic}-{seq}-verification.md`, `pr/US-{epic}-{seq}-pr-description.md` — never to `stories/index.md` or `epics/index.md`. Both of those shared registry files are written by exactly one command, `/update-status`, which both `/implement-story` and `/verify-story` explicitly hand off to rather than touching themselves. In practice this means the PO is the one running `/update-status`, one call at a time, after reviewing each developer's work — so the shared files only ever see one writer at a time, regardless of how many developers are implementing in parallel.
+
+**This is a convention enforced by what each command's own instructions say to do, not an access control.** Nothing stops a developer with their own Claude Code session from invoking `/update-status` directly — there is no technical permission boundary between "PO" and "developer" in this framework, the same way there's no technical boundary preventing any command from being run out of its intended sequence. If your team needs that distinction actually enforced rather than followed by convention, that has to be built at your infrastructure layer (e.g., restricting who can run scripts against `projects/{PROJECT_CODE}/` on your shared setup) — it isn't something a slash command's own text can guarantee. See "Solo Use vs. Team Use" in `README.md` for the related point that `projects/{PROJECT_CODE}/` itself has to be deliberately set up for team sharing in the first place — none of the above applies until that's true.
 
 ---
 

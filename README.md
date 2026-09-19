@@ -50,6 +50,14 @@ Every subsequent phase — domain knowledge, BRD, epics, screen design, architec
 
 ---
 
+## Solo Use vs. Team Use
+
+By default, `projects/*` is gitignored (see `.gitignore`) — this repo is the framework author's own public repo, and client project content has no business being pushed to it. Running solo, this is exactly what you want: your client work stays local and private automatically, with zero setup.
+
+Running with a team — multiple developers implementing stories in parallel against the same `projects/{CODE}/` workspace (test reports, PR descriptions, the story/epic index files `/verify-story`, `/gen-pr-description`, and `/update-status` write into) — you'll need to adjust that gitignore rule yourself, in your own fork or a private repo, so `projects/{CODE}/` is actually version-controlled and shared rather than living on one person's machine. The framework doesn't prescribe how (a private fork, a separate private repo for `projects/`, or just removing the exclusion in your own copy) — that's your team's own setup decision, not something this repo's default is meant to answer for you. A clone/update helper script for this case may be added later; none exists yet.
+
+---
+
 ## Folder Structure
 
 ```
