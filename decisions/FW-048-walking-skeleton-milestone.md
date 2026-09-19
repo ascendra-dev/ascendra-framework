@@ -5,7 +5,7 @@
 | **ID** | FW-048 |
 | **Date** | 2026-09-17 |
 | **Status** | Decided — implemented |
-| **Area** | `brd.template.md`, `gen-brd.md`, `run-brd-discovery.md`, `epic.template.md`, `gen-epics.md`, `review-epics.md`, `story.template.md`, `gen-stories.md`, `review-stories.md`, `gen-sprint-plan.md`, `assess-change.md`, `judgment-check.md` (BRD/Epics/Sprint Planning coverage), `practitioner-guide/04-product-structuring-epics.md`, `practitioner-guide/07-sprint-planning.md`, `CLAUDE.md`, `PROJECT-LIFECYCLE.md` |
+| **Area** | `brd.template.md`, `gen-brd.md`, `run-brd-discovery.md`, `epic.template.md`, `gen-epics.md`, `review-epics.md`, `story.template.md`, `gen-stories.md`, `review-stories.md`, `gen-sprint-plan.md`, `assess-change.md`, `judgment-check.md` (BRD/Epics/Sprint Planning coverage), `practitioner-guide/04-product-structuring-epics.md`, `practitioner-guide/07-sprint-planning.md`, [`CLAUDE.md`](../CLAUDE.md), [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) |
 
 ---
 
@@ -110,5 +110,5 @@ Not yet applied — tracked here for the implementation pass:
 - [x] `practitioner-guide/07-sprint-planning.md` — new section "Walking Skeleton Independence: the check that actually enforces FW-048," a Common Mistakes bullet, and a Harborview-in-practice addition citing the three real worked stories in `story.example.md` (all three happen to be Walking Skeleton stories)
 - [x] *(added, not in original scope list)* `projects/TEMPLATE/epics/epic.example.md` and `projects/TEMPLATE/stories/story.example.md` — Walking Skeleton column/field added so the practitioner-guide citations above trace to real, updated files, not stale ones
 - [x] *(caught on a follow-up pass — initially missed)* `projects/TEMPLATE/brds/brd-discovery-state.example.md` and `projects/TEMPLATE/sprints/sprint-plan.example.md` — every template that gained a Walking Skeleton field/column now has its matching `.example.md` updated too; none were left showing the pre-FW-048 shape
-- [x] *(reviewed, no change needed)* `CLAUDE.md`, `PROJECT-LIFECYCLE.md` — both describe the pipeline at a level that doesn't enumerate individual template columns or check counts (confirmed no other FW-XXX is cited inline in either file either, so this isn't a gap specific to this decision) — nothing in either file became inaccurate
+- [x] *(reviewed, no change needed)* [`CLAUDE.md`](../CLAUDE.md), [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) — both describe the pipeline at a level that doesn't enumerate individual template columns or check counts (confirmed no other FW-XXX is cited inline in either file either, so this isn't a gap specific to this decision) — nothing in either file became inaccurate
 - [x] `ANCHOR-PROJECT-DESIGN.md` — §9/§11 updated to reference the real `Walking Skeleton Complete` field

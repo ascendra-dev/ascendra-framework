@@ -5,7 +5,7 @@
 | **ID** | FW-050 |
 | **Date** | 2026-09-19 |
 | **Status** | Decided — implemented, pending validation against a real project |
-| **Area** | `.claude/commands/anchor-project.md`, `.claude/commands/init-project.md`, `projects/TEMPLATE/journal.template.md` + `.example.md`, `conventions/template-conventions.md` (one exception: `T-042`), `observations/index.md` + `TEMPLATE.md`, `CLAUDE.md` |
+| **Area** | `.claude/commands/anchor-project.md`, `.claude/commands/init-project.md`, `projects/TEMPLATE/journal.template.md` + `.example.md`, [`conventions/template-conventions.md`](../conventions/template-conventions.md) (one exception: `T-042`), `observations/index.md` + `TEMPLATE.md`, [`CLAUDE.md`](../CLAUDE.md) |
 | **Depends on** | `FW-049` (Anchor Project and Priming Session) — this redesigns the self-improvement logging mechanism `FW-049` originally shipped, using the same one-agent orchestration model |
 
 ---
@@ -37,7 +37,7 @@ A related problem: the original design had no place for the PO's own real-time r
 ## Key Mechanisms
 
 - **Two layers, two different bars.** The journal takes anything real, generously; extraction applies the high bar the original design could only apply in the moment, now with the benefit of hindsight and multiple data points.
-- **A closed category vocabulary, not free text** — the same discipline the framework already applies to Flag types elsewhere (`Conflicting Source` and friends in `priming-command-conventions.md`), extended here to journal entries.
+- **A closed category vocabulary, not free text** — the same discipline the framework already applies to Flag types elsewhere (`Conflicting Source` and friends in [`priming-command-conventions.md`](../conventions/priming-command-conventions.md)), extended here to journal entries.
 - **Extraction is milestone-triggered, never reactive** — the deliberate gap between writing an entry and analyzing it is the actual point, not an inefficiency. This is the direct answer to "don't patch the framework reactively, only from real analysis."
 - **The testimonial is a distinct artifact from an observation** — one is a narrative for a human, the other a framework-decision candidate for the maintainer. Generating both from the same extraction pass, at different scales, avoids needing a third mechanism.
 - **The reporting-gap placeholder from `FW-049` is unchanged in kind, refined in scope** — still an unsolved real channel to the framework author/community, but now explicitly the *observation* that gets recommended for sharing, never the raw journal.
@@ -45,9 +45,9 @@ A related problem: the original design had no place for the PO's own real-time r
 
 ---
 
-## Conventions Exception (proposed centrally, per `template-conventions.md`'s own governing principle)
+## Conventions Exception (proposed centrally, per [`template-conventions.md`](../conventions/template-conventions.md)'s own governing principle)
 
-- **`T-042`** — a continuous, append-only session-record template (`journal.template.md` is the first of this kind) keeps its resume-relevant pointer in a top-of-file Index instead of T-040's penultimate Resume Instructions placement, and carries no Document Control table or Status field, for the same reason discovery-state files already don't (T-011, T-014). Added to `template-conventions.md` itself, not improvised inside the journal template.
+- **`T-042`** — a continuous, append-only session-record template (`journal.template.md` is the first of this kind) keeps its resume-relevant pointer in a top-of-file Index instead of T-040's penultimate Resume Instructions placement, and carries no Document Control table or Status field, for the same reason discovery-state files already don't (T-011, T-014). Added to [`template-conventions.md`](../conventions/template-conventions.md) itself, not improvised inside the journal template.
 
 ---
 
@@ -63,14 +63,14 @@ A related problem: the original design had no place for the PO's own real-time r
 
 Built and self-checked, 2026-09-19:
 
-- [x] `projects/TEMPLATE/journal.template.md` — new file, following `template-conventions.md`'s discovery-state-file pattern with the `T-042` exception
+- [x] `projects/TEMPLATE/journal.template.md` — new file, following [`template-conventions.md`](../conventions/template-conventions.md)'s discovery-state-file pattern with the `T-042` exception
 - [x] `projects/TEMPLATE/journal.example.md` — worked example, Harborview-consistent, all eight categories illustrated across a Brief → Domain → BRD arc, entry-numbering scheme validated against a same-day-multiple-entries case
-- [x] `conventions/template-conventions.md` — `T-042` exception added, checklist updated
+- [x] [`conventions/template-conventions.md`](../conventions/template-conventions.md) — `T-042` exception added, checklist updated
 - [x] `.claude/commands/anchor-project.md` — Step 11 rewritten in full (11a journal writing, 11b extraction), Step 12's session-close report extended (Journal/Observations/Testimonial lines), Step 3's Reference Material Index and reconciliation procedure extended with a Journal row/check
 - [x] `.claude/commands/init-project.md` — Step 7 extended to create and pre-fill `journal.md`, Step 9's report updated
 - [x] `observations/TEMPLATE.md` — "Found while" field repointed at journal entries
 - [x] `observations/index.md` — description updated to reflect the extraction-sourced model
-- [x] `CLAUDE.md` — folder structure diagram gained `journal.md`, `testimonial.md`, and `journal.template.md`; a pre-existing gap (`priming/` was never added to this diagram by `FW-049`) caught and fixed in passing
+- [x] [`CLAUDE.md`](../CLAUDE.md) — folder structure diagram gained `journal.md`, `testimonial.md`, and `journal.template.md`; a pre-existing gap (`priming/` was never added to this diagram by `FW-049`) caught and fixed in passing
 - [x] `ANCHOR-PROJECT-DESIGN.md` — §8 rewritten in full (§8.1–§8.4 new, original design kept as §8.5/§8.5.1/§8.5.2 for the record)
 
 Amended 2026-09-19 (same day) — re-verification safeguard added to extraction:

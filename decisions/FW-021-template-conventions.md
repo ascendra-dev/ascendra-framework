@@ -11,7 +11,7 @@
 
 ## Decision
 
-A formal, verifiable convention set is established for all Ascendra document templates. The full rule set — 19 rules across 5 sections, governing principle, exception model, and verification checklist — lives in `conventions/template-conventions.md`. That file is the authoritative reference; this record captures why the decision was made and what was corrected on first application.
+A formal, verifiable convention set is established for all Ascendra document templates. The full rule set — 19 rules across 5 sections, governing principle, exception model, and verification checklist — lives in [`conventions/template-conventions.md`](../conventions/template-conventions.md). That file is the authoritative reference; this record captures why the decision was made and what was corrected on first application.
 
 ---
 

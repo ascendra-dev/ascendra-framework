@@ -11,7 +11,7 @@
 
 ## Decision
 
-A formal, verifiable convention set is established for all Ascendra slash commands. The full rule set — 22 rules across 5 sections, governing principle, exception model, and verification checklist — lives in `conventions/command-conventions.md`. That file is the authoritative reference; this record captures why the decision was made and what was corrected on first application.
+A formal, verifiable convention set is established for all Ascendra slash commands. The full rule set — 22 rules across 5 sections, governing principle, exception model, and verification checklist — lives in [`conventions/command-conventions.md`](../conventions/command-conventions.md). That file is the authoritative reference; this record captures why the decision was made and what was corrected on first application.
 
 ---
 
@@ -50,7 +50,7 @@ Conventions were audited and applied retroactively to all Phase 1–5 commands d
 | `review-stories.md` | All deviations (full redesign under T-27) |
 | `review-architecture.md` | Checks as bold headings; no argument parsing step; no real-world framing |
 
-All new commands written after FW-020 must be verified against the checklist in `conventions/command-conventions.md` before being marked ready. For commands not yet reviewed in the lifecycle (Phases 6–9), conventions are applied as part of the review pass.
+All new commands written after FW-020 must be verified against the checklist in [`conventions/command-conventions.md`](../conventions/command-conventions.md) before being marked ready. For commands not yet reviewed in the lifecycle (Phases 6–9), conventions are applied as part of the review pass.
 
 ---
 

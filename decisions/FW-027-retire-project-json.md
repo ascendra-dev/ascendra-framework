@@ -6,7 +6,7 @@
 | **Date** | 2026-07-13 |
 | **Status** | Decided |
 | **Amends** | `FW-006` (superseded — see below) |
-| **Area** | `project.json`, `/init-project`, `/implement-story`, `/gen-pr-description`, `CLAUDE.md`, `projects/index.md` |
+| **Area** | `project.json`, `/init-project`, `/implement-story`, `/gen-pr-description`, [`CLAUDE.md`](../CLAUDE.md), `projects/index.md` |
 
 ---
 

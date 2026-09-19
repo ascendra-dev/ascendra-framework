@@ -4,15 +4,15 @@
 
 Defines the twelve stages of every software project delivered by Ascendra. Stages are strictly sequential — no stage begins until the previous stage's exit criteria are met and any required gate is closed.
 
-**How to read this document:** This is the conceptual stage map — it describes *what* happens and *why* at each stage, entry and exit criteria, and what is produced. For the operational detail (which slash command runs, which template is used, which status value to set), see `PROJECT-LIFECYCLE.md`.
+**How to read this document:** This is the conceptual stage map — it describes *what* happens and *why* at each stage, entry and exit criteria, and what is produced. For the operational detail (which slash command runs, which template is used, which status value to set), see [`PROJECT-LIFECYCLE.md`](PROJECT-LIFECYCLE.md).
 
 **Mode of operation:** All AI work is executed by Claude in chat mode using slash commands (`/gen-brd`, `/gen-epics`, etc.), not by autonomous agents. "Product Owner" is the human approver at every gate — the person with authority over scope, quality, and release decisions.
 
-> **On agent-based implementation (T-10):** a specialist-agent model for Stage 8 (Development) was explored in depth and parked — the framework retains chat-mode command execution until it's more mature. See `decisions/FW-011-agent-based-implementation.md` (the full design doc it references is preserved in git history, not the working tree) if this direction is revisited later. Treat this line and Stage 8 below as the current, confirmed model, not a placeholder.
+> **On agent-based implementation (T-10):** a specialist-agent model for Stage 8 (Development) was explored in depth and parked — the framework retains chat-mode command execution until it's more mature. See [`decisions/FW-011-agent-based-implementation.md`](decisions/FW-011-agent-based-implementation.md) (the full design doc it references is preserved in git history, not the working tree) if this direction is revisited later. Treat this line and Stage 8 below as the current, confirmed model, not a placeholder.
 
 **Stages 1–6 run once per project.** Stage 7's story-generation half repeats per **wave** (normally one epic — see Stage 7 for what a wave is and why it isn't always one sprint); its sprint-plan half, and Stages 8–11, repeat per sprint, in sequence, until all epics are done and the project enters Stage 12.
 
-**Cross-cutting, not tied to any one stage:** `/assess-change` (assesses and applies a scope change's blast radius across the document pipeline), `update-status` (records every gate decision — referenced throughout the stages below), `/project-status` (live dashboard of epic/story/sprint state, run at any time). See `PROJECT-LIFECYCLE.md` for full detail on all three.
+**Cross-cutting, not tied to any one stage:** `/assess-change` (assesses and applies a scope change's blast radius across the document pipeline), `update-status` (records every gate decision — referenced throughout the stages below), `/project-status` (live dashboard of epic/story/sprint state, run at any time). See [`PROJECT-LIFECYCLE.md`](PROJECT-LIFECYCLE.md) for full detail on all three.
 
 ---
 
@@ -111,7 +111,7 @@ Defines the twelve stages of every software project delivered by Ascendra. Stage
 - Per-screen data requirements are recorded — this becomes the input for Architecture's Data Model and API Contracts
 - `/gen-ui-mocks` is invoked in base mode (not run standalone) right after `screen-design.md` is written — real `ascendra-ui` component-source fidelity, not just design tokens, so the Product Owner can review actual navigation and screen layout before architecture begins
 - `/review-screen-design` walks through every screen against the BRD, mirroring `/review-epics`'s structure. **Sets status to `Approved` inline** on the Product Owner's confirmation — no separate manual status-setting step in the normal path. Skipped entirely (not applicable) if the BRD has no UI in scope.
-- See `decisions/FW-026-screen-design-phase.md` for why this runs before Architecture rather than after
+- See [`decisions/FW-026-screen-design-phase.md`](decisions/FW-026-screen-design-phase.md) for why this runs before Architecture rather than after
 
 **Exit criteria:**
 - Screen Design status set to `Approved` (or phase skipped — no UI in scope)
@@ -170,7 +170,7 @@ Defines the twelve stages of every software project delivered by Ascendra. Stage
 
 ## Stage 8 — Development
 
-> **On agent-based implementation (T-10):** described below is the current, confirmed single-command model. A master-orchestrator/specialist-agent redesign was explored and parked (see `decisions/FW-011-agent-based-implementation.md`) — not scheduled, may be revisited once the framework is more mature.
+> **On agent-based implementation (T-10):** described below is the current, confirmed single-command model. A master-orchestrator/specialist-agent redesign was explored and parked (see [`decisions/FW-011-agent-based-implementation.md`](decisions/FW-011-agent-based-implementation.md)) — not scheduled, may be revisited once the framework is more mature.
 
 **Entry:** Sprint Active. Repeats for each story in the sprint.
 
@@ -311,4 +311,4 @@ A hotfix is triggered by a Critical or High severity defect found in production 
 
 ## Sequential Enforcement
 
-No stage may begin until the preceding stage's exit criteria are met and any required gate is closed. Gate checks are enforced by the AI at the start of every downstream command — each command reads the upstream artifact's status and stops with a clear error if the gate has not been closed. See `PROJECT-LIFECYCLE.md`'s Gate Summary table for the complete gate reference.
+No stage may begin until the preceding stage's exit criteria are met and any required gate is closed. Gate checks are enforced by the AI at the start of every downstream command — each command reads the upstream artifact's status and stops with a clear error if the gate has not been closed. See [`PROJECT-LIFECYCLE.md`](PROJECT-LIFECYCLE.md)'s Gate Summary table for the complete gate reference.

@@ -1,6 +1,6 @@
 # Artifact Naming Conventions
 
-Authoritative, consolidated reference for every ID format and generated-file naming pattern in the Ascendra framework. Each pattern is still documented locally where it's used (a template's own "File location" AI Guide line, per `template-conventions.md` T-001, and the generating command's Output path) — this file exists so those scattered copies have one place to be checked against, not to replace them. When adding a new artifact type, register its pattern here and confirm it doesn't collide with an existing one.
+Authoritative, consolidated reference for every ID format and generated-file naming pattern in the Ascendra framework. Each pattern is still documented locally where it's used (a template's own "File location" AI Guide line, per [`template-conventions.md`](template-conventions.md) T-001, and the generating command's Output path) — this file exists so those scattered copies have one place to be checked against, not to replace them. When adding a new artifact type, register its pattern here and confirm it doesn't collide with an existing one.
 
 **Governing principle:** the project code never appears inside an ID or a generated filename. `projects/{PROJECT_CODE}/...` already disambiguates which project an artifact belongs to — repeating it inside the ID itself (e.g. a rejected `PRJ-{PROJECT_CODE}-US-...` form once present in `story.template.md`) is redundant and never actually used anywhere in the framework.
 

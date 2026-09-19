@@ -37,7 +37,7 @@ A second problem surfaced while fixing the first: `revokedBy`/`submittedBy` are 
 **Framework-level (for future projects):**
 - `gen-architecture.md`'s Section 4.2 (Data Model) generation guidance now includes Rule 4a's judgment as one of its "universal rules" bullets, and the `database-standards.md`-generation instructions state the same judgment for the file itself — both point at the same criteria so a freshly generated project gets this from its first `/gen-architecture` run, not a later PO review pass.
 - `review-architecture.md` gains check 20a (Concern B — Data Model): flags a table where one domain-specific lifecycle transition has a paired `_by` column and a sibling transition on the same table doesn't, unless the unpaired one is correctly exempt under Rule 4a. Added as a lettered sub-check (`20a`) rather than renumbering 21–34, since several of those checks are cross-referenced by number elsewhere in the same file (e.g. check 16 references check 28).
-- `SDLC.md` and `PROJECT-LIFECYCLE.md`'s "34 structural checks" references updated to 35.
+- [`SDLC.md`](../SDLC.md) and [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md)'s "34 structural checks" references updated to 35.
 
 ---
 

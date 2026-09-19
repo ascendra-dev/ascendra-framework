@@ -5,7 +5,7 @@
 | **ID** | FW-026 |
 | **Date** | 2026-07-11 |
 | **Status** | Decided — implementation in progress |
-| **Area** | New phase between Epic Approval and Architecture; `gen-architecture.md`, `gen-ui-mocks.md`, `implement-story.md`, `review-architecture.md`, `init-project.md`, `CLAUDE.md`, `PROJECT-LIFECYCLE.md`, `SDLC.md` |
+| **Area** | New phase between Epic Approval and Architecture; `gen-architecture.md`, `gen-ui-mocks.md`, `implement-story.md`, `review-architecture.md`, `init-project.md`, [`CLAUDE.md`](../CLAUDE.md), [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md), [`SDLC.md`](../SDLC.md) |
 
 ---
 

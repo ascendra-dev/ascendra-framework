@@ -6,9 +6,9 @@ This document is the authoritative reference for the Ascendra delivery workflow 
 
 Read this document when: starting a new project, resuming a project mid-delivery, onboarding a new agent to an in-flight project, or verifying that all gates are correctly closed before advancing.
 
-**Relationship to `SDLC.md`:** `SDLC.md` describes the twelve delivery *stages* and the responsible *agents*. This document describes the specific *slash commands* that implement those stages and the exact sequence of execution. They are complementary — read both.
+**Relationship to [`SDLC.md`](SDLC.md):** [`SDLC.md`](SDLC.md) describes the twelve delivery *stages* and the responsible *agents*. This document describes the specific *slash commands* that implement those stages and the exact sequence of execution. They are complementary — read both.
 
-**Relationship to `decisions/FW-022-problem-solution-domain-boundary.md`:** every phase below is explicitly tagged with its domain region. **Problem Domain** (Phases 1–4: Intake, Discovery, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Phase 5: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Phases 6–8: Sprint Delivery, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, `project-status`, and `judgment-check` are cross-cutting utilities that operate across all three regions and belong to none of them. `/anchor-project` is different in kind from all four — it doesn't add a utility alongside the sequence below, it drives the sequence itself; see "Running This Sequence via `/anchor-project`" directly below.
+**Relationship to [`decisions/FW-022-problem-solution-domain-boundary.md`](decisions/FW-022-problem-solution-domain-boundary.md):** every phase below is explicitly tagged with its domain region. **Problem Domain** (Phases 1–4: Intake, Discovery, Product Structuring, Screen Design) has zero architecture dependency — every artifact in it can be produced with no knowledge of the tech stack. **Bridge** (Phase 5: Architecture) is the first hard dependency point in the gate chain. **Solution Domain** (Phases 6–8: Sprint Delivery, Sprint Closure & Release, Support) requires Locked architecture, directly or transitively, for everything in it. `assess-change`, `update-status`, `project-status`, and `judgment-check` are cross-cutting utilities that operate across all three regions and belong to none of them. `/anchor-project` is different in kind from all four — it doesn't add a utility alongside the sequence below, it drives the sequence itself; see "Running This Sequence via `/anchor-project`" directly below.
 
 **Repeatable / optional steps are called out explicitly** — most of this lifecycle runs once per project, but a few sections repeat (Phase 6 runs once per **wave**, not once per project) or are conditional (Domain Discovery, Mock Discovery, Screen Design are all skippable under stated conditions). See the "Repeats / Optional" column in the table below.
 
@@ -29,11 +29,11 @@ Read this document when: starting a new project, resuming a project mid-delivery
 - **Its own running record.** Anchor keeps a project journal as it goes — PO feedback, friction, what worked — feeding both a narrative project testimonial at key milestones and real improvements back into the framework itself (`FW-050`).
 - **Nothing about the underlying commands changes.** Every artifact, every gate, every file format is identical to running commands by hand. Anchor is a sequencing and interaction layer on top of the framework, never a different or lesser way of producing the work.
 
-It stops driving once a project's Walking Skeleton (`FW-048`) is complete — see `decisions/FW-049-anchor-project-and-priming-session.md`'s Solution Domain Boundary — narrowing afterward to release prep and formal scope changes, with day-to-day story work reverting to direct command use.
+It stops driving once a project's Walking Skeleton (`FW-048`) is complete — see [`decisions/FW-049-anchor-project-and-priming-session.md`](decisions/FW-049-anchor-project-and-priming-session.md)'s Solution Domain Boundary — narrowing afterward to release prep and formal scope changes, with day-to-day story work reverting to direct command use.
 
 **Who should use which path:** if you're new to this framework, running your first few projects, or simply want less to hold in your head at once, start with anchor — that's exactly what it's built for. If you're an experienced practitioner who wants to type each command directly, control every question yourself, or already knows this sequence well enough not to need the compression, the table below is your path — fully available, with nothing about it diminished by anchor's existence. Every command remains usable standalone either way.
 
-Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` and `decisions/FW-050-project-journal-and-framework-learning.md`; the command itself: `.claude/commands/anchor-project.md`.
+Design and rationale: [`decisions/FW-049-anchor-project-and-priming-session.md`](decisions/FW-049-anchor-project-and-priming-session.md) and [`decisions/FW-050-project-journal-and-framework-learning.md`](decisions/FW-050-project-journal-and-framework-learning.md); the command itself: `.claude/commands/anchor-project.md`.
 
 ---
 
@@ -100,7 +100,7 @@ Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` a
 - `/project-status projects/{PROJECT_CODE}` — live dashboard showing all epic statuses, story completion by status and size, per-sprint progress bars, and an ATTENTION section flagging anything that needs action (stale statuses, unresolved dependencies, L-stories not split, sprints at risk of slipping). Run it to get a situational picture before any gate, at session start, or whenever you need to know where the project stands.
 - `/judgment-check {artifact-path}` — supplementary density/judgment-quality check against one already-generated artifact, sourced from the matching `practitioner-guide/` chapter rather than the artifact's own template. Run it before that artifact's `/review-X` walkthrough, not after — it surfaces things worth raising during that review, never a gate on its own. Piloted on BRD, Epics, and Architecture, then extended to every other artifact type this table covers — no type reports "not yet extended" any more.
 
-**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any phase, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Design: `decisions/FW-049-anchor-project-and-priming-session.md`.
+**`/run-priming-session {PROJECT_CODE}` is different from the four above** — it isn't usable at any phase, only Problem Domain (Brief/Domain/BRD), and it isn't a check against an existing artifact — it's a free-form, optional, repeatable session (with or without dropped `source-material/` files) that materializes facts into `priming/priming-package.md`, giving `/run-intake`, `/run-domain-discovery`, and `/run-brd-discovery` a head start instead of a blank page. Runs after `/init-project`, since it needs the folder structure that command creates. Design: [`decisions/FW-049-anchor-project-and-priming-session.md`](decisions/FW-049-anchor-project-and-priming-session.md).
 
 ---
 
@@ -348,7 +348,7 @@ Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` a
 
 *Domain: Problem Domain (`FW-022`) — no architecture dependency.*
 
-**Purpose:** Derive Portals, Navigation Map, and Screen Inventory from the BRD alone — pattern-matched against `ascendra-ui`'s real component catalog — before architecture starts. See `decisions/FW-026-screen-design-phase.md` for why this sits here rather than inside Architecture. **Not optional**, unlike Domain Discovery — screens are project-specific by definition, with no "well-known enough to skip" case — except when the BRD has no UI in scope at all (pure API/backend project).
+**Purpose:** Derive Portals, Navigation Map, and Screen Inventory from the BRD alone — pattern-matched against `ascendra-ui`'s real component catalog — before architecture starts. See [`decisions/FW-026-screen-design-phase.md`](decisions/FW-026-screen-design-phase.md) for why this sits here rather than inside Architecture. **Not optional**, unlike Domain Discovery — screens are project-specific by definition, with no "well-known enough to skip" case — except when the BRD has no UI in scope at all (pure API/backend project).
 
 **Entry condition:** All epics must be `Approved`.
 
@@ -452,7 +452,7 @@ Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` a
 - Runs Part 2 verification on each story before writing
 - Closing message: if this epic is interleaved with another, instructs generating that paired epic next before any review; otherwise instructs running `/review-stories` for this epic now — **never** "generate every remaining epic first"
 
-**Arguments:** `<epic-file> [<starting-sequence>]` — no sprint number; sprint membership isn't known until Step 14/15 and is never encoded in the Story ID (`US-{epic}-{seq}`, stable from generation — see `conventions/artifact-naming-conventions.md`)
+**Arguments:** `<epic-file> [<starting-sequence>]` — no sprint number; sprint membership isn't known until Step 14/15 and is never encoded in the Story ID (`US-{epic}-{seq}`, stable from generation — see [`conventions/artifact-naming-conventions.md`](conventions/artifact-naming-conventions.md))
 
 **Gate check (before generating):** Epic status must be `Approved`.
 
@@ -536,7 +536,7 @@ Design and rationale: `decisions/FW-049-anchor-project-and-priming-session.md` a
 - Reads the Confirmed plan as its task list — which artifacts (`API-N`/`WEB-N`) to build, in what order — cross-checked against the story's own `Target` field (API / Web / Worker / multiple), resolved from architecture Section 3.1 as a sibling directory (`../{repo-name}`) — never from a per-project config file (`FW-027`)
 - **Bootstraps the repo if it doesn't exist yet** — scaffolds it (e.g. `nest new`, or cloning `ascendra-ui` for Next.js) the first time any story touches it, resolving the circular "scaffolding story needs the repo to exist" problem
 - Creates a story branch (`story/{STORY-ID}-{slug}`) per `git-standards.md` before writing code
-- First-run bootstrap: creates `README.md`/`CLAUDE.md` in the target repo if missing
+- First-run bootstrap: creates `README.md`/[`CLAUDE.md`](CLAUDE.md) in the target repo if missing
 - Reads the approved UI mock's actual markup for Web stories (Step 2 of the command) — builds to match the PO-approved visual shape, not a fresh interpretation
 - Implements exactly the plan's declared artifacts, satisfying every story AC — nothing more. Any mid-implementation deviation from the plan is recorded in the plan's own Section 7 (Deviations from Plan) with rationale, never applied silently
 - Runs lint, build, and test suite in the target directory(ies); commits on the story branch

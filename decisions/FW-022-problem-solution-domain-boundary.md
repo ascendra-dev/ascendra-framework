@@ -11,7 +11,7 @@
 
 ## Decision
 
-The 28-step lifecycle (`PROJECT-LIFECYCLE.md`), plus the 3 Screen Design sub-steps (9a–9c, `decisions/FW-026-screen-design-phase.md`), is classified into three regions:
+The 28-step lifecycle ([`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md)), plus the 3 Screen Design sub-steps (9a–9c, [`decisions/FW-026-screen-design-phase.md`](FW-026-screen-design-phase.md)), is classified into three regions:
 
 - **Problem Domain** — Brief, Domain Knowledge, BRD, Epics, Screen Design
 - **Bridge** — Architecture
@@ -42,7 +42,7 @@ The 28-step lifecycle (`PROJECT-LIFECYCLE.md`), plus the 3 Screen Design sub-ste
 
 **Boundary test:** a phase is problem domain only if it can be produced with zero knowledge of the tech stack. A phase is solution domain if it has a hard dependency on Locked architecture, directly or transitively.
 
-This is a mechanical test, not a judgment call — it is answered by the existing gate table in `decisions/FW-015-framework-design-strategy.md`:
+This is a mechanical test, not a judgment call — it is answered by the existing gate table in [`decisions/FW-015-framework-design-strategy.md`](FW-015-framework-design-strategy.md):
 
 | Gate | Requires architecture? |
 |------|------------------------|
@@ -65,7 +65,7 @@ Stories look like problem-domain artifacts on the surface — PO-authored in cha
 But two facts override the surface appearance:
 
 1. **Ordering is a hard gate, not a filing convenience.** `/gen-stories` refuses to run unless architecture is Locked. Epics has no equivalent dependency — it is generated and reviewed with zero tech-stack knowledge, before architecture even exists.
-2. **Planned metadata would make the dependency explicit, if built.** T-10 design item D3 (the parked agent-based implementation design, `decisions/FW-011-agent-based-implementation.md`) would have stories declare an execution-context tag, validated against the architecture's Execution Contexts table — every story carrying architecture-derived routing metadata as a first-class field, not an optional hint. T-10 is currently parked, so this is supporting context for the argument, not a committed near-term fact — fact 1 alone already establishes the ordering dependency.
+2. **Planned metadata would make the dependency explicit, if built.** T-10 design item D3 (the parked agent-based implementation design, [`decisions/FW-011-agent-based-implementation.md`](FW-011-agent-based-implementation.md)) would have stories declare an execution-context tag, validated against the architecture's Execution Contexts table — every story carrying architecture-derived routing metadata as a first-class field, not an optional hint. T-10 is currently parked, so this is supporting context for the argument, not a committed near-term fact — fact 1 alone already establishes the ordering dependency.
 
 Conclusion: Stories are the bridge's first *consumer*, not the problem domain's last *producer*. The content staying business-flavored is a quality convention (keep it PO-readable), not evidence of domain membership.
 
