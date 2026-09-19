@@ -68,6 +68,10 @@ A command should very rarely need both for the same kind of content in the same 
 
 **PC-041** When `/anchor-project` decomposes the priming package into a phase command's expected input, Section 10 is handled differently from Sections 4-6: its content is **not** pre-filled into a specific template field the way Brief/Domain/BRD Material is, because it has no fixed home in any one phase's schema. It is instead handed to whichever phase command is about to run as background reference material, for that command's own judgment to use or set aside.
 
+**PC-042** Sections 7 (Terms As Used) and 8 (Source Material Index) are handed along the same way as Section 10 — background reference material, never pre-filled into a phase's field, since neither carries a substitutable answer. Section 8 goes to whichever phase command is about to run, same as Section 10. Section 7 goes specifically to `/run-domain-discovery` and no other phase, since the package's own document-level guide already establishes that "which term becomes canonical is domain discovery's decision" — that is the one phase a flagged possible-synonym is actually actionable in.
+
+**PC-043** Section 9 (Open/Uncategorized) is handled differently from Sections 7/8/10 — it is not reference material, it is unresolved content that still needs a real answer. Each unresolved row surfaces as a live question at the phase named in its own "where it probably belongs" column, treated exactly like a genuinely `Pending` Sections 4-6 topic — never pre-filled, never handed along silently as background material, and never written directly into any downstream artifact (including the BRD's own Parking Lot, `FW-024` Section 15) by `/anchor-project` itself. If that live discovery session and the PO decide together the item belongs in the Parking Lot, the session's own normal judgment puts it there — the same way any other Parking Lot entry gets added, never as an automatic decomposition step. A row with no clear "probably belongs" guess defaults to surfacing at BRD discovery, the last Problem-Domain phase, so nothing goes unraised by default.
+
 ---
 
 ## Section 6 — Conflict Detection and Resolution
@@ -103,6 +107,8 @@ Use this before marking any new or modified priming-producing command ready:
 - [ ] PC-032  Any new Source-Specific subsection is added to this file's registry table (Section 4)
 - [ ] PC-040  Pre-Handoff Verification checks Section 10 attribution
 - [ ] PC-041  Command's own handling (if it invokes or is invoked by `/anchor-project`) treats Section 10 as reference material, never a pre-filled field
+- [ ] PC-042  Sections 7 and 8 are treated as reference material like Section 10 — Section 7 routed specifically to `/run-domain-discovery`, Section 8 to whichever phase is running
+- [ ] PC-043  Section 9 rows surface as live questions at their probable phase, never pre-filled, never handed along silently, never auto-written into a downstream artifact
 - [ ] PC-050  `Conflicting Source` recognized as a flag type; typing required uniformly across Sections 4-7
 - [ ] PC-051  Conflict detection is a designed comparison step (disagreement, not just redundancy), regardless of origin
 - [ ] PC-052  A `Conflicting Source` flag records every statement in full, each attributed — no silent preference

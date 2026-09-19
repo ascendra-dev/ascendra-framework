@@ -22,7 +22,7 @@
 >
 > **When writing this file (`/run-priming-session`):** distil what the PO actually said into the matching section below. Do not write a transcript. Do not invent content to fill a gap — an honest `Pending` is always correct where nothing surfaced. Sessions can repeat: if this file already exists, merge new material into it rather than starting over or overwriting what's already captured.
 >
-> **When reading this file (`/anchor-project`):** this file is never read directly by `/run-intake`, `/gen-domain-knowledge`, `/run-brd-discovery`, or `/gen-brd` — none of them are modified to know it exists. When anchor reaches each of those phases, it decomposes the matching section below into that phase's own expected input (pre-filling `brief.md`'s fields, or `domain-discovery-state.md` / `brd-discovery-state.md` before invoking the command that reads them) at that moment — not speculatively ahead of time. A PO running any of those commands directly, without anchor, is entirely unaffected by whether this file exists. Section 10 (Source-Specific Material) is handled differently — it is never pre-filled into a specific phase's field, only handed along as background reference material; see `conventions/priming-command-conventions.md` PC-041. **A topic carrying any unresolved Flag, of any type, is never pre-filled either, regardless of its own Status field** — Status and Flag are independent, and a Flag always means the topic surfaces as a live question when its owning phase command reaches it, never a silent substitution; see `conventions/priming-command-conventions.md` PC-054.
+> **When reading this file (`/anchor-project`):** this file is never read directly by `/run-intake`, `/gen-domain-knowledge`, `/run-brd-discovery`, or `/gen-brd` — none of them are modified to know it exists. When anchor reaches each of those phases, it decomposes the matching section below into that phase's own expected input (pre-filling `brief.md`'s fields, or `domain-discovery-state.md` / `brd-discovery-state.md` before invoking the command that reads them) at that moment — not speculatively ahead of time. A PO running any of those commands directly, without anchor, is entirely unaffected by whether this file exists. Sections 7, 8, and 10 are never pre-filled into a phase's field — they carry no answer to substitute, only reference material. Section 10 (Source-Specific Material) is handed along as background reference material to whichever phase command is about to run; Section 8 (Source Material Index) the same way; Section 7 (Terms As Used) specifically to `/run-domain-discovery`, the one phase where a flagged possible-synonym is actually actionable — see `conventions/priming-command-conventions.md` PC-041/PC-042. **A topic carrying any unresolved Flag, of any type, is never pre-filled either, regardless of its own Status field** — Status and Flag are independent, and a Flag always means the topic surfaces as a live question when its owning phase command reaches it, never a silent substitution; see `conventions/priming-command-conventions.md` PC-054. **Section 9 (Open/Uncategorized) is handled like a `Pending` topic, not like reference material** — each unresolved row surfaces as a live question at the phase named in its own "where it probably belongs" column, never an automatic write into any artifact; see `conventions/priming-command-conventions.md` PC-043.
 >
 > **More than one command can write into this file.** `/run-priming-session` is the only one today, and maps everything it captures onto Sections 4-6. A future command reading a different source mechanic (e.g. legacy code) may also contribute to Section 10 — see `conventions/priming-command-conventions.md`, which governs every priming-producing command uniformly.
 
@@ -176,7 +176,7 @@ PO stated: [Reports, notifications, dashboards the PO described]
 
 ## 9. Open / Uncategorized
 
-> **[AI Guide]** Same discipline as the BRD template's Parking Lot (`FW-024`) — anything discovered that doesn't fit a section above still gets recorded here, not discarded. If none, write "None."
+> **[AI Guide]** Same discipline as the BRD template's Parking Lot (`FW-024`) — anything discovered that doesn't fit a section above still gets recorded here, not discarded. If none, write "None." Fill in "Where it probably belongs" with a real phase (Domain or BRD) whenever you can make a reasonable guess — `/anchor-project` uses that column to decide which live discovery session raises this row as a question later; see `conventions/priming-command-conventions.md` PC-043. A row with no reasonable guess is fine left blank — it defaults to surfacing at BRD discovery.
 
 | # | What was discovered | Why it doesn't fit above | Where it probably belongs |
 |---|---------------------|---------------------------|----------------------------|
@@ -213,6 +213,9 @@ None — every fact captured this session mapped onto Sections 4-6.
 
 **Flags still needing a real discovery session (Sections 4–7):**
 - [List]
+
+**Open/Uncategorized items still unresolved (Section 9):**
+- [List, pulled from Section 9 — each one surfaces as a live question at the phase named in its own "where it probably belongs" column; see `conventions/priming-command-conventions.md` PC-043]
 
 ---
 

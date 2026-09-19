@@ -44,6 +44,23 @@ Full rule set: `conventions/priming-command-conventions.md` Section 6 (`PC-050`-
 
 ---
 
+## Amended 2026-09-19 — Section 7/8/9 Consumption Gap, and Two Smaller Fixes
+
+A follow-up review of `anchor-project.md`'s own decomposition logic (rather than a new priming-package feature) found that it reads exactly two things out of the priming package — Sections 4-6 (pre-filled into a phase command's fields) and Section 10 (handed along as background material, per PC-041). Sections 7 (Terms As Used), 8 (Source Material Index), and 9 (Open/Uncategorized) are all written by `/run-priming-session` but were never read by anything downstream, including the package's own Resume Instructions — a fact captured in any of the three could be recorded once and never surface again.
+
+The first candidate fix — auto-writing leftover Section 9 rows into the BRD's Parking Lot (`FW-024` Section 15) at `/gen-brd` time — was rejected: `FW-024` itself states Parking Lot entries are "not [added] during discovery-driven authoring," the exact moment that fix would fire, and a Parking Lot entry is supposed to be a specific, deliberate idea a human raised, not raw un-triaged material no one has vetted yet.
+
+**Resolution, kept in two parts:**
+- Sections 7 and 8 are reference material like Section 10 — never pre-filled, handed along as background material instead. Section 8 goes to whichever phase is running; Section 7 goes specifically to `/run-domain-discovery`, the one phase where a flagged possible-synonym is actually actionable.
+- Section 9 is unresolved content, not reference material — each row surfaces as a live question at the phase named in its own "where it probably belongs" column, exactly like a genuinely `Pending` topic. It is never pre-filled, never handed along silently, and never auto-written into any artifact (Parking Lot included) by anchor itself — only through that live session's own ordinary judgment, same as any other Parking Lot entry.
+- Section 11 (Resume Instructions) gained a third list (unresolved Section 9 rows) alongside its existing Pending-topics and Flags lists.
+
+Two smaller, unrelated fixes landed in the same pass: Step 3's Reference Material Index cited "Section 3" as the source for a per-topic Pending count that section doesn't actually hold (corrected to scan Sections 4-6's own Status lines); and Step 7's pre-fill logic described only a binary Covered/Pending split, silently omitting the `Partial` status PC-011 already makes canonical (corrected so a `Partial` topic surfaces as an informed live question — stating what's known, asking what's missing — never silently treated as complete).
+
+Full rule set: `conventions/priming-command-conventions.md` PC-042/PC-043; design rationale: `ANCHOR-PROJECT-DESIGN.md` §5.17.
+
+---
+
 ## Why This Was Needed
 
 Running a project through this framework end to end means the PO carries the entire sequence in their head — which of ~30 commands to run next, what state each artifact is in, how to answer each command's own dense discovery/review questions, repeated at every one of twelve stages. Nothing in the framework addressed the sequencing burden itself, only the quality of what happens at each individual stage once the PO gets there.
@@ -113,6 +130,14 @@ Amended 2026-09-19 (second pass, same day) — Conflicting Source Flags, built a
 - [x] `.claude/commands/run-priming-session.md` — Step 5a Triage/Extract extended with disagreement detection and a new "Conflicting facts" paragraph; Step 5b extended for the live-PO case; Step 8 report line updated
 - [x] `.claude/commands/anchor-project.md` — Step 6 and Step 7 both extended with the non-substitution guarantee and the `Conflicting Source` live-question handling
 - [x] `ANCHOR-PROJECT-DESIGN.md` — §5.5 extended, new §5.16 added, status line and Document History updated
+
+Amended 2026-09-19 (third pass, same day) — Section 7/8/9 Consumption Gap and two smaller fixes, built and self-checked:
+
+- [x] `conventions/priming-command-conventions.md` — PC-042 (Sections 7/8 as background material) and PC-043 (Section 9 as live-question content) added to Section 5, checklist updated
+- [x] `projects/TEMPLATE/priming/priming-package.template.md` — document-level "When reading this file" note extended to cover Sections 7/8/9; Section 11 (Resume Instructions) gained a third list for unresolved Section 9 rows
+- [x] `projects/TEMPLATE/priming/priming-package.example.md` — Section 11 updated to match: PU-001 moved out of the Flags list (it was never a Flag) into its own new Open/Uncategorized list
+- [x] `.claude/commands/anchor-project.md` — Step 3 point 6's Reference Material Index fixed to cite the correct source for its Pending-topic count (not Section 3); Step 7 extended with explicit Section 7/8 handoff, explicit Section 9 live-question surfacing, and explicit `Partial`-status handling (previously only a binary Covered/Pending split)
+- [x] `ANCHOR-PROJECT-DESIGN.md` — new §5.17 added, status line and Document History updated
 
 Not yet done:
 

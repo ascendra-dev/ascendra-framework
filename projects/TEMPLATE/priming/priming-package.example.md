@@ -156,11 +156,13 @@ None — every fact captured this session mapped onto Sections 4-6. (This sessio
 - Output Confirmation (BRD)
 - Walking Skeleton confirmation (BRD) — likely candidate exists, not yet confirmed directly
 
-**Flags still needing a real discovery session:**
+**Flags still needing a real discovery session (Sections 4–7):**
 - Stripe as a stated integration preference (Section 5)
 - VAT rate `Conflicting Source` — James's "always 20%" vs. `old-invoice-tracker.xlsx`'s 0% line item on `INV-2025-000412` (Section 5) — unresolved, needs `/run-domain-discovery` to address directly, not assumed
 - "clients" vs. domain-default "Payer" terminology (Section 7)
-- PU-001, accounting software (Section 9)
+
+**Open/Uncategorized items still unresolved (Section 9):**
+- PU-001, accounting software — surfaces at BRD discovery per its own "where it probably belongs" guess
 
 ---
 
