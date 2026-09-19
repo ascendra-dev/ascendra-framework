@@ -41,6 +41,7 @@ A related problem: the original design had no place for the PO's own real-time r
 - **Extraction is milestone-triggered, never reactive** — the deliberate gap between writing an entry and analyzing it is the actual point, not an inefficiency. This is the direct answer to "don't patch the framework reactively, only from real analysis."
 - **The testimonial is a distinct artifact from an observation** — one is a narrative for a human, the other a framework-decision candidate for the maintainer. Generating both from the same extraction pass, at different scales, avoids needing a third mechanism.
 - **The reporting-gap placeholder from `FW-049` is unchanged in kind, refined in scope** — still an unsolved real channel to the framework author/community, but now explicitly the *observation* that gets recommended for sharing, never the raw journal.
+- **Extraction re-verifies before promoting, never trusts a journal entry on its own** — added same day, after a direct question surfaced that a terse, low-bar entry written gates earlier could describe a gap that's since been fixed. Extraction re-reads the implicated file and confirms the pattern is still current before writing an observation; a stale pattern is not evidence.
 
 ---
 
@@ -71,6 +72,11 @@ Built and self-checked, 2026-09-19:
 - [x] `observations/index.md` — description updated to reflect the extraction-sourced model
 - [x] `CLAUDE.md` — folder structure diagram gained `journal.md`, `testimonial.md`, and `journal.template.md`; a pre-existing gap (`priming/` was never added to this diagram by `FW-049`) caught and fixed in passing
 - [x] `ANCHOR-PROJECT-DESIGN.md` — §8 rewritten in full (§8.1–§8.4 new, original design kept as §8.5/§8.5.1/§8.5.2 for the record)
+
+Amended 2026-09-19 (same day) — re-verification safeguard added to extraction:
+
+- [x] `.claude/commands/anchor-project.md` — Step 11b extended: extraction now re-reads the implicated file and confirms a pattern is still current before writing an observation, never promoting a journal entry's claim on trust alone
+- [x] `ANCHOR-PROJECT-DESIGN.md` — §8.3 extended to match, Document History updated
 
 Not yet done:
 

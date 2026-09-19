@@ -51,7 +51,7 @@ Keep this short — one message, not a form:
 > "I can work from files you drop in `source-material/`, from talking it through, or both. What have you got?"
 
 Wait for PO response. Branch based on what they say:
-- **Files only, no interest in talking:** skip to Step 5's triage pipeline, then present what was extracted for confirmation (Step 6) rather than running a live conversation.
+- **Files only, no interest in talking:** skip to Step 5's triage pipeline. The PO sees what got extracted via Step 8's end-of-session report — there is no separate confirmation step here; provisional priming content gets truly confirmed later, during the real discovery session that reads it.
 - **Wants to talk, no files:** skip triage, go straight to the live conversation (Step 5's conversational half).
 - **Both:** triage the files first — it's cheaper to ask about genuine gaps once you know what the files already answered, rather than asking the PO something a file already told you.
 
@@ -73,7 +73,7 @@ For every file in `source-material/` the PO points to (or all of them, if they s
 
 **Conflicting facts** — when a unit's content disagrees with something already captured for the same topic (per the Triage check above), never silently pick a side or overwrite the earlier entry. Write both statements in full, each attributed to its origin (file name + rough location, or "PO stated live" if it came from conversation), and tag the Flag `Conflicting Source`. This applies whether the disagreement is between two places in the same file, two different files, or a file and something the PO already said this session.
 
-**A fact touching an already-settled topic** — if a unit maps to a Brief or Domain topic that's already Approved/Locked in the real artifact (per Step 3), do not discard it just because that topic is out of scope for this session's own questions. "Out of scope" means don't go asking about it — it doesn't mean ignore a fact that shows up on its own. Record it in Section 9 (Open/Uncategorized), noting which already-settled artifact it affects and that it needs `/assess-change` to actually land, not this round's discovery.
+**A fact touching an already-settled topic** — per Step 3's out-of-scope handling (`PC-015`): if a unit reveals a genuine new fact about a topic already Approved/Locked in any real artifact (Brief, Domain, or BRD), record it in Section 9 rather than discarding it just because that topic is out of scope for this session's own questions.
 
 **Sensitive content** — recognize obviously credential-shaped strings (API keys, tokens, passwords) and flag them to the PO rather than filing them into the package.
 
@@ -98,7 +98,7 @@ Persist the Map + Triage decisions themselves in Section 8 (Source Material Inde
 
 **When the PO's live statement disagrees with something already captured** — from earlier file triage, or from earlier in this same conversation — ask about it directly, right then, compressed like any other question: *"Your notes/the SRS say X, but you just said Y — which is it?"* This is the cheap case, since resolution is available immediately. Only fall back to a recorded `Conflicting Source` flag (per Step 5a) when no live resolution is possible in the moment — e.g. two dropped files disagree and the PO hasn't been asked about either yet.
 
-**When the PO volunteers something that touches an already-settled Brief or Domain topic**, same treatment as Step 5a's file case — don't discard it as out of scope, record it in Section 9 with a note on which artifact it affects and that `/assess-change` is the real next step for it, not this session.
+**When the PO volunteers something that touches an already-settled topic** (Brief, Domain, or BRD) — same treatment as Step 5a's file case, per Step 3's out-of-scope handling: record it in Section 9, don't discard it as out of scope.
 
 **100% coverage is never the goal.** If a topic genuinely doesn't come up, leave it `Pending` and move on — do not manufacture a question for every empty section just to fill it. A short, honest session that leaves real gaps clearly marked is a better outcome than a long one that pads out low-value detail to look complete.
 
