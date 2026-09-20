@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-screen-design.md"><code>/gen-screen-design</code></a>, <a href="../../.claude/commands/review-screen-design.md"><code>/review-screen-design</code></a>, <a href="../../.claude/commands/gen-ui-mocks.md"><code>/gen-ui-mocks</code></a> (base mode).</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What Screen Design is</a>
         <a href="#verify">Verifying a citation</a>
         <a href="#portals">Portal boundaries</a>
         <a href="#locked">What's locked</a>
@@ -48,6 +49,16 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What Screen Design is, and why it exists as its own stage</h2>
+        <div class="prose">
+          <p><strong>What is Screen Design?</strong> It's the stage that decides, for every screen a user will see, exactly what shape it takes — its Surface (a routed Page, or an overlay Dialog, Sheet, or Drawer) and its UI Pattern (Form, Dashboard, Report, Table-List, or Detail) — each cited to a real, checkable entry in <code>ascendra-ui</code>'s component catalog, never invented.</p>
+          <p><strong>Why does this get its own stage, before architecture even starts?</strong> Before this phase existed, implementation and mocks each independently guessed what a screen looked like. That's not a guess — a grep found <code>/implement-story</code> never once actually read the architecture section that was supposed to define screen shape. A PO-approved mock carried no real weight over what got built. This stage closes that gap: the mock you approve here is the same mock <code>/implement-story</code> is later held to.</p>
+          <p><strong>Where does a screen's shape come from?</strong> Entirely from the BRD's own journeys and requirements, matched against <code>ascendra-ui</code>'s real catalog — there's no architecture dependency yet. That's why this stage can run for every approved epic at once, before any technology decision is made.</p>
+        </div>
+      </section>
 
       <section class="block" id="verify">
         <div class="block-label"><span class="dot"></span>The test you can actually run</div>
