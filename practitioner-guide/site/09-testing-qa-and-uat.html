@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-uat-checklist.md"><code>/gen-uat-checklist</code></a> and <a href="../../reference/defect-severity.md">defect severity</a>.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">Where a checklist comes from</a>
         <a href="#severity">Defect severity</a>
         <a href="#deferral">Deferral rule</a>
         <a href="#report">Full report trigger</a>
@@ -48,6 +49,15 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">Where a UAT checklist actually comes from</h2>
+        <div class="prose">
+          <p><strong>What generates it?</strong> <code>/gen-uat-checklist</code> reads every story file for the sprint and turns each acceptance criterion into one test case — real steps, an observable expected result. It runs once all sprint stories are Merged, after Stage 9's QA confirmation is recorded.</p>
+          <p><strong>Why two separate gates instead of one?</strong> QA and UAT check genuinely different things, and they can genuinely disagree. Every test can pass — the code does exactly what the stories said — while UAT still fails, because what the stories said wasn't actually what the client needed. Passing one gate is never evidence you'll pass the other.</p>
+        </div>
+      </section>
 
       <section class="block" id="severity">
         <div class="block-label"><span class="dot"></span>Reference</div>
