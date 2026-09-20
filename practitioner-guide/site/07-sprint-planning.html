@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-stories.md"><code>/gen-stories</code></a>, <a href="../../.claude/commands/review-stories.md"><code>/review-stories</code></a>, <a href="../../.claude/commands/gen-sprint-plan.md"><code>/gen-sprint-plan</code></a>.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What a story is</a>
         <a href="#estimation">Estimation model</a>
         <a href="#wave">Wave vs. epic</a>
         <a href="#split">Split-boundary heuristic</a>
@@ -49,6 +50,16 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What a story is, and why this is the first Solution Domain stage</h2>
+        <div class="prose">
+          <p><strong>What is a story?</strong> It's the smallest independently buildable, testable, and demoable unit of work — small enough that one developer can pick it up, build it, and verify it against its own acceptance criteria without needing several other things to land first.</p>
+          <p><strong>Why can't this stage start any earlier?</strong> <code>/gen-stories</code> requires Locked architecture. Everything before this point — brief, domain knowledge, BRD, epics, screen design — deliberately had zero architecture dependency. Stories are the first artifact that needs to know the real tech stack, the real API shape, the real data model, because a story's acceptance criteria have to be testable against something real, not a placeholder.</p>
+          <p><strong>Where does a story's content come from?</strong> Entirely from its parent epic — <code>/gen-stories</code> reads only the epic's In Scope bullets and Notes section, the same two fields Product Structuring covered. Nothing about how a story gets broken down or sized comes from anywhere else.</p>
+        </div>
+      </section>
 
       <section class="block" id="estimation">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
