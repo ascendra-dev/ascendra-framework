@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Structuring — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html" class="active"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 4</div>
+      <h1 class="title">Product Structuring</h1>
+      <p class="dek"><code>/gen-stories</code> reads an epic's In Scope bullets and Notes to derive its story list — nothing else. An epic that bundles two capabilities together produces one bloated, undemoable wave; a wrong dependency order schedules an epic before the capability it needs exists.</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-epics.md"><code>/gen-epics</code></a> and <a href="../.claude/commands/review-epics.md"><code>/review-epics</code></a>. Picks up where <a href="03-brd-and-scope-lock.html">BRD &amp; Scope Lock</a> left off.</div>
+
+      <nav class="jumpnav">
+        <a href="#sizing">Epic sizing</a>
+        <a href="#twopass">Two-pass review</a>
+        <a href="#dependency">Dependency ordering</a>
+        <a href="#skeleton">Walking Skeleton</a>
+        <a href="#interleaving">Story-level interleaving</a>
+        <a href="#section8">Section 8 Notes</a>
+        <a href="#estimate">Story-count estimate</a>
+        <a href="#tier3">Tier 3 decisions</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="sizing">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">One capability, or two glued together?</h2>
+        <div class="rule-callout">Could this feature area ship and be demoed as a complete, independently useful capability on its own — one scenario, one Definition-of-Done walkthrough, no "and separately, at a different time, a different person does X"?<span class="src">The cohesion test — same test as Chapter 3's REQ density, one level up</span></div>
+        <div class="prose"><p>Four of Harborview's five feature areas map 1:1 to a single epic. Section 5.2 (Invoice Management, eight REQs) is the interesting one — it correctly splits into <strong>two</strong> epics on the cohesion test: different trigger (create vs. threshold crossed), different acting persona (Finance Manager vs. Director), independently demoable either way.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>BRD section</th><th>REQs</th><th>Epic</th></tr>
+          <tr><td>5.1 Payer Management</td><td>001–005</td><td>EPIC-001</td></tr>
+          <tr><td>5.2 Invoice Management</td><td>006,007,008,009,013</td><td>EPIC-003</td></tr>
+          <tr><td>5.2 Director Approval</td><td>010,011,012</td><td>EPIC-004 (split from the same heading)</td></tr>
+          <tr><td>5.3 Payment Collection</td><td>014–016</td><td>EPIC-005</td></tr>
+          <tr><td>5.4 Overdue Management</td><td>017–019</td><td>EPIC-006</td></tr>
+          <tr><td>5.5 Dashboards</td><td>020–021</td><td>EPIC-007</td></tr>
+        </table></div>
+        <div class="prose"><p><strong>Don't count REQs and stop there</strong> — REQ count is a proxy that catches size outliers, not boundary correctness. A four-REQ epic can still be two capabilities glued together; an eight-REQ epic can still be genuinely one.</p></div>
+      </section>
+
+      <section class="block" id="twopass">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Don't do <code>/review-epics</code>'s job at the planning table</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Spend your attention at Step 4 on</h4><p>Do the groupings feel like real capabilities? Does dependency order look right at a glance? Any REQ obviously misfiled?</p></div>
+          <div class="distcard"><h4>Don't attempt at Step 4</h4><p>REQ-by-REQ verbatim checking, In Scope wording precision, Section 8 domain-rule coverage — no epic file exists yet to check any of it against.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="dependency">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Dependency ordering: the falsifiable test</h2>
+        <div class="rule-callout">Epic B depends on Epic A only if a story in B cannot be implemented or meaningfully demoed without a capability A delivers — not merely "A is conceptually foundational."<span class="src">The test</span></div>
+        <div class="prose"><p>Someone might propose "Dashboard depends on Payer Management — it shows Payer figures." Apply the test: the dashboard's actual figures come from Invoice, Payment, and Overdue state, not a raw Payer record. Payer Management is a real ancestor, but only <em>transitively</em>, through three other epics — not a direct Section 5 dependency. Naming it directly would pass an eyeball check and fail the test.</p></div>
+      </section>
+
+      <section class="block" id="skeleton">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>FW-048 — a stricter constraint than ordinary dependency ordering</div>
+          <p>Dependency ordering answers "what must exist first." The Walking Skeleton answers "which epic proves the whole system works end to end before anything else gets built to full breadth." A prior real project shipped without one and paid for it: breadth got built across many epics before a single thin path was proven, and nothing downstream could be verified independently as a result.</p>
+          <p><strong>What to check:</strong> every <code>Yes</code>-tagged REQ landed in some epic; that epic is sequenced first in build order, ahead of anything that carries none of the tag; a Walking Skeleton REQ split across two epics is a signal worth pausing on, not automatically wrong.</p>
+        </div>
+      </section>
+
+      <section class="block" id="interleaving">
+        <div class="block-label"><span class="dot"></span>Mechanism</div>
+        <h2 class="block-title">The story-level interleaving note</h2>
+        <div class="rule-callout">Can you name one specific story in the depended-on epic — not the whole epic — that must land before a specific story in the dependent epic can be built or demoed?<span class="src">The trigger test</span></div>
+        <div class="prose"><p>Harborview never exercises this — every dependency resolves cleanly at the epic level. A hypothetical that does: Staff Invite / Staff Accept-Invite. At the epic level, Accept-Invite depends on all of Staff Invite. The <em>true</em> first blocker is finer — only "generate and email the invite link" has to exist first; revoke, resend, and status-list don't. Scheduling two fully sequential waves would needlessly block Accept-Invite behind capabilities it never touches.</p></div>
+      </section>
+
+      <section class="block" id="section8">
+        <div class="block-label"><span class="dot"></span>A real, sharp boundary</div>
+        <h2 class="block-title">Section 8 Notes: business rule vs. architecture opinion</h2>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ Epic-appropriate, full confidence</div>
+            <div class="gb-quote">"Payer data is scoped to the organisation. A Finance Manager from one organisation must not be able to view, edit, or import Payers belonging to another."</div>
+            <p class="gb-why">A domain/business constraint, true regardless of what architecture turns out to be.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ A technical mechanism, stated as settled fact</div>
+            <div class="gb-quote">"...This is enforced by filtering all Payer queries by orgId from the JWT."</div>
+            <p class="gb-why">A specific implementation mechanism — an auth/tenancy shape decision <code>/gen-architecture</code> hasn't made yet. No check anywhere catches this; hold it loosely as a labeled hint, not fixed fact.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="estimate">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>A sanity check, never a commitment</div>
+          <p><code>/review-epics</code>'s "approximately N stories" has no formula behind it anywhere in the command file. Cross-reference it against the ~4–10-stories-per-epic rule of thumb; if the AI can't give a reason for an outlier when you ask, discount the number to zero. Nothing about sprint capacity should be decided off it.</p>
+        </div>
+      </section>
+
+      <section class="block" id="tier3">
+        <div class="block-label"><span class="dot"></span>Tier 3 — what "PO decides" actually asks of you</div>
+        <div class="rule-callout">Reassign a REQ to a different epic only if that requirement's acceptance criteria would naturally be written and tested as part of the OTHER epic's capability — not merely because it feels thematically closer.<span class="src">The test</span></div>
+        <div class="prose"><p>The four example targeted-PO-questions in <code>/review-epics</code> are explicitly generic and interchangeable — real, but a checklist item wearing a question mark. A sharpened version interrogates a specific state transition the REQ text doesn't address, and couldn't be pasted verbatim into a different epic's review. That non-transferability is the actual test for whether a question is doing its job.</p></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Epic Size / No Gold-Plating</b><span>Epic Size flags a REQ-count outlier against siblings. No Gold-Plating flags scope not traced to any REQ or approved domain rule.</span></li>
+          <li><b>Story-Level Interleaving</b><span>A note marking a dependency pair whose true build order is finer than epic-before-epic.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Treating REQ count alone as the sizing test.</li>
+            <li>Doing <code>/review-epics</code>'s verification work at the planning table, before material exists to check it against.</li>
+            <li>Listing a dependency because an epic "feels foundational" instead of naming the blocked story.</li>
+            <li>Letting a Walking Skeleton REQ land wherever's convenient without checking sequencing.</li>
+            <li>Treating every dependency as fully sequential when the real blocker is one story.</li>
+            <li>Letting a Section 8 technical hint quietly become a fixed architecture decision in your head.</li>
+            <li>Treating "approximately N stories" as a sprint-planning commitment.</li>
+            <li>Reassigning a REQ for thematic fit instead of acceptance-criteria home.</li>
+            <li>Asking a generic targeted question verbatim instead of sharpening it to this epic specifically.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">epic.example.md — EPIC-001</span><p>Section 3.2 names all five sibling epics by ID — the evidence BRD §5.2 became two epics, not one. Section 5 states the dependency-root role in plain language. Section 8 shows both a correct use and the JWT sharp edge, side by side.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/04-product-structuring.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

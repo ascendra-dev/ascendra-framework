@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Cutting — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html" class="active"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">No stage — every stage</div>
+      <h1 class="title">Cross-Cutting Commands</h1>
+      <p class="dek">Nothing puts <code>/assess-change</code>, <code>/update-status</code>, or <code>/project-status</code> in front of you the way a staged command is. You have to remember to reach for them yourself — usually at the exact moment reaching for the right tool matters most.</p>
+      <div class="chapter-links"><a href="../.claude/commands/assess-change.md"><code>/assess-change</code></a>, <a href="../.claude/commands/update-status.md"><code>/update-status</code></a>, <a href="../.claude/commands/project-status.md"><code>/project-status</code></a>, <a href="../.claude/commands/judgment-check.md"><code>/judgment-check</code></a>.</div>
+
+      <nav class="jumpnav">
+        <a href="#pattern">Pattern 2 vs. 3</a>
+        <a href="#promotion">Promotion Gate</a>
+        <a href="#status">update-status: when</a>
+        <a href="#attention">ATTENTION flags</a>
+        <a href="#judgment">judgment-check habit</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#together">How they work together</a>
+      </nav>
+
+      <section class="block" id="pattern">
+        <div class="block-label"><span class="dot"></span>The actual test</div>
+        <h2 class="block-title">Pattern 2 (Gap) vs. Pattern 3 (Scope Shift)</h2>
+        <div class="prose"><p>The one pair with no built-in test — and the pair a PO hits constantly. Under deadline pressure the natural drift is toward Pattern 2 every time, because it's cheaper.</p></div>
+        <div class="rule-callout">Can you point to the specific sentence in an approved BRD requirement that already implies this behavior? If yes — Pattern 2. If you're inferring intent — Pattern 3.<span class="src">Mirrored on FW-024's Parking Lot test</span></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th></th><th>Pattern 2 (Gap)</th><th>Pattern 3 (Scope Shift)</th></tr>
+          <tr><td>BRD</td><td>Untouched</td><td>Untouched</td></tr>
+          <tr><td>Epic</td><td>No version bump; gap-fill row only if a new story added</td><td>Version bump, Document Control row</td></tr>
+          <tr><td>Confirmation gate</td><td>None</td><td>An explicit "confirm this is intentional" gate</td></tr>
+          <tr><td>Epic Status</td><td>Unchanged</td><td>Unchanged — formal ≠ un-approval</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block" id="promotion">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>The Promotion Gate surprise</div>
+          <p>If the change is already sitting in the BRD's Parking Lot, <code>/assess-change</code> stops mid-session to redirect you to a discovery pass first — right behavior, but a wasted read-and-classify cycle if it surprises you. <strong>The habit that avoids it:</strong> glance at Section 15 yourself before describing the change.</p>
+        </div>
+      </section>
+
+      <section class="block" id="status">
+        <div class="block-label"><span class="dot"></span>The reference to bookmark</div>
+        <h2 class="block-title"><code>/update-status</code>: when do you actually need to run this?</h2>
+        <h3 class="sub-title">Set inline — no call needed in the normal path</h3>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Artifact</th><th>Transition</th><th>Set by</th></tr>
+          <tr><td>Brief (Content Status)</td><td>Draft → Brief complete</td><td><code>/run-intake</code> Step 8</td></tr>
+          <tr><td>BRD</td><td>→ Approved</td><td><code>/review-brd</code>, on 'approved'</td></tr>
+          <tr><td>Epic</td><td>Draft → Approved</td><td><code>/review-epics</code></td></tr>
+          <tr><td>Architecture</td><td>→ Locked</td><td><code>/review-architecture</code>, on lock</td></tr>
+          <tr><td>Story</td><td>Draft → Reviewed</td><td><code>/review-stories</code></td></tr>
+        </table></div>
+        <h3 class="sub-title">Always manual — nothing else does it</h3>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Artifact</th><th>Transition</th></tr>
+          <tr><td>Epic</td><td>Approved → In Progress → Done, or → Deprecated</td></tr>
+          <tr><td>Story</td><td>Reviewed → In Progress → PR Created → Merged → Done — every step</td></tr>
+          <tr><td>Sprint</td><td>Planning → Active → Complete</td></tr>
+          <tr><td>Story Plan</td><td>Draft → Confirmed (hard gate, no override)</td></tr>
+          <tr><td>Brief (Status)</td><td>Every project-lifecycle transition, always</td></tr>
+        </table></div>
+        <div class="rule-callout">A review command sets the status it exists to grant. Everything that isn't the specific thing a review command was built to grant is on you.<span class="src">The one-sentence pattern</span></div>
+      </section>
+
+      <section class="block" id="attention">
+        <div class="block-label"><span class="dot"></span>A real action for each flag</div>
+        <h2 class="block-title"><code>/project-status</code>'s ATTENTION section</h2>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Trigger</th><th>Real action</th></tr>
+          <tr><td>L-sized stories not yet split</td><td>Split now — a story-authoring fix, not necessarily a scope change</td></tr>
+          <tr><td>"Changes Requested" stories</td><td>Human action — go review the PR. No command moves this forward</td></tr>
+          <tr><td>Active sprint &gt;50% duration, &lt;30% closed</td><td>No remedy command exists — a real PO judgment call: capacity, descope, or extend</td></tr>
+          <tr><td>Epic In Progress, no stories In Progress</td><td>Ambiguous by design — check recent activity or ask directly before acting</td></tr>
+          <tr><td>Dependency not yet Done</td><td>Already flagged once at the transition — ask if it was a deliberate accepted override</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block" id="judgment">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>The two-invocation habit</div>
+          <p><strong>A single invocation never both finds and resolves.</strong> Analysis Mode surfaces findings and logs them Open; Resolve Mode walks you through them. Stop after the first and move to <code>/review-X</code>, and those findings sit Open forever — logged, never weighed. When anchor drives it, both passes happen automatically; running standalone, you're the one who has to remember the second invocation.</p>
+        </div>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Defaulting to Pattern 2 because it's cheaper, without pointing to the actual BRD sentence.</li>
+            <li>Describing a change without first checking whether it's already a Parking Lot entry.</li>
+            <li>Assuming a <code>/review-X</code> command advances every status field, when it only sets the one it exists to grant.</li>
+            <li>Treating a GitHub PR merge as the story-file status update — they're two separate actions.</li>
+            <li>Inventing a remedy command for sprint slip risk because the dashboard's generic line implies one exists.</li>
+            <li>Running <code>/judgment-check</code> once and moving straight to <code>/review-X</code> without a second invocation to resolve findings.</li>
+            <li>Treating "no findings" as a quality certification rather than "nothing checkable stood out."</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="together">
+        <div class="block-label"><span class="dot"></span>How these four work together</div>
+        <div class="prose"><p><code>/project-status</code> is where a real Tuesday starts — you run it, work down the ATTENTION list, and most items resolve into either <code>/update-status</code> (a stale field) or <code>/assess-change</code> (a real scope change). <code>/judgment-check</code> sits at a different point in the same discipline — not a Tuesday habit, a pre-gate one: it runs against whatever's about to go through <code>/review-X</code>, gets resolved, and only then does the walkthrough proceed.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/11-cross-cutting.md</code>. Source markdown unchanged. This is the guide's twelfth and final chapter — the phase chapters keep getting corrected as real projects run against them.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

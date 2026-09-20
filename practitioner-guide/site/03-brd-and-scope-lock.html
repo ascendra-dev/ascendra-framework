@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRD &amp; Scope Lock — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html" class="active"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 3</div>
+      <h1 class="title">BRD &amp; Scope Lock</h1>
+      <p class="dek">The BRD is the contract between Product and Engineering. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work epics and stories trace back to by REQ-ID — and every feature-area heading becomes an epic boundary you don't get to redraw for free later.</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-brd-playbook.md"><code>/gen-brd-playbook</code></a>, <a href="../.claude/commands/run-mock-discovery.md"><code>/run-mock-discovery</code></a>, <a href="../.claude/commands/run-brd-discovery.md"><code>/run-brd-discovery</code></a>, <a href="../.claude/commands/gen-brd.md"><code>/gen-brd</code></a>, <a href="../.claude/commands/review-brd.md"><code>/review-brd</code></a>.</div>
+
+      <nav class="jumpnav">
+        <a href="#mode">Discovery mode</a>
+        <a href="#confidence">Confidence score</a>
+        <a href="#variation">Known Variation</a>
+        <a href="#circuit">Circuit breaker</a>
+        <a href="#density">REQ density</a>
+        <a href="#scope">Scope vs. Priority vs. Layer</a>
+        <a href="#epic-boundary">The epic boundary</a>
+        <a href="#reviewing">Reviewing and approving</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="mode">
+        <div class="block-label"><span class="dot"></span>Process decision</div>
+        <h2 class="block-title">Live session, AI-synthesis, or skip to <code>/gen-brd</code>?</h2>
+        <div class="prose"><p><code>run-brd-discovery.md</code> assumes a two-role interview. If you have no client, you have to <em>enact</em> AI-synthesis-and-review yourself, inside the same command.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Situation</th><th>Mode</th><th>How to run it</th></tr>
+          <tr><td>External client, reachable</td><td>Live discovery</td><td>Run as written — two-role interview</td></tr>
+          <tr><td>No client, domain well-understood</td><td>AI-synthesis-and-review</td><td>Propose the domain default, write down why a real client might differ, record your own confirmed/corrected answer</td></tr>
+          <tr><td>No client, niche/unfamiliar domain</td><td>Live discovery still worth insisting on</td><td>Find someone who knows the domain, even if not the paying client</td></tr>
+          <tr><td>Tempted to skip discovery entirely</td><td>Not actually available</td><td><code>/gen-brd</code>'s gate requires discovery state with ≥1 Covered topic</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block" id="confidence">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>Scores you can't verify</div>
+          <p><strong>The denominator is topics <em>and</em> journeys together</strong> — Section 4 and Section 6 combined, not Section 4 alone, whatever the command text's own phrasing suggests.</p>
+          <p><strong>Coverage is not resolution.</strong> A "Covered" mark means a topic was asked and answered — not that the answer was a real decision. A client who says "it depends" to everything can rack up 100% coverage on a nearly content-free BRD. When an answer is genuine uncertainty, mark it Pending and open a Section 7 entry with a real owner — even at ≥85%, re-check for scope-blocking Open Questions before generating.</p>
+        </div>
+      </section>
+
+      <section class="block" id="variation">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Known Variation vs. an ordinary follow-up</h2>
+        <div class="rule-callout">Does the answer fit inside a topic subsection that already exists, or does it need a topic that isn't there?<span class="src">The test</span></div>
+        <div class="prose"><p>An unusual <em>value</em> on an existing axis → resolve in-session, record, move on. A structurally new <em>axis</em> the domain knowledge doesn't model at all → flag for a domain knowledge update, not just a BRD note — the next project in this domain will hit the same gap.</p></div>
+      </section>
+
+      <section class="block" id="circuit">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>The circuit breaker</div>
+          <p>Two signals mean the problem isn't discovery — it's that you're talking to someone who can't give a stable answer: <strong>the same topic revised more than twice</strong> across sessions, or <strong>a Scope Risk Flag flipping status more than once.</strong> When either happens, stop scheduling sessions and escalate to a decision-maker above the immediate contact.</p>
+        </div>
+      </section>
+
+      <section class="block" id="density">
+        <div class="block-label"><span class="dot"></span>Density guidance — the single most important skill in this phase</div>
+        <h2 class="block-title">REQ-writing density</h2>
+        <div class="rule-callout">One REQ = one independently testable, independently story-able capability.<span class="src">The rule</span></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ Correctly dense — REQ-002</div>
+            <div class="gb-quote">"The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both. Default is phone number."</div>
+            <p class="gb-why">Three sentences, but every clause is a facet of one capability. Strip any part out and a developer has to ask which key to check.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Over-fat — REQ-BAD-FAT</div>
+            <div class="gb-quote">"...create an invoice with line items and a due date, submit it for Director approval if the total is above the threshold, and generate a PDF once approved."</div>
+            <p class="gb-why">Welds together three independently shippable capabilities — creation, approval, PDF generation — each with its own real REQ in the actual BRD.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Over-thin — REQ-BAD-THIN</div>
+            <div class="gb-quote">"Invoices above a threshold require Director approval."</div>
+            <p class="gb-why">Passes a superficial "short enough" read but silently omits the number that makes it usable. A developer can't write a single AC from this.</p>
+          </div>
+        </div>
+        <div class="prose"><p><strong>The test:</strong> could each half of the sentence ship, get tested, and get demoed on its own, with the other half simply not built yet? If yes to both, split. If the second half is meaningless without the first, fold it in.</p></div>
+      </section>
+
+      <section class="block" id="scope">
+        <div class="block-label"><span class="dot"></span>Full working depth</div>
+        <h2 class="block-title">Scope vs. Priority vs. Layer</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Should Have vs. Out of Scope — deferred</h4><p>Should Have is a Priority value — only applies to something already In Scope, ships this phase if time allows. Out of Scope — deferred means not being built this phase at all.</p></div>
+          <div class="distcard"><h4>§5.21 vs. §15 Parking Lot</h4><p>Can you write one factual sentence backed by the domain doc or this session? If yes, §5.21 (gets a REQ-ID). If you're guessing, §15 (no fields until promoted).</p></div>
+        </div>
+        <div class="rule-callout">Can you write one factual sentence describing exactly how it will behave, backed by something already in the domain knowledge document or this discovery session? If yes, Section 5.21. If you're guessing, Section 15.<span class="src">FW-024</span></div>
+        <div class="casecard"><span class="filechip">REQ-022, brd.example.md §5.21</span><p>Accounting export (Xero) — Out of Scope for Phase 1, but grounded: the domain doc already models the integration point, and the client named Xero during discovery. Full REQ-ID, full fields.</p></div>
+        <div class="casecard"><span class="filechip">PL-001, brd.example.md §15</span><p>An admin-assistant-submits-invoices idea, surfaced during UAT prep, months after discovery closed. No domain backing, no REQ-ID — a Promotion Path note instead, since it can never become a REQ through <code>/assess-change</code> alone.</p></div>
+      </section>
+
+      <section class="block" id="epic-boundary">
+        <div class="block-label"><span class="dot"></span>Downstream impact</div>
+        <h2 class="block-title">What the BRD commits you to: the epic boundary you're already drawing</h2>
+        <div class="prose"><p>Each Section 5.N feature-area heading becomes one epic, 1:1, when <code>/gen-epics</code> runs. Choose feature-area boundaries the way you'd choose epic boundaries — not chapter headings. Harborview's five feature areas are five genuinely independent capabilities; that's why they became five clean epics.</p></div>
+        <div class="rule-callout">Could this feature area ship and be demoed as a complete, independently useful capability on its own?<span class="src">Ask this of every Section 5 heading</span></div>
+      </section>
+
+      <section class="block" id="reviewing">
+        <div class="block-label"><span class="dot"></span>What "good" looks like</div>
+        <h2 class="block-title">Reviewing and approving</h2>
+        <div class="prose"><p>You should be able to restate what each requirement will actually produce, in your own words, without looking back at the REQ text. Section 16's Flags table empty or resolved, no unresolved scope blockers, every <code>[Assumed]</code> tag actually looked at.</p></div>
+        <div class="caution"><p><strong>The gap: what to do when you don't disagree, you just don't know.</strong> Don't force yourself into Confirm/Change/Remove. Tell the AI you're uncertain and want it routed to Section 12 (Open Questions) with the <strong>client</strong> as owner — a legitimate outcome of the review, not a failure to complete it.</p></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>§5.21 vs. §15 Parking Lot</b><span>Both hold Out of Scope items, but only 5.21 has domain/discovery grounding and a REQ-ID.</span></li>
+          <li><b>Requirement Confidence Score</b><span>A coverage measure, not a resolution measure. Don't conflate the two.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Marking a topic Covered when the real answer was "it depends" or "I don't know."</li>
+            <li>Writing a REQ that's really two or three capabilities glued together with "and."</li>
+            <li>Writing a REQ so thin it omits the number, threshold, or default that makes it usable.</li>
+            <li>Confusing Should Have with Out of Scope — deferred.</li>
+            <li>Putting an ungrounded idea into §5.21 because it's convenient, instead of the honest §15.</li>
+            <li>Noting a structurally new domain variation as just a BRD aside instead of flagging a domain knowledge update.</li>
+            <li>Letting a feature-area heading sprawl into a "Miscellaneous" catch-all.</li>
+            <li>Approving a BRD with <code>[Assumed]</code> tags nobody actually re-examined.</li>
+            <li>Scheduling a fourth or fifth discovery session on the same unresolved topic instead of escalating.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">brd.example.md — REQ-002, REQ-016</span><p>Source-tagging discipline: REQ-002 shows correctly dense <code>[Client-Stated]</code> text; REQ-016 shows <code>[Assumed]</code> used sparingly, for a low-risk inference rather than something that should have been confirmed.</p></div>
+        <div class="casecard"><span class="filechip">brd-playbook.example.md + brd-discovery-state.example.md</span><p>Worth reading alongside the BRD — the full chain from a scope risk flag that didn't trigger (SRF-004) through to the requirement that made it into the final document.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/03-brd-and-scope-lock.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

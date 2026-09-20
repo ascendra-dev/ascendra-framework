@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint Planning — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html" class="active"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 7</div>
+      <h1 class="title">Sprint Planning</h1>
+      <p class="dek">Stories are where the BRD's scope finally becomes something a developer can pick up without a follow-up question. Most of the risk in this phase is doing one command's job at the wrong point in the sequence, or trusting a number the framework hands you without a way to check it.</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-stories.md"><code>/gen-stories</code></a>, <a href="../.claude/commands/review-stories.md"><code>/review-stories</code></a>, <a href="../.claude/commands/gen-sprint-plan.md"><code>/gen-sprint-plan</code></a>.</div>
+
+      <nav class="jumpnav">
+        <a href="#estimation">Estimation model</a>
+        <a href="#wave">Wave vs. epic</a>
+        <a href="#split">Split-boundary heuristic</a>
+        <a href="#skeleton">Walking Skeleton Independence</a>
+        <a href="#sizing">Proactive sizing</a>
+        <a href="#terms">Wave / Sprint / Epic in full</a>
+        <a href="#tiebreak">The tie-break rule</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="estimation">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Choosing an estimation model</h2>
+        <div class="caution"><p><strong>Time-Based is disqualified in the normal case.</strong> Its own reference file says AI implementation speed doesn't map linearly to human hours — every project here has an AI implementer. The one exception: a contract that requires hour-denominated billing regardless of accuracy — treat hours as a complexity proxy, not a time prediction.</p></div>
+        <div class="rule-callout">Does this specific engagement already have a real Scrum velocity baseline? If yes, Fibonacci is viable. If no — the default state of every new project — choose T-Shirt.<span class="src">T-Shirt vs. Fibonacci, the real test</span></div>
+      </section>
+
+      <section class="block" id="wave">
+        <div class="block-label"><span class="dot"></span>Using the real mechanism</div>
+        <h2 class="block-title">The wave-vs-epic boundary</h2>
+        <div class="prose"><p>A wave is normally one epic — one <code>/gen-stories</code> run. It's legitimately more only when the pair carries a documented interleaving note.</p></div>
+        <div class="rule-callout">Confirm the note names one specific story in the depended-on epic, not the whole epic. If it reads like a generic "these are related" gesture, push back before committing to paired generation.<span class="src">What to check at Step 8, before following either instruction</span></div>
+      </section>
+
+      <section class="block" id="split">
+        <div class="block-label"><span class="dot"></span>Sprint Assignment — well-designed, with one real gap</div>
+        <h2 class="block-title">The split-boundary heuristic</h2>
+        <div class="prose"><p>Capacity is sourced from <code>estimation.md</code>, not invented. Three branches — at/near target, below target, above target — each with a deterministic action. The one gap: "above target" gives you the decision but not the tool.</p></div>
+        <div class="rule-callout">The split should fall where the epic's own intra-epic dependency order already shows a natural seam — everything before it one coherent, demoable action, everything after it a distinct next action — not at whatever story happens to be eighth or tenth in the table.<span class="src">The seam heuristic, scaled up from the estimation standard's own Split Triggers</span></div>
+        <div class="gb-wrap">
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Wrong split</div>
+            <div class="gb-quote">Sprint the first ten rows of the planning table, carry the remaining three.</div>
+            <p class="gb-why">That cutoff has no relationship to what's actually buildable and demoable — it's just where the table ran out of room.</p>
+          </div>
+          <div class="gb-card good">
+            <div class="gb-head">✓ Right split</div>
+            <div class="gb-quote">Everything needed to create and persist a valid draft invoice → Sprint N. Everything that acts on an already-existing invoice → Sprint N+1.</div>
+            <p class="gb-why">Each half is one coherent, independently demoable scene — a Finance Manager either creates an invoice, or acts on one that already exists.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="skeleton">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>The check that actually enforces FW-048</div>
+          <p>A REQ can be correctly tagged, land in the right epic, and still produce a story that quietly depends on an untagged story. <code>/review-stories</code> check #7: for every <code>Walking Skeleton: Yes</code> story, every dependency — intra-epic or cross-epic — must itself be tagged. Not "practically fine" — a single non-tagged dependency is a finding, full stop.</p>
+        </div>
+      </section>
+
+      <section class="block" id="sizing">
+        <div class="block-label"><span class="dot"></span>Proactive, not just reactive</div>
+        <h2 class="block-title">Story sizing before any file is generated</h2>
+        <div class="rule-callout">Does the bullet describe a brand-new pattern for this codebase? Does it plausibly touch more than half a dozen files? Does it read as two or three things joined by "and"?<span class="src">Apply at the Step 4 planning table, not after review flags it</span></div>
+        <div class="prose"><p>Catching this at the table costs a slightly longer planning conversation. Catching it at <code>/review-stories</code> costs a Tier 3 fix on a story that already has ACs, an Out of Scope section, and dependencies written against the wrong boundary.</p></div>
+      </section>
+
+      <section class="block" id="terms">
+        <div class="block-label"><span class="dot"></span>Full working depth</div>
+        <h2 class="block-title">Wave vs. Sprint vs. Epic</h2>
+        <div class="prose"><p><strong>Epic</strong> — fixed scope, decided once at approval. <strong>Wave</strong> — a unit of story generation, decided at <code>/gen-stories</code> time. <strong>Sprint</strong> — a unit of delivery cadence, decided later, purely from real story count vs. capacity. A wave and a sprint are not the same size and are not decided at the same time.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Step</th><th>What happens</th><th>Wave</th><th>Sprint</th></tr>
+          <tr><td>1</td><td><code>/gen-stories</code> on EPIC-003 — 6 stories</td><td>Wave A</td><td>—</td></tr>
+          <tr><td>2</td><td>Review: below target. PO folds in EPIC-004</td><td>—</td><td>—</td></tr>
+          <tr><td>3</td><td><code>/gen-stories</code> on EPIC-004 — 4 stories</td><td>Wave B</td><td>—</td></tr>
+          <tr><td>4</td><td>Review resumes. Total 6+4=10, at target</td><td>A &amp; B consumed</td><td>Sprint 01 = 10 stories, two waves</td></tr>
+          <tr><td>5</td><td><code>/gen-stories</code> on a hypothetical 13-story epic</td><td>Wave C</td><td>—</td></tr>
+          <tr><td>6</td><td>Review: above target. PO gives split boundary: 7 + 6</td><td>One wave, two sprints</td><td>Sprint 02 = first 7 of Wave C</td></tr>
+          <tr><td>7</td><td><code>/gen-stories</code> on EPIC-006 — 4 stories</td><td>Wave D</td><td>—</td></tr>
+          <tr><td>8</td><td>Review: 4, below target. PO folds in Wave C's leftover 6</td><td>—</td><td>Sprint 03 = 6 (Wave C tail) + 4 (Wave D)</td></tr>
+        </table></div>
+        <div class="prose"><p>Two divergent cases both show up here: one sprint absorbing two full waves (row 4), and one wave splitting across two sprints with the second sprint also absorbing a fresh wave (rows 6–8). Neither is a special case — it's Part F's three branches doing exactly what they're designed to do.</p></div>
+      </section>
+
+      <section class="block" id="tiebreak">
+        <div class="block-label"><span class="dot"></span>Worked, two personas, one capability</div>
+        <h2 class="block-title">The tie-break rule</h2>
+        <div class="rule-callout">If two personas need the same capability, check whether the permission model actually distinguishes them — if not, pick the lower-privilege role.<span class="src">story.template.md §1</span></div>
+        <div class="prose"><p>A "view an approved invoice's detail" screen (no Payer contact info) — both Finance Manager and Director genuinely need it, and the permission model doesn't distinguish them on this specific, narrowed scope. Written from the Director's side (the narrower role) forces the ACs to be built against the more restrictive permission set from the start, so a broader role is never the one implicitly excluded.</p></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Sprint Assignment (Part F)</b><span>The three-branch mechanism that actually decides sprint boundaries. Nothing upstream commits to a sprint number.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Selecting Time-Based because it "sounds more rigorous."</li>
+            <li>Choosing Fibonacci on a brand-new engagement with no velocity history.</li>
+            <li>Treating "generate the paired epic first" as self-justifying without confirming the interleaving note names a specific story pair.</li>
+            <li>Assuming one epic = one sprint.</li>
+            <li>Waiting for review to flag an oversized story instead of scanning the planning table first.</li>
+            <li>Splitting an over-capacity wave at whatever story lands eighth, instead of finding the real seam.</li>
+            <li>Writing a shared-capability story for the higher-privilege persona by default.</li>
+            <li>Accepting a Walking Skeleton story's untagged dependency as "practically fine."</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">story.example.md</span><p>Three shapes: US-01-005 (backend, a Notes-section constraint with no business being an AC), US-01-002 (UI, Out of Scope naming the covering story for everything excluded), US-01-012 (Stripe webhook, all four AC categories in one story). All three are <code>Walking Skeleton: Yes</code>, and their own dependencies are entirely within the same tagged chain — a clean pass of check #7.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/07-sprint-planning.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen Design — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html" class="active"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 5</div>
+      <h1 class="title">Screen Design</h1>
+      <p class="dek">Before this phase existed, <code>/implement-story</code> never actually read the architecture section meant to define screen shape. Approving Screen Design commits you to more than "these are the right screens" — it's "this is the real shape each one will be built in."</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-screen-design.md"><code>/gen-screen-design</code></a>, <a href="../.claude/commands/review-screen-design.md"><code>/review-screen-design</code></a>, <a href="../.claude/commands/gen-ui-mocks.md"><code>/gen-ui-mocks</code></a> (base mode).</div>
+
+      <nav class="jumpnav">
+        <a href="#verify">Verifying a citation</a>
+        <a href="#portals">Portal boundaries</a>
+        <a href="#locked">What's locked</a>
+        <a href="#twopass">The two-pass mock</a>
+        <a href="#distinction">Portal/Screen/Surface/Pattern</a>
+        <a href="#tabs">Tabs</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="verify">
+        <div class="block-label"><span class="dot"></span>The test you can actually run</div>
+        <h2 class="block-title">Verifying a catalog citation without ascendra-ui knowledge</h2>
+        <div class="prose"><p>You can't independently verify a Matched Reference is a real catalog row in a 1,500-line reference doc. <strong>Open the mock, not just the table</strong> — you don't need to know what the catalog says a pattern looks like; you need to know whether the rendered HTML looks like something a Finance Manager would actually be shown. That's a judgment any PO can make.</p></div>
+        <h3 class="sub-title">The <code>closest:</code> prefix — undocumented, worth knowing anyway</h3>
+        <div class="prose"><p>Not a formally recognized convention — the canonical example uses it without ever being told to. It means the AI found no exact match and cited the nearest real one instead.</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Legitimate</h4><p>The screen shape is genuinely novel — nothing in the catalog resembles it. Note it and move on.</p></div>
+          <div class="distcard"><h4>Not legitimate</h4><p>The AI stopped at the first plausible-ish row instead of checking primitive compositions or <code>showcase-reference.md</code>. Push back.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="portals">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Portal boundaries: when two personas share one, and when they don't</h2>
+        <div class="rule-callout">Two personas sharing the same nav shell but entering via genuinely different auth flows are two portals, even if the nav items are otherwise identical.<span class="src">The sharper addition</span></div>
+        <div class="prose"><p>Harborview's single shared portal (Finance Manager + Account Owner, both standing session) is the simple baseline, not the hard case — there's no auth-flow split to force a division. See <a href="case-studies/harder-cases.html">Harder Cases</a> for the multi-portal RBAC scenario Harborview doesn't exercise.</p></div>
+      </section>
+
+      <section class="block" id="locked">
+        <div class="block-label"><span class="dot"></span>What Architecture can and can't change</div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Sections 1–3 — structurally locked</h4><p>Portals, Nav Map, Screen Inventory. Architecture carries these into 3.1.3.1–3.1.3.3 as-is, never re-derived. Approving Screen Design is the final word here.</p></div>
+          <div class="distcard"><h4>Section 4 — a forecast, not a lock</h4><p>Per-Screen Data Requirements only "feed" architecture's data modeling. A different real data shape emerging is a normal refinement, not a regression — it does <strong>not</strong> require <code>/assess-change</code>.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="twopass">
+        <div class="block-label"><span class="dot"></span>Why base and patch are separate</div>
+        <h2 class="block-title">The two-pass mock</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Base mode</h4><p>Invoked by <code>/gen-screen-design</code>. Full layout, navigation, real component fidelity. No gating captions yet — Section 6 (security) doesn't exist at this point, so there's nothing to gate against.</p></div>
+          <div class="distcard"><h4>Patch mode</h4><p>Invoked by <code>/gen-architecture</code> once Section 6 exists. Additive only — gating captions and cross-cutting banners, never touching reviewed layout.</p></div>
+        </div>
+        <div class="caution"><p><strong>A real strength:</strong> both passes read <code>hard-instructions.md</code> — the same corrections registry <code>/implement-story</code> consults. Before this, a mock could be built from a documented-but-fictional pattern, get approved, and not match what implementation correctly built — silently defeating the reason this phase exists.</p></div>
+      </section>
+
+      <section class="block" id="distinction">
+        <div class="block-label"><span class="dot"></span>Full depth</div>
+        <h2 class="block-title">Portal, Screen, Surface, UI Pattern</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Portal</h4><p>A navigation shell — one app, one session model.</p></div>
+          <div class="distcard"><h4>Screen</h4><p>One Screen Inventory row. Equal weight regardless of Surface — an overlay Dialog is exactly as much "a screen" as a routed Page.</p></div>
+          <div class="distcard"><h4>Surface</h4><p>The container: Page, Dialog, Sheet, or Drawer. How the screen is presented.</p></div>
+          <div class="distcard"><h4>UI Pattern</h4><p>The internal content shape: Form, Dashboard, Report, Table-List, Detail. Independent of Surface — a Form can live on a Page or inside a Sheet.</p></div>
+        </div>
+        <div class="prose"><p>If you're counting how many screens a project has, count Screen Inventory rows, not routes.</p></div>
+      </section>
+
+      <section class="block" id="tabs">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>A criterion to apply carefully</div>
+          <p>Harborview's example doesn't demonstrate real Tabs usage at all — no row uses them. When you hit a real case, apply the template's criterion directly to your own journey text (2+ independent sub-views, one entry point, no route change) — you can't pattern-match from the canonical example here.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Every Section 3 row is "a Screen" with equal weight</b><span>Regardless of Surface — a Dialog carries the same status as a routed Page.</span></li>
+          <li><b>The <code>closest:</code> prefix</b><span>An approximate match, not an exact one — worth a one-line reason, even though no check currently forces it.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Reviewing only the Screen Inventory table and never opening the generated mock.</li>
+            <li>Accepting a vague match answer instead of insisting on the specific catalog row.</li>
+            <li>Waving through a <code>closest:</code> citation without asking why no exact match exists.</li>
+            <li>Treating "same nav items" as sufficient to merge two personas into one portal, without checking auth flow.</li>
+            <li>Panicking when Architecture's real data model doesn't match Section 4's forecast.</li>
+            <li>Treating a Dialog or Sheet as a lesser "sub-screen" instead of a full Screen Inventory row.</li>
+            <li>Proposing Tabs because a screen "feels like" it should have them.</li>
+            <li>Forgetting base-mode mocks intentionally have no gating captions yet.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">screen-design.example.md</span><p>One portal, five screens. SCR-002 and SCR-004 show the <code>closest:</code> prefix on a Sheet and a Page respectively — practice the "why no exact match" question on both. SCR-005's Notes column shows a journey citation spanning two BRD journeys for one screen.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/05-screen-design.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

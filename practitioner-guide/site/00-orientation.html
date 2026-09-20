@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orientation — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html" class="active"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Orientation</div>
+      <h1 class="title">How to Use This Guide</h1>
+      <p class="dek">CLAUDE.md, SDLC.md, and PROJECT-LIFECYCLE.md tell you <em>what</em> happens and <em>which command</em> runs it. This guide answers a harder question: what do you actually write, how much, and what breaks three phases downstream if you get the judgment call wrong — turning as many of those calls as possible into a test you can apply, backed by a worked example.</p>
+
+      <nav class="jumpnav">
+        <a href="#running-example">Running example</a>
+        <a href="#terminology">Terminology map</a>
+        <a href="#axis">Scope · Priority · Layer</a>
+        <a href="#pairs">Other pairs</a>
+        <a href="#scores">Scores you can't verify</a>
+        <a href="#more">Where to find more</a>
+      </nav>
+
+      <div class="prose">
+        <p>Every finding referenced in this guide was verified against the actual command and template files as they exist today, not assumed — the research that produced it surfaced 14 framework defects, all fixed before it was written. Two ways to run everything it teaches: typing each command directly (the default assumption throughout), or via <code>/anchor-project</code>, which invokes the same commands and follows their instructions exactly — it changes the interaction around them, not the commands themselves. A third command, <a href="../.claude/commands/run-priming-session.md"><code>/run-priming-session</code></a>, is a free-form session that materializes facts into a priming package before formal discovery starts. A fourth, <a href="../.claude/commands/judgment-check.md"><code>/judgment-check</code></a>, runs underneath every phase chapter without a section of its own — see <a href="11-cross-cutting.html">Cross-Cutting</a> for full coverage.</p>
+      </div>
+
+      <section class="block" id="running-example">
+        <div class="block-label"><span class="dot"></span>The running example</div>
+        <h2 class="block-title">Harborview</h2>
+        <div class="prose">
+          <p>Every <code>.example.md</code> file in <code>projects/TEMPLATE/</code> — all seventeen of them — traces the same fictional project: <strong>Harborview Consulting Ltd, Invoice Management System</strong>. This guide leans on it constantly, by direct reference to the real files, so what you read here and what you find on disk always agree.</p>
+          <p>Harborview is deliberately the <strong>easy case</strong> — one client, one familiar domain, no contradictions, no regulatory complexity. Exactly why it's a good teaching example for the normal path, and exactly why it can't teach the harder calls.</p>
+        </div>
+        <div class="casecard">
+          <span class="filechip">case-studies/harder-cases.md</span>
+          <p>For a niche/regulated domain, an extension project, or multi-portal RBAC — the judgment calls Harborview never exercises. Built out phase by phase alongside this guide. <a href="case-studies/harder-cases.html">Read it →</a></p>
+        </div>
+      </section>
+
+      <section class="block" id="terminology">
+        <div class="block-label"><span class="dot"></span>Terminology map</div>
+        <h2 class="block-title">Four things that sound related and aren't</h2>
+        <div class="prose">
+          <p>Confusing them is easy and the cost is real — you can approve a BRD that's internally consistent under one reading and contradictory under another. Learn this before you touch a real project.</p>
+        </div>
+      </section>
+
+      <section class="block" id="axis">
+        <div class="axis-wrap">
+          <div class="axis-grid">
+            <div class="axis-col">
+              <h4>Scope</h4>
+              <div class="axis-q">Will this be built in this project <em>at all</em>?</div>
+              <div class="axis-values"><span class="axis-chip">In Scope</span><span class="axis-chip">Out of Scope</span></div>
+              <div class="axis-example"><b>BRD §1.4</b>Where it lives</div>
+            </div>
+            <div class="axis-col">
+              <h4>Priority</h4>
+              <div class="axis-q">Given it's in scope, how essential is it to <em>this phase</em>?</div>
+              <div class="axis-values"><span class="axis-chip">Must Have</span><span class="axis-chip">Should Have</span><span class="axis-chip">Nice to Have</span></div>
+              <div class="axis-example"><b>BRD §5</b>Per requirement</div>
+            </div>
+            <div class="axis-col">
+              <h4>Layer</h4>
+              <div class="axis-q">What <em>technical sequence</em> must it be built in?</div>
+              <div class="axis-values"><span class="axis-chip">Core</span><span class="axis-chip">Ext:PK</span><span class="axis-chip">Ext:School</span><span class="axis-chip">Ext:[code]</span></div>
+              <div class="axis-example"><b>Test</b>"Would a UK retailer need this?" → <span class="val">Core</span></div>
+            </div>
+          </div>
+          <div class="axis-conflict">
+            <b>Where they can genuinely conflict:</b> a requirement can be Must Have <em>and</em> Ext:PK at once — Priority says build it first, Layer says you can't yet. Layer wins for build order; Priority governs sequencing within what's buildable right now. If they keep conflicting on a real requirement, that's usually a sign it should be split.
+          </div>
+        </div>
+        <div class="prose" style="margin-top:16px;">
+          <p>They look related because Layer and the Core/Extension architecture methodology share vocabulary — but Layer is a label on <em>one BRD requirement inside one project</em>, while Core/Extension is how a whole <em>separate future project</em> is architected to build on top of this one. See <a href="case-studies/harder-cases.html">Harder Cases</a> for a worked extension project exercising both at once.</p>
+        </div>
+      </section>
+
+      <section class="block" id="pairs">
+        <div class="block-label"><span class="dot"></span>Distinctions</div>
+        <h2 class="block-title">Other pairs worth knowing before they surprise you</h2>
+        <div class="distgrid">
+          <div class="distcard">
+            <h4>Content Status vs. Status</h4>
+            <p>Status = the whole project's lifecycle, set once. Content Status = one document's own readiness — the field every gate actually checks. Unique to <code>brief.md</code>; every other gated artifact uses one field for both.</p>
+            <a class="goto" href="01-intake.html">→ Intake</a>
+          </div>
+          <div class="distcard">
+            <h4>Wave vs. Sprint vs. Epic</h4>
+            <p>A wave is what <code>/gen-stories</code> generates against (usually one epic). A sprint is a delivery-cadence unit decided later, purely from story count vs. capacity. One wave ≠ one sprint.</p>
+            <a class="goto" href="07-sprint-planning.html">→ Sprint Planning</a>
+          </div>
+          <div class="distcard">
+            <h4>Portal vs. Screen vs. Surface vs. Pattern</h4>
+            <p>Portal = a nav shell. Screen = one Inventory row, full weight regardless of size. Surface = container (Page/Dialog/Sheet/Drawer). Pattern = internal content shape — independent of Surface.</p>
+            <a class="goto" href="05-screen-design.html">→ Screen Design</a>
+          </div>
+          <div class="distcard">
+            <h4>Core/Extension architecture</h4>
+            <p>Layer is a label on <em>one requirement inside one project</em>. Core/Extension is how a whole <em>separate future project</em> plugs into this one. They share vocabulary, not meaning.</p>
+            <a class="goto" href="06-architecture.html">→ Architecture</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="scores">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>A pattern to watch for across every phase</div>
+          <p><strong>Scores and thresholds you can't reproduce.</strong> Domain Discovery and BRD Discovery both hand you a percentage against a fixed gate (70%, 85%) — but the formula isn't fully specified anywhere, so you can't independently check a number you're handed. Treat any confidence score as a rough signal: read the section it claims is weak yourself, and raise your personal bar above the stated threshold whenever the domain is regulated, unfamiliar, or a wrong assumption costs more than a sprint to unwind. A 70% pass on a niche compliance domain is not the same confidence as a 70% pass on an internal expense tool, even though the gate treats them identically.</p>
+        </div>
+      </section>
+
+      <section class="block" id="more">
+        <div class="block-label"><span class="dot"></span>Where to find more</div>
+        <ul class="reflist">
+          <li><a href="../../SDLC.md"><code>SDLC.md</code> / <code>PROJECT-LIFECYCLE.md</code></a> — the conceptual and operational references this guide complements, not replaces.</li>
+          <li><a href="../../decisions/"><code>decisions/</code></a> — the ADRs. Cited where they explain a <em>why</em> worth knowing.</li>
+          <li><a href="case-studies/harder-cases.html"><code>case-studies/harder-cases.md</code></a> — the scenarios Harborview doesn't cover.</li>
+        </ul>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/00-orientation.md</code>. Source markdown unchanged — this page is a regenerated view of it, not a second authored copy.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harder Cases — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="../index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="../00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="../01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="../02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="../03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="../04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="../05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="../06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="../07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="../08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="../09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="../10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="../11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="harder-cases.html" class="active">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Case studies</div>
+      <h1 class="title">Harder Cases</h1>
+      <p class="dek">Harborview is deliberately the easy path — one client, one well-understood domain, one portal, Core layer only. That's exactly why it can't teach the judgment calls that actually cause trouble. Targeted vignettes, not a second project traced end to end.</p>
+
+      <nav class="jumpnav">
+        <a href="#case1">Case 1 — Regulated domain</a>
+        <a href="#case2">Case 2 — Extension project</a>
+        <a href="#case3">Case 3 — Multi-portal RBAC</a>
+      </nav>
+
+      <section class="block" id="case1">
+        <div class="block-label"><span class="dot"></span>Supports Domain Discovery</div>
+        <h2 class="block-title">Case 1 — Cross-border remittance compliance</h2>
+        <div class="prose"><p>A licensed money-transfer operator sending remittances UK → Pakistan, Philippines, Nigeria. The self-test from <a href="../02-domain-discovery.html">Domain Discovery</a>, applied for real:</p>
+        <ol>
+          <li>Name the 3 most consequential rules confidently? You can guess "large transactions need checks" — not the actual threshold or regulator. Low confidence.</li>
+          <li>Wrong assumption costs &gt;1 sprint? Yes — a regulatory exposure, not a UI bug.</li>
+          <li>Regulator that would reject wrong output? Yes, several, disagreeing across corridors.</li>
+        </ol></div>
+        <div class="caution"><p><strong>Where Section 5 vs. 10 gets concrete:</strong> "transactions over $3,000 require enhanced due diligence" sounds universal. It's actually the US FinCEN threshold — the UK's MLR threshold differs, Nigeria's CBN threshold differs again. This belongs in Section 10 (Known Variations), never Section 5 — get it wrong and the framework won't ask which threshold applies in any corridor.</p></div>
+        <div class="prose"><p><strong>What the raised 90% bar looks like here:</strong> every regulation in Section 9 cited to something specific ("UK MLR 2017 Regulation 33," not "AML regulations apply"); every Section 12.3 Unverified row treated as a hard blocker; a Known Variations row for every corridor with its own confirmed threshold, not one row saying "varies."</p></div>
+      </section>
+
+      <section class="block" id="case2">
+        <div class="block-label"><span class="dot"></span>Supports Intake &amp; BRD/Scope Lock</div>
+        <h2 class="block-title">Case 2 — Ascendra Pay's Pakistan extension</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>ASCENDRA-PAY-001</h4><p>The base platform. Standalone. BRD §1.6 names two extension dimensions (Market: Pakistan; Sector: School) — naming them signals where architecture leaves seams, without designing the extension yet.</p></div>
+          <div class="distcard"><h4>ASCENDRA-PAY-PKN-001</h4><p>The Pakistan extension, its own project, its own brief. <code>Extends: ASCENDRA-PAY-001</code> — a free-text sentence, the field that actually drives every downstream chain resolution.</p></div>
+        </div>
+        <div class="prose"><p>What Layer looks like here, in contrast to Harborview's all-Core BRD: "capture a 7-digit NTN for every Issuer" is tagged <code>Ext:PK</code> — a UK retailer wouldn't need it. "Generate an invoice PDF" stays <code>Core</code> regardless of which project's BRD it's written in.</p></div>
+        <div class="prose"><p><strong>Layer and Core/Extension architecture meet, and stay separate:</strong> Layer labels this project's own requirements. The Core/Extension methodology is what the <em>base</em> project's architecture already built to make the seam exist. If a PO on the extension project finds themselves needing to change something in Core, that requirement doesn't belong to this project — it's a change request against the base, through <code>/assess-change</code> there.</p></div>
+      </section>
+
+      <section class="block" id="case3">
+        <div class="block-label"><span class="dot"></span>Supports Screen Design &amp; Product Structuring</div>
+        <h2 class="block-title">Case 3 — Multi-portal RBAC: the School extension</h2>
+        <div class="prose"><p>School Admin and Bursar (same SSO, same app, differ only by visibility) vs. Parent (standalone magic-link, has never touched the school's Google Workspace).</p></div>
+        <div class="rule-callout">The base portal rule fails immediately for Admin/Bursar vs. Parent — before nav items even matter, they don't share an authentication flow. Two portals, full stop.<span class="src">Applying the Screen Design boundary test</span></div>
+        <div class="caution"><p><strong>Where RBAC bites past the portal boundary:</strong> a Parent must see only their own children's fees — two parents with legitimate access to the same student is the normal case, not an edge case. This isn't a Screen Design decision (that's Architecture's Section 6, a per-row data-scoping rule) — but Screen Design <em>is</em> responsible for modeling the Family Portal's data requirements as scoped-by-default ("this Parent's children's fees," not "fees") so Architecture confirms a requirement already surfaced, rather than discovering it from scratch.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/case-studies/harder-cases.md</code>. Source markdown unchanged. Built out phase by phase alongside the guide.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intake — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html" class="active"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 1</div>
+      <h1 class="title">Intake</h1>
+      <p class="dek">Everything downstream traces back to one file: <code>brief.md</code>. Get intake thin or wrong and the damage shows up three phases later — a BRD missing a constraint nobody wrote down, an architecture decision made without knowing a regulation applied.</p>
+      <div class="chapter-links">Two commands: <a href="../.claude/commands/init-project.md"><code>/init-project</code></a> creates the project; <a href="../.claude/commands/run-intake.md"><code>/run-intake</code></a> fills <code>brief.md</code> section by section. Read <a href="00-orientation.html">Orientation</a> first if you haven't.</div>
+
+      <nav class="jumpnav">
+        <a href="#boundary">Project boundary</a>
+        <a href="#code">Project code</a>
+        <a href="#standalone">Standalone vs. Extension</a>
+        <a href="#sizing">Sizing the session</a>
+        <a href="#states">Content Status</a>
+        <a href="#sections">Section by section</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="boundary">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Project boundary — one product, one project</h2>
+        <div class="prose">
+          <p><code>/init-project</code>'s built-in test: a web app and its API are one project (technical components); separate portals for different user groups are separate projects. Three edge cases the one-line rule doesn't spell out on its own:</p>
+          <ul>
+            <li><strong>Teacher portal + parent portal, same school system.</strong> Two projects. Different user groups solving different problems, even sharing one backend.</li>
+            <li><strong>Admin dashboard bolted onto an existing product, for the same users.</strong> Not a new project — new scope inside the existing one. Belongs in the existing project's BRD.</li>
+            <li><strong>Admin/ops console for a different internal team.</strong> A separate project — very likely an <strong>Extension</strong>, since it can't be understood without the parent's domain knowledge, but it still gets its own brief.</li>
+          </ul>
+        </div>
+        <div class="rule-callout">Would this capability have its own go-live date, its own primary user group, and its own BRD sign-off, even if the "host" project never shipped it? If yes, separate project.<span class="src">The generalizing test</span></div>
+      </section>
+
+      <section class="block" id="code">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">Project code format, and when to add EXT</h2>
+        <div class="prose"><p>Baseline: <code>CLIENT-DOMAIN-NNN</code>. The optional fourth segment (<code>CLIENT-DOMAIN-EXT-NNN</code>) is <strong>cosmetic</strong> — never read by any command. The real extension relationship is always the brief's <code>Project Type</code>/<code>Extends</code>/<code>Extension Adds</code> fields.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Code</th><th>Reading</th></tr>
+          <tr><td><code>HARBORVIEW-INV-001</code></td><td>Harborview, invoice domain, first iteration. Standalone.</td></tr>
+          <tr><td><code>ASCENDRA-PAY-CORE-001</code></td><td>Ascendra's own payment product, core layer — base of an extension chain.</td></tr>
+          <tr><td><code>ASCENDRA-PAY-PKN-001</code></td><td>Pakistan market layer on top of the Core project. The brief's <code>Extends:</code> field is the real dependency.</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block" id="standalone">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Standalone vs. Extension — what actually changes</h2>
+        <div class="prose"><p>Not cosmetic — it changes what gets loaded into context for nearly every generating command downstream.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Command</th><th>If Extension: also loads from the parent chain</th></tr>
+          <tr><td><code>/gen-domain-knowledge</code></td><td>Parent domain knowledge, base-first — this project's document becomes a delta only</td></tr>
+          <tr><td><code>/gen-brd-playbook</code> / <code>/gen-brd</code></td><td>Parent BRD as baseline — this project's BRD captures only what's new or different</td></tr>
+          <tr><td><code>/gen-architecture</code></td><td>Parent architecture's Extension Points section specifically</td></tr>
+          <tr><td><code>/implement-story</code></td><td>Parent architecture, to know which codebase/service a story targets</td></tr>
+          <tr><td><code>/gen-epics</code>, <code>/gen-stories</code></td><td>Nothing — always project-specific regardless of type</td></tr>
+        </table></div>
+        <div class="rule-callout">Would someone who has never seen the other project be able to fully understand, discover, and build this one from its own brief and BRD alone? If yes, Standalone. If no, Extension.<span class="src">The decision test</span></div>
+      </section>
+
+      <section class="block" id="sizing">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Interactive vs. hand-filled — sizing the session</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Small internal project</h4><p>You're effectively both PO and client. Hand-filling is fine and usually faster — no vague client answer for a follow-up to catch.</p></div>
+          <div class="distcard"><h4>Medium client project</h4><p>A real external client, a discovery call happened or will. Run <code>/run-intake</code> interactively — its follow-up prompts catch vague client answers before they're written down as specific.</p></div>
+          <div class="distcard"><h4>Large or complex project</h4><p>Regulated domain, extension chain, multiple stakeholders. Always interactive — the mandatory Verification checklist is the only mechanism forcing checks like "does every regulation cite the specific statute."</p></div>
+        </div>
+        <div class="prose"><p>If you do hand-fill, still run the Part 2 Verification checklist in <code>brief.template.md</code> against your own draft — nothing else will.</p></div>
+      </section>
+
+      <section class="block" id="states">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">The Content Status state machine</h2>
+        <div class="prose"><p><code>brief.md</code> is the one artifact with two independent status fields — this split exists nowhere else in the framework.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Field</th><th>Tracks</th><th>Set by</th></tr>
+          <tr><td><strong>Status</strong></td><td>The whole project's lifecycle (Active/On Hold/Complete/Cancelled)</td><td><code>/init-project</code> once, rarely touched again</td></tr>
+          <tr><td><strong>Content Status</strong></td><td>Whether <code>brief.md</code>'s content is ready to use — the field every downstream gate reads</td><td><code>/init-project</code>, <code>/run-intake</code>, <code>update-status</code></td></tr>
+        </table></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Value</th><th>Meaning</th></tr>
+          <tr><td><code>Draft</code></td><td>Set by <code>/init-project</code>; every section still the awaiting-intake placeholder</td></tr>
+          <tr><td><code>Under Review</code></td><td>Manually-set, optional — flag the brief as out for client sign-off</td></tr>
+          <tr><td><code>Brief complete</code></td><td>Set automatically by <code>/run-intake</code> Step 8 once all 9 sections pass verification</td></tr>
+          <tr><td><code>Approved</code></td><td>Set manually — the actual gate <code>/gen-domain-knowledge</code> checks for</td></tr>
+          <tr><td><code>Locked</code> / <code>Superseded</code></td><td>Available values, no defined command trigger — your own process discipline</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">Resuming, revising, amending</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>Intake mode (Draft)</h4><p>The normal first pass. Sections 1→9 in order; anything already ✅ from an interrupted session is skipped, with an offer to review it first.</p></div>
+          <div class="distcard"><h4>Revision mode (Brief complete)</h4><p>Intake done but not yet approved. Name a section, re-runs the draft/approve loop just for it.</p></div>
+          <div class="distcard"><h4>Amendment mode (Approved)</h4><p>Any change is a tracked amendment — a one-line summary appended to a Document History table with an incremented minor version. Content Status stays <code>Approved</code> throughout.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="sections">
+        <div class="block-label"><span class="dot"></span>Density guidance</div>
+        <h2 class="block-title">Section by section: how much is enough</h2>
+
+        <h3 class="sub-title">1. Problem Statement</h3>
+        <div class="prose"><p>Two to four sentences: what's happening now that shouldn't be, what it costs, what would be true if solved — from the client's perspective, never the solution. A bad Problem Statement is either too thin ("the client needs better invoicing") or already the solution ("we are building an automated reminder system").</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> too thin, and BRD discovery re-derives context a discovery call already surfaced. Written as a solution, and it quietly biases requirement discovery toward one implementation before alternatives get explored.</p></div>
+
+        <h3 class="sub-title">2. Client Context</h3>
+        <div class="prose"><p>Enough that someone joining mid-project understands the client without follow-up questions: who they are, scale, current process, anything that changes a design decision. Deliberately omits company history and mission statements.</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> too thin (no transaction volume, no team size), and neither domain knowledge nor architecture has a basis for scoping decisions. Padded with marketing, and every irrelevant sentence competes for attention in every future AI session.</p></div>
+
+        <h3 class="sub-title">3. Strategic Goals</h3>
+        <div class="rule-callout">Could the client achieve this goal without the system, in principle? If yes, it's a goal. If no, it's a feature — it belongs in the BRD, not here.<span class="src">The sharpest test in this chapter</span></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> goals that are secretly features get treated as already-decided, skipping the alternatives BRD discovery should explore. Genuinely vague goals give the BRD nothing to check priority calls against.</p></div>
+
+        <h3 class="sub-title">4. Key Stakeholders</h3>
+        <div class="prose"><p>Only people whose involvement affects delivery — not a company directory. Every row needs a named Decision Authority (Final sign-off / Input only / Daily user / End user only).</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> vague Decision Authority means UAT sign-off is ambiguous — you can build a whole sprint and discover the real approver was never identified.</p></div>
+
+        <h3 class="sub-title">5. Constraints</h3>
+        <div class="prose"><p>Hard, non-negotiable limits only. If a constraint can be relaxed with a conversation, it's a preference (Section 6), not here. "None" is a valid, expected answer. Regulatory citations must be specific — "UK GDPR," not "privacy laws."</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> a vague regulatory constraint gives architecture nothing concrete to design against. A genuine preference listed as a constraint locks out options that were actually still open.</p></div>
+
+        <h3 class="sub-title">6. Technology Preferences</h3>
+        <div class="prose"><p>Existing systems that must be integrated with (factual), stack preferences (and how strong), hosting, existing auth provider. "No preference — client defers to delivery team" is correct when true, and should be written exactly that way.</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> omitting an existing integration surface means architecture designs without knowing it exists. Writing a preference as a hard requirement causes over-engineering around a constraint never actually imposed.</p></div>
+
+        <h3 class="sub-title">7. Success Criteria</h3>
+        <div class="rule-callout">Could you check this off during UAT unaided, or would you need the client to say "yes, that feels right"?<span class="src">The template's test</span></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> vague criteria give <code>/gen-uat-checklist</code> nothing concrete to translate. A bloated list turns UAT into a feature checklist instead of an outcomes checklist.</p></div>
+
+        <h3 class="sub-title">8. Risks and Open Questions</h3>
+        <div class="prose"><p>Two distinct types, never combined: a <strong>Risk</strong> might go wrong regardless of action and needs mitigation; an <strong>Open Question</strong> must be answered before a requirement can be written. Every row needs a named owner.</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> an unowned Open Question stays open indefinitely — BRD discovery stalls or proceeds on an unstated assumption. Misfiling a Risk as a Question means it never gets a mitigation plan.</p></div>
+
+        <h3 class="sub-title">9. Related Artifacts</h3>
+        <div class="prose"><p>Auto-populated with the brief as the first row. Known gap: not every generating command keeps this table current automatically — the safest habit is running <code>/update-status</code> after each artifact changes status.</p></div>
+        <div class="caution"><p><strong>What breaks downstream:</strong> a stale entry sends a human — or an AI session — to the wrong version of a document, treating it as current.</p></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Content Status vs. Status</b><span>Full explanation in <a href="00-orientation.html">Orientation</a>'s terminology table — this chapter doesn't repeat it.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Writing the Problem Statement as a feature list instead of current-state pain.</li>
+            <li>Marking a project Extension because it shares a client or similar-sounding domain, not because it can't be understood without the parent.</li>
+            <li>Treating a genuine preference as a Constraint instead of a Preference — silently removing options that were never closed.</li>
+            <li>Leaving Section 8 owners as "TBD" — an easy field to rush past in a live session.</li>
+            <li>Approving the brief and then amending it without running <code>/run-intake</code> in amendment mode — no Document History entry, no audit trail.</li>
+            <li>Hand-filling a brief for a project that actually needed a live client interview — the checklist still technically passes on vague-but-present answers.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard">
+          <span class="filechip">brief.example.md</span>
+          <p>The finished, Approved artifact this chapter points at. Section 1's Problem Statement never once describes the system being built — it stays in the language of the spreadsheet and the Finance Manager's weekly manual check. Sections 5 and 6 show the Constraint/Preference split side by side: Stripe is a Constraint (non-negotiable existing rate); stack and hosting sit in Section 6 as genuine preferences.</p>
+        </div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/01-intake.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

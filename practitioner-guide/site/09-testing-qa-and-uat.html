@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing, QA &amp; UAT — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html" class="active"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 9–10</div>
+      <h1 class="title">Testing, QA &amp; UAT</h1>
+      <p class="dek">Two separate gates, not one step with two names. QA asks a technical question: does the code do what the stories said? UAT asks a business question: does the running system, operated by the PO's own hands, actually deliver what the BRD promised? A sprint can pass one and fail the other.</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-uat-checklist.md"><code>/gen-uat-checklist</code></a> and <a href="../../reference/defect-severity.md">defect severity</a>.</div>
+
+      <nav class="jumpnav">
+        <a href="#severity">Defect severity</a>
+        <a href="#deferral">Deferral rule</a>
+        <a href="#report">Full report trigger</a>
+        <a href="#density">UAT scenario density</a>
+        <a href="#loop">The fail-and-return loop</a>
+        <a href="#exit">QA exit criteria</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="severity">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">Defect severity</h2>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Severity</th><th>Meaning</th><th>Blocks release?</th></tr>
+          <tr><td>Critical</td><td>Unusable, data at risk, or a security control bypassed</td><td>Always — no exceptions</td></tr>
+          <tr><td>High</td><td>Core feature broken, no viable workaround</td><td>Unless formally deferred</td></tr>
+          <tr><td>Medium</td><td>Degraded, workaround exists</td><td>No</td></tr>
+          <tr><td>Low</td><td>Cosmetic</td><td>No</td></tr>
+        </table></div>
+        <div class="caution"><p>Two automatic escalations easy to under-apply: a defect found in <strong>production</strong> escalates one level; any <strong>security or cross-tenant data</strong> defect is always Critical, no proportionality exception.</p></div>
+      </section>
+
+      <section class="block" id="deferral">
+        <div class="block-label"><span class="dot"></span>The Deferred Defect Process</div>
+        <div class="rule-callout">Critical defects can never be deferred, under any condition. A High defect needs explicit Product Owner agreement recorded against that one specific defect — not covered by a blanket sprint sign-off.<span class="src">Read condition 3 literally</span></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ Correctly deferred — DEF-14, High</div>
+            <div class="gb-quote">CSV export fails, but the on-screen data is fully usable, the Finance Manager confirmed export isn't needed until month-end (3 weeks out), and the PO recorded the decision against this specific defect with a target sprint.</div>
+            <p class="gb-why">All four conditions met, individually, for this one defect.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Should not be deferred — DEF-15, High</div>
+            <div class="gb-quote">Void Invoice silently fails for >10 line items — no error shown, no way for the user to know it didn't work.</div>
+            <p class="gb-why">No real workaround exists (the user can't even detect the failure). A silent, undetectable failure on a money-moving action should fail the PO's honest risk-weighing.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="report">
+        <div class="block-label"><span class="dot"></span>Process decision</div>
+        <h2 class="block-title">When the full test execution report is warranted</h2>
+        <div class="rule-callout">Is there an external stakeholder who expects to be shown quality evidence? Is there a compliance or contractual reason a formal record has to exist? If no to both, a one-line sprint-plan note is sufficient.<span class="src">The trigger test</span></div>
+        <div class="caution"><p>Skipping the full report doesn't mean a lighter bar — the suite still has to pass, Critical/High still has to be zero (or deferred), coverage still has to clear the threshold.</p></div>
+      </section>
+
+      <section class="block" id="density">
+        <div class="block-label"><span class="dot"></span>Density guidance</div>
+        <h2 class="block-title">Turning an AC into something a client can run</h2>
+        <div class="gb-wrap">
+          <div class="gb-card bad">
+            <div class="gb-head">Written for engineers</div>
+            <div class="gb-quote">"The system rejects a payment attempt when the invoice status is not Open."</div>
+          </div>
+          <div class="gb-card good">
+            <div class="gb-head">✓ The UAT translation</div>
+            <div class="gb-quote">1. Navigate to Payments. 2. Find an already-Paid invoice. 3. Attempt to record a new payment. 4. Submit.<br>Expected: an error is shown, no payment recorded, status unchanged.</div>
+            <p class="gb-why">Numbered single-action steps, a concrete reproducible instance (not an abstract category), and an observable expected result — nothing about a 409 or an exception class.</p>
+          </div>
+        </div>
+        <div class="rule-callout">Could someone who has never seen the codebase execute every step and judge Pass/Fail purely from what's in front of them?<span class="src">The check before you consider a translation done</span></div>
+      </section>
+
+      <section class="block" id="loop">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>What it actually costs</div>
+          <p>A Critical or High UAT finding doesn't mean a quick patch — it re-runs the <strong>entire</strong> pipeline for that story: fix, re-verify (the whole AC set, not just the failing one, since a fix can regress a passing AC), re-raise the PR, the suite-wide QA checks again, and UAT often resumes from scratch since a mid-checklist fix can change behavior already marked Pass. Budget UAT with slack at the end of a sprint, not flush against a hard release date.</p>
+        </div>
+      </section>
+
+      <section class="block" id="exit">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">What QA confirmation actually requires</h2>
+        <div class="prose"><p>Full suite passing, zero open Critical/High, coverage threshold met.</p></div>
+        <div class="caution"><p><strong>The coverage threshold is this project's own number</strong>, from <code>standards/test-strategy.md</code> — SDLC.md's "≥80%" is a default suggestion, not a framework-wide constant. Know which number applies to <em>this</em> project before you sign off.</p></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Deferred</b><span>Allowed to cross UAT sign-off without being fixed, under the four-condition process. Never available to Critical.</span></li>
+          <li><b>QA confirmation vs. UAT sign-off</b><span>Two separate confirmations — the first technical, the second the PO operating the running system.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Treating a High defect's deferral as approved because the PO signed the overall sprint sign-off.</li>
+            <li>Deferring a High defect where no real workaround exists.</li>
+            <li>Producing the full test execution report for a project with no external stakeholder who'll ever read it.</li>
+            <li>Writing a UAT step around an internal mechanism instead of what the tester can observe.</li>
+            <li>Letting a tester invent their own test data for an AC's condition.</li>
+            <li>Budgeting UAT as a flush-to-deadline half-day.</li>
+            <li>Assuming the coverage threshold is a fixed 80% for every project.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">uat-checklist.example.md</span><p>TC-1 and TC-2 on US-03-002 show the full observable-expected-result pattern for both a happy path and a rejection AC.</p></div>
+        <div class="casecard"><span class="filechip">test-execution-report.example.md</span><p>DEF-1 (Medium) logged and left Open — the routine case the deferral rule doesn't even need to engage for. Section 5's sign-off checklist item 3 checked because Sprint 01 genuinely had zero High defects.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/09-testing-qa-and-uat.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

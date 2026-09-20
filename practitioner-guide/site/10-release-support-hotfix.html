@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Release, Support &amp; Hotfix — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html" class="active"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 11–12</div>
+      <h1 class="title">Release, Support &amp; Hotfix</h1>
+      <p class="dek">Three things that look like they could be one "ship it and watch it" step. Get the hotfix git logic wrong and the fix you deployed can vanish from <code>main</code> without anyone touching it on purpose — the single most consequential thing in this chapter to get right.</p>
+      <div class="chapter-links"><a href="../.claude/commands/close-sprint.md"><code>/close-sprint</code></a>, <a href="../.claude/commands/gen-release-notes.md"><code>/gen-release-notes</code></a>, and the manual Hotfix Cycle.</div>
+
+      <nav class="jumpnav">
+        <a href="#learnings">Forward-looking learnings</a>
+        <a href="#versioning">Release versioning</a>
+        <a href="#hotfix">The Hotfix Cycle</a>
+        <a href="#trigger">Hotfix vs. batched</a>
+        <a href="#support">Support's two end states</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <div class="distgrid">
+        <div class="distcard"><h4>Sprint Closure &amp; Release</h4><p>Where this sprint's learnings get checked against not-yet-built scope, and a client-facing version boundary is decided — one that doesn't always line up with a sprint boundary.</p></div>
+        <div class="distcard"><h4>Support</h4><p>A standing posture, not an event. Runs once per project, ends one of two structurally different ways.</p></div>
+        <div class="distcard"><h4>Hotfix Cycle</h4><p>An emergency deviation — no sprint planning, no UAT — for the moment when waiting for the normal pipeline is the wrong call.</p></div>
+      </div>
+
+      <section class="block" id="learnings">
+        <div class="block-label"><span class="dot"></span><code>/close-sprint</code> Step 8</div>
+        <h2 class="block-title">Forward-looking learnings, vs. sprint-specific noise</h2>
+        <div class="rule-callout">Does this new information change what a not-yet-built epic should have been told, or does it only affect work already built or already has its own fix in hand?<span class="src">The test that separates the two</span></div>
+        <div class="prose"><p><code>/gen-stories</code> generates a wave from the Locked architecture and Approved BRD as they stand at that moment — it never re-reads a prior sprint's retrospective. Step 8 is the one deliberate place that catches staleness before the next wave builds on it, and it hands you <code>/assess-change</code> as the fix.</p></div>
+      </section>
+
+      <section class="block" id="versioning">
+        <div class="block-label"><span class="dot"></span>Not by sprint</div>
+        <h2 class="block-title">Release notes are versioned by release</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4>A sprint ships as its own release</h4><p>UAT passes, the client wants it live immediately. One sprint, one version, one deploy — the common case.</p></div>
+          <div class="distcard"><h4>Two sprints batch into one release</h4><p>A client's monthly change-window policy means both land in the same deploy. Treat the deploy, not the sprint boundary, as the trigger — one version, not two back to back.</p></div>
+        </div>
+        <div class="caution"><p><code>/gen-release-notes</code> reads exactly one sprint plan file. If batching, it won't fold the earlier sprint in for you — point it at the later sprint and manually merge, or read both files in the same session first.</p></div>
+      </section>
+
+      <section class="block" id="hotfix">
+        <div class="block-label"><span class="dot"></span>Git process, explained clearly</div>
+        <h2 class="block-title">The Hotfix Cycle</h2>
+        <div class="prose"><p>Trunk-based: one branch per story, cut from <code>main</code>, merged directly back. There is no persistent sprint-integration branch. A hotfix branch is cut from <code>main</code> like any story branch, fixed, verified, PR'd, and merged — the moment it merges, every story branch created <em>after</em> that point already contains it. Nothing to do for those.</p></div>
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>The one thing that needs a manual check</div>
+          <p>A story branch cut <strong>before</strong> the hotfix merged has a frozen copy of <code>main</code> with no knowledge the fix happened. If it touches the same lines and merges without pulling <code>main</code> in first, its version silently wins — overwriting the hotfix. <strong>Rule of thumb:</strong> the instant a hotfix PR merges, pull <code>main</code> into every story branch that was already open at that moment, before its own PR is allowed to merge.</p>
+        </div>
+      </section>
+
+      <section class="block" id="trigger">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">What triggers a hotfix vs. what gets batched</h2>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Severity</th><th>SLA</th><th>In production</th></tr>
+          <tr><td>Critical</td><td>Fix within 4 hours</td><td>Hotfix immediately, no exceptions</td></tr>
+          <tr><td>High</td><td>Fix within 1 business day</td><td>Hotfix immediately</td></tr>
+          <tr><td>Medium</td><td>Fix within current sprint</td><td>Batched into a future sprint</td></tr>
+          <tr><td>Low</td><td>Next sprint or backlog</td><td>Batched</td></tr>
+        </table></div>
+        <div class="caution"><p>A production defect is automatically escalated one severity level. Log a batched defect in the Support Log with a target sprint — it doesn't automatically show up in a future sprint's story list the way a UAT carry-forward story does.</p></div>
+      </section>
+
+      <section class="block" id="support">
+        <div class="block-label"><span class="dot"></span>Reference</div>
+        <h2 class="block-title">Support's two end states</h2>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th></th><th>Closure</th><th>Retainer</th></tr>
+          <tr><td>Trigger</td><td>Scope delivered, window elapses clean, no further agreement</td><td>Client wants ongoing work, new agreement in place</td></tr>
+          <tr><td>What changes</td><td>Brief Status → <code>Complete</code></td><td>New/addendum brief; project stays Active</td></tr>
+        </table></div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Hotfix branch</b><span>Cut from <code>main</code> like any story branch. No persistent sprint-integration branch exists to merge into.</span></li>
+          <li><b>Support Log</b><span>The running defect log for the monitoring period — where a batched production defect is tracked so it doesn't disappear.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Treating the retrospective as if it already corrects stale scope — Step 8 and <code>/assess-change</code> are the actual path.</li>
+            <li>Assuming one release note per sprint is the default.</li>
+            <li>Running <code>/gen-release-notes</code> once and assuming it picked up an earlier batched sprint too.</li>
+            <li>Looking for a sprint-integration branch that doesn't exist in this framework's git model.</li>
+            <li>Assuming a hotfix "reaching" the codebase is the risk — it already has, the moment its PR merges. The risk is an older, already-open branch overwriting it.</li>
+            <li>Not escalating a defect's severity when found in production.</li>
+            <li>Leaving a project's brief Status at Active after the support window closes cleanly.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">release-notes.example.md</span><p>Section 6 honestly records "Epics completed: 0 (partially delivered)" rather than rounding up. No real Hotfix or Stage 12 closure example exists in the repo — the walkthroughs above are this chapter's own construction, built to the same rigor.</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/10-release-support-hotfix.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

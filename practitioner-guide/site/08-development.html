@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html" class="active"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Stage 8</div>
+      <h1 class="title">Development</h1>
+      <p class="dek">Four commands run in sequence, once per story: plan, implement, verify, describe. <code>/implement-story</code> hard-gates on the plan being Confirmed, with no PO override — the plan is cheap enough to produce and review that there's no legitimate "not worth it" case.</p>
+      <div class="chapter-links"><a href="../.claude/commands/gen-story-plan.md"><code>/gen-story-plan</code></a>, <a href="../.claude/commands/implement-story.md"><code>/implement-story</code></a>, <a href="../.claude/commands/verify-story.md"><code>/verify-story</code></a>, <a href="../.claude/commands/gen-pr-description.md"><code>/gen-pr-description</code></a>.</div>
+
+      <nav class="jumpnav">
+        <a href="#checklist">Plan confirmation</a>
+        <a href="#scaffold">Repo scaffolding</a>
+        <a href="#vendor">Vendoring commons</a>
+        <a href="#recovery">The recovery loop</a>
+        <a href="#mismatch">Template mismatches</a>
+        <a href="#agnostic">Stack-agnostic reading</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <div class="rule-callout">The PO explicitly requested visibility into what a story would produce before implementation started — pages, endpoints, queries, DTOs, guards.<span class="src">FW-031's rationale for the plan gate</span></div>
+
+      <section class="block" id="checklist">
+        <div class="block-label"><span class="dot"></span>The real gate isn't Step 9</div>
+        <h2 class="block-title">The story-plan confirmation checklist</h2>
+        <div class="prose"><p>Step 9's summary confirms every AC has a row, not that the row is right. The actual decision happens after, against the written file, via <code>update-status ... Confirmed</code>.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Check against</th><th>Ask yourself</th></tr>
+          <tr><td>Each API block's Auth line</td><td>Does the guard/role match who you'd actually expect — not a plausible placeholder?</td></tr>
+          <tr><td>Each API block's Queries line</td><td>Is tenant-scoping actually present when this project has a tenant boundary?</td></tr>
+          <tr><td>Each WEB block's Route/Surface</td><td>Does this match the approved mock — same path, same Page/Dialog/Sheet/Drawer?</td></tr>
+          <tr><td>Each WEB block's Data layer</td><td>Does the hook name and the API call it references actually line up?</td></tr>
+          <tr><td>AC → Artifact Traceability</td><td>Does every AC map to something that genuinely satisfies it?</td></tr>
+          <tr><td>Risks / Open Questions</td><td>Anything you'd resolve differently than proposed?</td></tr>
+        </table></div>
+        <div class="caution"><p>A plan you correct <em>after</em> implementation started costs the same re-implementation chain a wrong architecture decision does — just scoped to one story.</p></div>
+      </section>
+
+      <section class="block" id="scaffold">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>What to expect on first touch</div>
+          <p><strong>If this is the first story for a given repo, expect the diff to include an entire scaffolded project</strong> — module structure, exception filter, logging, auth module, <code>.env.example</code> — not just this story's own endpoint. That's expected bootstrap cost every later story won't pay, not scope creep. If a <em>later</em> story on an already-scaffolded repo produces a similarly oversized diff, that's the actual signal worth chasing.</p>
+        </div>
+      </section>
+
+      <section class="block" id="vendor">
+        <div class="block-label"><span class="dot"></span>Finer-grained than scaffolding</div>
+        <h2 class="block-title">Vendoring an <code>ascendra-commons</code> module</h2>
+        <div class="prose"><p>Only relevant if the project adopted a module during architecture. Vendoring happens once per <strong>module</strong>, at whichever story first needs it — not once per repo, and not for every adopted module up front. Look for a separate <code>chore: vendor ascendra-commons/{module}</code> commit, kept apart from the story's own work.</p></div>
+        <div class="caution"><p>Every import should resolve to that module's <code>.core</code> package — never a concrete implementation package reached past it for convenience. This is one of the things <code>/implement-story</code>'s own Standards Compliance Self-Check re-reads against the actual diff, "not from memory of what was written earlier in the same session."</p></div>
+      </section>
+
+      <section class="block" id="recovery">
+        <div class="block-label"><span class="dot"></span>The asymmetric recovery loop</div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Implementation failure</h4><p>Clear, bounded: two attempts, then stop and report exactly what failed and why. You always know where you stand.</p></div>
+          <div class="distcard"><h4>Verification failure</h4><p>No stated procedure. The instinct to re-run <code>/implement-story</code> is wrong — it hits the <code>In Progress</code> gate and refuses.</p></div>
+        </div>
+        <div class="prose"><p><strong>The actual recovery path:</strong> fix directly on the same story branch, re-run lint/build/test, commit, then re-run <code>/verify-story</code>.</p></div>
+        <div class="caution"><p><strong>If the same AC fails verification twice in a row</strong>, that's a plan-correctness signal, not an implementation-effort signal. Stop attempting a third blind fix. Regenerate the plan instead.</p></div>
+      </section>
+
+      <section class="block" id="mismatch">
+        <div class="block-label"><span class="dot"></span>Two real template mismatches</div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Story-plan template's Data Layer field</h4><p>Hardcoded to React Query language. The command's own conditional instruction is correct — on a hookless project, describe the real fetch mechanism instead. No worked hookless example exists to copy from.</p></div>
+          <div class="distcard"><h4>PR description's Pre-Merge Checklist</h4><p>Two items hardcode <code>orgId</code>/React Query as unconditional. Tick "— N/A" honestly on a project that uses neither, rather than forcing a match.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="agnostic">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>What "stack-agnostic" means at run time</div>
+          <p><code>/implement-story</code> reads Section 2 before doing anything else — NestJS/Next.js is a reference path for the common case, never a hardcoded universal rule. Seeing a Spring or Angular idiom in the command's own reasoning on a non-default project is the intended behavior, not the command drifting from a "real" standard.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Plan Status vs. Story Status</b><span>A story can be Reviewed while its plan is still Draft — two independent gate fields.</span></li>
+          <li><b>Scaffolding vs. vendoring</b><span>Scaffolding: once per repo. Vendoring: once per <code>ascendra-commons</code> module. A repo can be long-scaffolded and still vendor a new module on story forty.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Typing <code>Confirmed</code> off the Step 9 summary table instead of opening the written plan file.</li>
+            <li>Panicking at an oversized first diff on a repo's first story.</li>
+            <li>Re-running <code>/implement-story</code> to fix a verification failure — it hits the status gate.</li>
+            <li>Attempting a third blind implementation fix instead of regenerating the plan.</li>
+            <li>Copying the Data Layer field's React Query wording literally on a hookless project.</li>
+            <li>Forcing a Pre-Merge Checklist match on a project that uses neither <code>orgId</code> nor React Query.</li>
+            <li>Reading a non-NestJS/Next.js idiom in the command's reasoning as a defect.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="casecard"><span class="filechip">story-plan.example.md — US-01-002</span><p>Run the checklist above against it directly: Auth names the exact expected role, Queries shows real tenant-scoping, Route/Surface match a real screen ID, Data layer is the React Query case the template was written for.</p></div>
+        <div class="casecard"><span class="filechip">pr-description.example.md — US-01-001</span><p>Shows the template's own N/A instruction already in honest practice: both hardcoded checklist items ticked with "— N/A (migration only)" / "— N/A (backend-only PR)."</p></div>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/08-development.md</code>. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

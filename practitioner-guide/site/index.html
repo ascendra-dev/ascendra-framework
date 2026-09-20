@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practitioner's Guide — Ascendra Framework</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="hero">
+  <div class="chapter-eyebrow">Ascendra Framework</div>
+  <h1>Practitioner's Guide</h1>
+  <p class="lede">CLAUDE.md, SDLC.md, and PROJECT-LIFECYCLE.md tell you <em>what</em> happens at each stage and <em>which command</em> runs it. This guide answers a harder question: what do you actually write, how much, and what breaks three phases downstream if you get a judgment call wrong.</p>
+  <a class="cta" href="00-orientation.html">Start with Orientation →</a>
+</div>
+
+<div class="chaptergrid">
+  <a class="chaptercard" href="00-orientation.html">
+    <span class="cnum">—</span>
+    <h3>Orientation</h3>
+    <p>How to use this guide, the terminology map, the running Harborview example.</p>
+  </a>
+  <a class="chaptercard" href="01-intake.html">
+    <span class="cnum">01</span>
+    <h3>Intake</h3>
+    <p><code>/init-project</code>, <code>/run-intake</code>, the brief.</p>
+  </a>
+  <a class="chaptercard" href="02-domain-discovery.html">
+    <span class="cnum">02</span>
+    <h3>Domain Discovery</h3>
+    <p><code>/gen-domain-knowledge</code> and the optional discovery sub-flow.</p>
+  </a>
+  <a class="chaptercard" href="03-brd-and-scope-lock.html">
+    <span class="cnum">03</span>
+    <h3>BRD &amp; Scope Lock</h3>
+    <p>BRD playbook, BRD discovery, scope lock.</p>
+  </a>
+  <a class="chaptercard" href="04-product-structuring.html">
+    <span class="cnum">04</span>
+    <h3>Product Structuring</h3>
+    <p><code>/gen-epics</code>, epic boundaries and sizing.</p>
+  </a>
+  <a class="chaptercard" href="05-screen-design.html">
+    <span class="cnum">05</span>
+    <h3>Screen Design</h3>
+    <p><code>/gen-screen-design</code>, <code>/gen-ui-mocks</code>.</p>
+  </a>
+  <a class="chaptercard" href="06-architecture.html">
+    <span class="cnum">06</span>
+    <h3>Architecture</h3>
+    <p><code>/gen-architecture</code>, the 35-check review.</p>
+  </a>
+  <a class="chaptercard" href="07-sprint-planning.html">
+    <span class="cnum">07</span>
+    <h3>Sprint Planning</h3>
+    <p><code>/gen-stories</code>, wave vs. sprint, sizing.</p>
+  </a>
+  <a class="chaptercard" href="08-development.html">
+    <span class="cnum">08</span>
+    <h3>Development</h3>
+    <p><code>/gen-story-plan</code>, <code>/implement-story</code>, <code>/verify-story</code>.</p>
+  </a>
+  <a class="chaptercard" href="09-testing-qa-and-uat.html">
+    <span class="cnum">09</span>
+    <h3>Testing, QA &amp; UAT</h3>
+    <p>Defect severity, deferral, UAT scenario density.</p>
+  </a>
+  <a class="chaptercard" href="10-release-support-hotfix.html">
+    <span class="cnum">10</span>
+    <h3>Release, Support &amp; Hotfix</h3>
+    <p>Sprint closure, versioning, the hotfix git model.</p>
+  </a>
+  <a class="chaptercard" href="11-cross-cutting.html">
+    <span class="cnum">11</span>
+    <h3>Cross-Cutting</h3>
+    <p><code>/assess-change</code>, <code>/update-status</code>, <code>/project-status</code>, <code>/judgment-check</code>.</p>
+  </a>
+  <a class="chaptercard" href="case-studies/harder-cases.html">
+    <span class="cnum">Case studies</span>
+    <h3>Harder Cases</h3>
+    <p>A regulated domain, an extension project, multi-portal RBAC — what Harborview doesn't cover.</p>
+  </a>
+</div>
+
+<footer class="pagefoot" style="max-width:900px; padding-inline:32px;">
+  Renders <code>practitioner-guide/*.md</code> for human reading. The markdown stays the single authored source — every AI-facing cross-reference (<code>/judgment-check</code> included) reads it directly, unchanged. This site is regenerated from it, never edited independently.
+</footer>
+
+</body>
+</html>
