@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-brd-playbook.md"><code>/gen-brd-playbook</code></a>, <a href="../../.claude/commands/run-mock-discovery.md"><code>/run-mock-discovery</code></a>, <a href="../../.claude/commands/run-brd-discovery.md"><code>/run-brd-discovery</code></a>, <a href="../../.claude/commands/gen-brd.md"><code>/gen-brd</code></a>, <a href="../../.claude/commands/review-brd.md"><code>/review-brd</code></a>.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What a BRD is</a>
         <a href="#mode">Discovery mode</a>
         <a href="#confidence">Confidence score</a>
         <a href="#variation">Known Variation</a>
@@ -50,6 +51,17 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What a BRD is, and where each requirement actually comes from</h2>
+        <div class="prose">
+          <p><strong>What is a BRD?</strong> It's the Business Requirements Document — the formal record of what this specific client actually needs, confirmed through discovery. Domain knowledge told you what's typically true across every client in this domain. The BRD tells you what's true for this one engagement.</p>
+          <p><strong>Why does it get its own gate?</strong> Nothing downstream gets built without it. <code>/gen-epics</code> won't run without an Approved BRD to point at. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work — epics and stories trace back to it by REQ-ID for the rest of the project.</p>
+          <p><strong>Where does each requirement's content actually come from?</strong> Every requirement in Section 5 carries a source tag, and the three options mean genuinely different things. <code>[Client-Stated]</code> — the client said this directly, in their own words, during discovery. <code>[Domain-Default]</code> — this matches what the domain document already says is standard, and it only appears here because the client specifically confirmed it or overrode it. An un-overridden domain default shouldn't be in the BRD at all — the domain document already covers it. <code>[Assumed]</code> — nobody actually confirmed this. The AI filled a gap on its own judgment.</p>
+          <p>That third tag is a real, named risk, not a formality. <code>/review-brd</code>'s whole job on an <code>[Assumed]</code> requirement is to make you personally look at it and decide: is it actually right, does it need confirming with the client, or should it move to Open Questions instead?</p>
+        </div>
+      </section>
 
       <section class="block" id="mode">
         <div class="block-label"><span class="dot"></span>Process decision</div>

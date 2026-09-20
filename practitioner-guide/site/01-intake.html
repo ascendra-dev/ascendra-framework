@@ -39,6 +39,8 @@
       <div class="chapter-links">Two commands run this stage: <a href="../../.claude/commands/init-project.md"><code>/init-project</code></a> sets up the project, and <a href="../../.claude/commands/run-intake.md"><code>/run-intake</code></a> walks you through filling in <code>brief.md</code>, section by section. New to this guide? Start with <a href="00-orientation.html">Orientation</a> first.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What a brief is</a>
+        <a href="#journey">The session, walked through</a>
         <a href="#boundary">Project boundary</a>
         <a href="#code">Project code</a>
         <a href="#standalone">Standalone vs. Extension</a>
@@ -49,11 +51,81 @@
         <a href="#harborview">Harborview in practice</a>
       </nav>
 
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What a brief is, and why it gets its own gate</h2>
+        <div class="prose">
+          <p><strong>What is a brief?</strong> It's a short, plain-language document. It captures what's wrong today, who's involved, what fixing it would achieve, and what limits already exist. It is not a requirements document — it doesn't say what the system will do. It says what the client's actual situation is, before anyone starts designing a solution.</p>
+          <p><strong>Why does it get its own gate, instead of folding into the first requirements conversation?</strong> Because everything downstream treats it as already-settled context. <code>/gen-domain-knowledge</code> won't run until the brief's Content Status is Approved. Once it's approved, every later command — domain knowledge, BRD discovery, architecture — reads the brief's answers as given, not as something to double-check. Get the Problem Statement or Constraints section wrong here, and nobody re-verifies it three phases later. They just build on top of it.</p>
+          <p><strong>Where does the content in a brief actually come from?</strong> Here it's simpler than in later stages: there's no AI-training-knowledge shortcut. A brief is entirely the PO's own answers, about this one specific client. <code>/run-intake</code> doesn't propose a candidate answer and ask you to confirm it, the way domain discovery does — it asks an open question and waits. If you don't actually say something, there's nothing else for it to fall back on.</p>
+        </div>
+      </section>
+
+      <section class="block" id="journey">
+        <div class="block-label"><span class="dot"></span>What actually happens, section by section</div>
+        <h2 class="block-title">The intake session, walked through</h2>
+        <div class="prose"><p>Nine sections, filled one at a time, always in the same shape. Before it asks you anything, the session shows you the actual guidance for that section, taken directly from the brief template — not a generic prompt. Then it asks one open question and waits for you to answer freely. If your answer misses something the guidance calls for, it asks one follow-up at a time. Never a list of them at once.</p></div>
+        <div class="rule-callout">"Describe what's broken or missing today — what the client is living with right now."<span class="src">The actual opening question for Section 1, verbatim</span></div>
+        <div class="prose">
+          <p>Once you've said enough, it drafts the section and shows you exactly what it plans to write. At that point you get three options, and only three. <strong>Approve</strong> saves it to <code>brief.md</code> immediately and moves to the next section. <strong>Revise</strong> takes your feedback and redrafts the same section. <strong>Skip</strong> leaves it blank and moves on — you can come back to it later.</p>
+          <p>One more thing happens before Section 1 even starts: the session asks whether this is a standalone project, or one that builds on an existing project. That timing matters — it's asked first, not somewhere in the middle. We cover what the answer actually changes in <a href="#standalone">Standalone vs. Extension</a>, further down this page.</p>
+        </div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 1000 240" role="img" aria-label="Skipping a section lets the session move on immediately, but once all 9 sections have been attempted, the brief can only be approved if nothing is left blank. If anything is still blank, the session reports intake paused and the brief cannot be approved. Only when nothing is left blank does the verification checklist run and Content Status flip to Brief complete." font-family="IBM Plex Sans, sans-serif" font-size="12">
+            <defs>
+              <marker id="ik-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+              </marker>
+              <marker id="ik-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+
+            <rect x="20" y="97" width="150" height="56" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="95" y="129" text-anchor="middle">Skip a section</text>
+
+            <rect x="280" y="97" width="210" height="56" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="385" y="121" text-anchor="middle">All 9 sections</text>
+            <text x="385" y="137" text-anchor="middle">attempted</text>
+
+            <rect x="600" y="20" width="180" height="56" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="690" y="52" text-anchor="middle">Verification checklist</text>
+
+            <rect x="820" y="20" width="160" height="56" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="900" y="44" text-anchor="middle">Content Status:</text>
+            <text x="900" y="60" text-anchor="middle">Brief complete</text>
+
+            <rect x="600" y="160" width="230" height="56" rx="8" fill="var(--accent-soft, var(--surface))" stroke="var(--accent)" stroke-width="1.6"/>
+            <text x="715" y="184" text-anchor="middle">INTAKE PAUSED —</text>
+            <text x="715" y="200" text-anchor="middle">can't approve yet</text>
+
+            <path d="M170,125 L278,125" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ik-arrow)"/>
+            <text x="224" y="112" text-anchor="middle" font-size="10.5">still blank</text>
+
+            <path d="M470,110 C540,90 560,60 598,50" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ik-arrow)"/>
+            <text x="550" y="80" text-anchor="middle" font-size="10.5">nothing left blank</text>
+
+            <path d="M780,50 L818,50" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#ik-arrow)"/>
+
+            <path d="M470,140 C540,160 560,180 598,188" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#ik-arrow-accent)"/>
+            <text x="550" y="210" text-anchor="middle" font-size="10.5" fill="var(--accent)">something still blank</text>
+          </svg>
+          <figcaption>Skipping a section costs nothing in the moment — it just moves you on. The real consequence lands later: the brief cannot be approved until every section has real content, no matter how you got there.</figcaption>
+        </figure>
+
+        <div class="caution"><p><strong>Skip doesn't mean skip forever.</strong> If anything is still blank once you've been through all 9 sections, the session stops and reports exactly which sections are pending. Content Status stays <code>Draft</code>, and the brief cannot be Approved until every section is filled. Only once nothing is left blank does the session run its Verification checklist — the same checks behind every "what breaks downstream" warning later in this chapter — and flip Content Status to <code>Brief complete</code>.</p></div>
+      </section>
+
       <section class="block" id="boundary">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Project boundary — one product, one project</h2>
         <div class="prose">
           <p><code>/init-project</code> uses a simple test: if two things share the same technical pieces — a web app and its own API, say — they're one project. If two things serve different groups of users solving different problems, they're separate projects, even when they happen to share a backend. That one-line rule covers most cases, but three situations trip people up:</p>
+        </div>
+        <div class="rule-callout">"In one sentence, what is this project — what product or capability does it deliver, and who uses it?"<span class="src">The actual question asked, verbatim, before anything is created</span></div>
+        <div class="prose">
+          <p>If your answer names more than one distinct product, you get pushed back on the spot: <em>"That sounds like more than one product... Which product do you want to start with?"</em> The session won't proceed until your answer describes exactly one.</p>
           <ul>
             <li><strong>A teacher portal and a parent portal, same school system.</strong> These are two separate projects — different user groups solving different problems, even though they might share one backend.</li>
             <li><strong>An admin dashboard bolted onto an existing product, for the same users.</strong> Not a new project — it's new scope inside the one you already have. It belongs in that project's BRD.</li>
@@ -73,12 +145,16 @@
           <tr><td><code>ASCENDRA-PAY-CORE-001</code></td><td>Ascendra's own payment product, core layer — the base of an extension chain.</td></tr>
           <tr><td><code>ASCENDRA-PAY-PKN-001</code></td><td>The Pakistan market layer on top of the Core project. What actually links the two is the brief's <code>Extends:</code> field, not the code itself.</td></tr>
         </table></div>
+        <div class="caution"><p><strong>Running <code>/init-project</code> again on a code that already exists</strong> gives you three choices: Cancel, add only the files that are missing, or Reinitialise. Reinitialise overwrites <code>brief.md</code> completely — anything already written there is gone. Everything else (BRD, stories, architecture) is untouched either way. If you're not sure which one you want, Cancel costs you nothing; Reinitialise can't be undone.</p></div>
       </section>
 
       <section class="block" id="standalone">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Standalone vs. Extension — what actually changes</h2>
-        <div class="prose"><p>This isn't a cosmetic label. Marking a project Extension changes what gets loaded into context for nearly every command that generates something downstream.</p></div>
+        <div class="prose">
+          <p>This isn't a cosmetic label. Marking a project Extension changes what gets loaded into context for nearly every command that generates something downstream.</p>
+          <p>This gets decided right at the start of the session, before Section 1 even opens. The actual question is: <em>"Is this a standalone project, or does it build on top of an existing Ascendra project?"</em> Answer Extension, and you're asked one more thing on the spot: what this project adds on top of the parent, in one sentence.</p>
+        </div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Command</th><th>If Extension: also loads from the parent chain</th></tr>
           <tr><td><code>/gen-domain-knowledge</code></td><td>Parent domain knowledge, base-first — this project's document becomes a delta only</td></tr>
@@ -133,6 +209,7 @@
       <section class="block" id="sections">
         <div class="block-label"><span class="dot"></span>Density guidance</div>
         <h2 class="block-title">Section by section: how much is enough</h2>
+        <div class="prose"><p>Every "what breaks downstream" warning below traces back to a real, automated check — the same Verification checklist that runs at the end of every intake session, whether you filled the brief by hand or through <code>/run-intake</code>. None of this is a style preference.</p></div>
 
         <h3 class="sub-title">1. Problem Statement</h3>
         <div class="prose"><p>Two to four sentences is enough: what's currently going wrong, what it's costing, and what would be true if it were fixed — written from the client's point of view, never as a solution. The two ways this goes wrong are opposite extremes: too thin ("the client needs better invoicing"), or already a solution in disguise ("we are building an automated reminder system").</p></div>
