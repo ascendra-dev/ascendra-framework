@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/assess-change.md"><code>/assess-change</code></a>, <a href="../../.claude/commands/update-status.md"><code>/update-status</code></a>, <a href="../../.claude/commands/project-status.md"><code>/project-status</code></a>, <a href="../../.claude/commands/judgment-check.md"><code>/judgment-check</code></a>.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What these commands are for</a>
         <a href="#pattern">Pattern 2 vs. 3</a>
         <a href="#promotion">Promotion Gate</a>
         <a href="#status">update-status: when</a>
@@ -47,6 +48,15 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#together">How they work together</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What these four commands are actually for</h2>
+        <div class="prose">
+          <p><strong><code>/assess-change</code></strong> is how scope changes after a gate has already closed. It classifies any described change into one of four patterns, each with its own formality level. Pattern 1 (Fix) — informal, no version bump. Pattern 2 (Gap) — informal, something the BRD already implied but nobody wrote into an epic. Pattern 3 (Scope Shift) — formal at the epic level: a version bump and an explicit confirmation gate. Pattern 4 (Requirement Change) — formal at the BRD level: PO sign-off required before anything downstream updates. The pattern decides how much ceremony the change gets — not how big the change feels.</p>
+          <p><strong><code>/update-status</code>, <code>/project-status</code>, and <code>/judgment-check</code></strong> are simpler by comparison: one records gate decisions, one gives you a live dashboard, one runs a density check before a review. What makes all four "cross-cutting" is the same thing — nothing in the staged pipeline reminds you to reach for them. You have to already know they exist.</p>
+        </div>
+      </section>
 
       <section class="block" id="pattern">
         <div class="block-label"><span class="dot"></span>The actual test</div>
