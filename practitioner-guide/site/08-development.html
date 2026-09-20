@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-story-plan.md"><code>/gen-story-plan</code></a>, <a href="../../.claude/commands/implement-story.md"><code>/implement-story</code></a>, <a href="../../.claude/commands/verify-story.md"><code>/verify-story</code></a>, <a href="../../.claude/commands/gen-pr-description.md"><code>/gen-pr-description</code></a>.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">The four commands</a>
         <a href="#checklist">Plan confirmation</a>
         <a href="#scaffold">Repo scaffolding</a>
         <a href="#vendor">Vendoring commons</a>
@@ -49,7 +50,15 @@
         <a href="#harborview">Harborview in practice</a>
       </nav>
 
-      <div class="rule-callout">The PO explicitly requested visibility into what a story would produce before implementation started — pages, endpoints, queries, DTOs, guards.<span class="src">FW-031's rationale for the plan gate</span></div>
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">Four commands, one story, always in the same order</h2>
+        <div class="prose">
+          <p><strong>What happens in this stage?</strong> Once a sprint is Active, every story runs through the same sequence: <code>/gen-story-plan</code> figures out what the story will actually touch — which pages, endpoints, and queries — before any code is written. <code>/implement-story</code> writes the code, exactly to that plan. <code>/verify-story</code> checks the result against the plan's own test scenarios. <code>/gen-pr-description</code> writes up the PR from what actually changed. This repeats once per story, for every story in the sprint.</p>
+          <p><strong>Why does the plan get its own gate, separate from the story itself?</strong> A story's acceptance criteria describe what the user experiences — not which endpoint, which table, which screen. FW-031 exists because the PO explicitly wanted to see what a story would actually produce before implementation started, not find out after the fact. That's why <code>/implement-story</code> hard-gates on the plan being Confirmed, with no override — the plan is cheap enough to produce and review that there's no legitimate "not worth it" case.</p>
+          <p><strong>Where does a story plan's content come from?</strong> Entirely extracted from the already-Locked architecture document — the exact endpoints, tables, and screens this one story needs, filtered down to just its own scope. Nothing in a plan is invented; it's the architecture's own facts, narrowed to one story.</p>
+        </div>
+      </section>
 
       <section class="block" id="checklist">
         <div class="block-label"><span class="dot"></span>The real gate isn't Step 9</div>
