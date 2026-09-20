@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html" class="active"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,7 +40,7 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 3</div>
       <h1 class="title">BRD &amp; Scope Lock</h1>
-      <p class="dek">The BRD is the contract between Product and Engineering. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work that epics and stories will trace back to by REQ-ID — and every feature-area heading becomes an epic boundary you don't get to redraw for free later.</p>
+      <p class="dek">A BRD turns a conversation with a client into something an engineer can build from — no more, no less. Write a requirement too loosely and nobody can build it. Write it too tightly and you've quietly designed the system instead of describing what it needs to do. Once <code>/review-brd</code> marks it Approved, every requirement is locked as a fixed unit of work that epics and stories will trace back to by REQ-ID for the rest of the project. If that sounds abstract right now, keep reading — this chapter starts from zero.</p>
       <div class="chapter-links"><a href="../../.claude/commands/gen-brd-playbook.md"><code>/gen-brd-playbook</code></a>, <a href="../../.claude/commands/run-mock-discovery.md"><code>/run-mock-discovery</code></a>, <a href="../../.claude/commands/run-brd-discovery.md"><code>/run-brd-discovery</code></a>, <a href="../../.claude/commands/gen-brd.md"><code>/gen-brd</code></a>, <a href="../../.claude/commands/review-brd.md"><code>/review-brd</code></a>.</div>
 
       <nav class="jumpnav">
@@ -45,68 +50,110 @@
         <a href="#variation">Known Variation</a>
         <a href="#circuit">Circuit breaker</a>
         <a href="#density">REQ density</a>
+        <a href="#walking-skeleton">Walking Skeleton</a>
         <a href="#scope">Scope vs. Priority vs. Layer</a>
         <a href="#epic-boundary">The epic boundary</a>
         <a href="#reviewing">Reviewing and approving</a>
+        <a href="#density-log">Density &amp; Judgment Log</a>
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
 
       <section class="block" id="foundations">
         <div class="block-label"><span class="dot"></span>Start here</div>
-        <h2 class="block-title">What a BRD is, and where each requirement actually comes from</h2>
+        <h2 class="block-title">What a BRD is, and why this phase earns its own care</h2>
         <div class="prose">
-          <p><strong>What is a BRD?</strong> It's the Business Requirements Document — the formal record of what this specific client actually needs, confirmed through discovery. Domain knowledge told you what's typically true across every client in this domain. The BRD tells you what's true for this one engagement.</p>
-          <p><strong>Why does it get its own gate?</strong> Nothing downstream gets built without it. <code>/gen-epics</code> won't run without an Approved BRD to point at. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work — epics and stories trace back to it by REQ-ID for the rest of the project.</p>
-          <p><strong>Where does each requirement's content actually come from?</strong> Every requirement in Section 5 carries a source tag, and the three options mean genuinely different things. <code>[Client-Stated]</code> — the client said this directly, in their own words, during discovery. <code>[Domain-Default]</code> — this matches what the domain document already says is standard, and it only appears here because the client specifically confirmed it or overrode it. An un-overridden domain default shouldn't be in the BRD at all — the domain document already covers it. <code>[Assumed]</code> — nobody actually confirmed this. The AI filled a gap on its own judgment.</p>
-          <p>That third tag is a real, named risk, not a formality. <code>/review-brd</code>'s whole job on an <code>[Assumed]</code> requirement is to make you personally look at it and decide: is it actually right, does it need confirming with the client, or should it move to Open Questions instead?</p>
+          <p><strong>What is a BRD?</strong> It's the Business Requirements Document — the record of what one specific client actually needs, confirmed through discovery. The domain document told you what's typically true across every client in a domain. A BRD tells you what's true for this one client, right now.</p>
+          <p><strong>Why does it get its own gate?</strong> Nothing downstream gets built without it. <code>/gen-epics</code> won't run without an Approved BRD to point at. Once <code>/review-brd</code> sets Section 14 (Approval)'s Status field to Approved, the document is locked — every epic and story built after this point traces back to it by REQ-ID.</p>
+          <p><strong>Why does this deserve more care than "ask questions, write a document"?</strong> Because every mistake made here gets more expensive the later it's caught, not less. A vague requirement costs a follow-up conversation — but only once epics already exist and someone has to go back and ask what it meant. A requirement that's too dense or too thin costs a broken story, discovered mid-sprint, after it's already been split or built around. A scope boundary drawn carelessly costs a client dispute at UAT, months later, about what "Phase 1" included. This chapter exists to catch all three while they're still cheap.</p>
+          <p><strong>Where does a requirement's content come from?</strong> Every requirement in Section 5 (Functional Requirements) carries a source tag. <code>[Client-Stated]</code> means the client said this directly, in their own words. <code>[Domain-Default]</code> means it matches what the domain document already calls standard — it only appears here because the client confirmed or overrode it; an un-overridden default has no business being in the BRD at all, since the domain document already covers it. <code>[Assumed]</code> means nobody confirmed it — the AI filled a gap on its own judgment.</p>
+          <p>That third tag is a real, named risk, not a formality. <code>/review-brd</code>'s job on an <code>[Assumed]</code> requirement is to make you personally decide: is it right, does it need confirming with the client, or should it move to Open Questions instead?</p>
+          <p>Two more fields ride along on every requirement: Priority (Must Have / Should Have / Nice to Have) and Layer (<code>Core</code> / <code>Ext:PK</code> / <code>Ext:School</code> / <code>Ext:[code]</code>). Both are explained in <a href="00-orientation.html">Orientation</a>, and this chapter assumes you already have them — see <a href="#scope">Scope vs. Priority vs. Layer</a> below for where they get genuinely hard to apply. A fifth field, Walking Skeleton, is different: it's a decision this phase itself makes, not something carried in from an earlier chapter — see <a href="#walking-skeleton">Walking Skeleton</a> below.</p>
         </div>
       </section>
 
       <section class="block" id="mode">
         <div class="block-label"><span class="dot"></span>Process decision</div>
         <h2 class="block-title">Live session, AI-synthesis, or skip to <code>/gen-brd</code>?</h2>
-        <div class="prose"><p><code>run-brd-discovery.md</code> assumes a two-role interview. If you have no client, you have to <em>enact</em> AI-synthesis-and-review yourself, inside the same command.</p></div>
+        <div class="prose">
+          <p><strong>Is <code>/run-brd-discovery</code> itself skippable?</strong> No. <code>/gen-brd</code>'s gate requires a discovery state file with at least one topic marked Covered — there's no path to a generated BRD that skips a discovery session, live or otherwise. What's actually optional is only which mode you run that session in.</p>
+          <p><strong>What "mode" means, mechanically:</strong> there is no mode flag anywhere in <code>run-brd-discovery.md</code>. The command always does the same thing — it asks the playbook's questions, section by section, and records whatever you type back. "Live discovery" and "AI-synthesis-and-review" describe two different things that answer can be, not two different things the command does.</p>
+        </div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Live discovery</h4><p>The answer typed back is a real client's own words — given directly on a call or in person, or relayed by you from one.</p></div>
+          <div class="distcard"><h4>AI-synthesis-and-review</h4><p>There's no client to ask. The AI still proposes a grounded default from the domain document; you write down why a real client might differ, then lock in your own confirmed or corrected answer.</p></div>
+        </div>
+        <div class="prose"><p><strong>How do you know which one you're in, and can you switch?</strong> You always know, because you're the one deciding what to type — nothing is tracked or displayed back to you. And you can switch mid-session: if a real stakeholder joins the call partway through, you simply start relaying their words instead of your own reasoning. There's no state to reset, because none was being kept.</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Situation</th><th>Mode</th><th>How to run it</th></tr>
-          <tr><td>External client, reachable</td><td>Live discovery</td><td>Run as written — two-role interview</td></tr>
-          <tr><td>No client, domain well-understood</td><td>AI-synthesis-and-review</td><td>Propose the domain default, write down why a real client might differ, record your own confirmed/corrected answer</td></tr>
+          <tr><td>External client, reachable</td><td>Live discovery</td><td>Run as written — relay the client's own words, question by question</td></tr>
+          <tr><td>No client, domain well-understood</td><td>AI-synthesis-and-review</td><td>Let the AI propose the domain default, write down why a real client might differ, record your own confirmed/corrected answer</td></tr>
           <tr><td>No client, niche/unfamiliar domain</td><td>Live discovery still worth insisting on</td><td>Find someone who knows the domain, even if not the paying client</td></tr>
-          <tr><td>Tempted to skip discovery entirely</td><td>Not actually available</td><td><code>/gen-brd</code>'s gate requires discovery state with ≥1 Covered topic</td></tr>
         </table></div>
+        <div class="caution"><p><strong>Two things worth weighing before defaulting to AI-synthesis.</strong> On a niche or unfamiliar domain, it is not a safe substitute for live discovery even with no client available — find someone who actually knows the domain, a subject-matter advisor or a future user, rather than letting the AI answer its own questions. And project size matters: prefer live discovery whenever any client exists at all, even an internal stakeholder, since catching a Scope Risk Flag live is worth far more than catching it after a draft already exists. AI-synthesis is proportionate mainly for small, fixed-scope internal tools, where the "client" really is just you or your own team confirming defaults.</p></div>
       </section>
 
       <section class="block" id="confidence">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>Scores you can't verify</div>
-          <p><strong>The denominator is topics <em>and</em> journeys together</strong> — Section 4 and Section 6 combined, not Section 4 alone, regardless of what the command's own wording might suggest.</p>
-          <p><strong>Coverage is not resolution.</strong> A "Covered" mark means a topic was asked and answered — not that the answer was a real decision. A client who says "it depends" to everything can rack up 100% coverage on a nearly content-free BRD. When an answer is genuine uncertainty, mark it Pending and open a Section 7 entry with a real owner — even at ≥85%, re-check for scope-blocking Open Questions before generating.</p>
+          <p><strong>What the number is:</strong> topics marked Covered, divided by total topics tracked in the discovery state's Section 3 (Playbook Progress) — its Section 4 (Core Discovery Questions) subsection <em>and</em> its Section 6 (Journey Walkthroughs) subsection combined, not the first alone. 85% is the stated gate before the command offers to generate the BRD.</p>
+          <p>That combined denominator is easy to miss: the command's own text at Step 6 describes the running score as "coverage of known-variation topics," which reads like the Section 4 subsection alone. If you're sanity-checking a number the AI hands you by counting yourself, count both subsections.</p>
+          <p><strong>Coverage isn't resolution.</strong> A "Covered" mark means a topic was asked and answered — not that the answer was a real decision. A client who says "it depends" to everything can reach 100% coverage on a nearly content-free BRD.</p>
+          <p>When an answer is genuine uncertainty, mark it Pending instead, and open an entry in the discovery state's own Section 7 (Open Questions) with a real owner and due date. Those entries carry forward into the BRD's own Section 12 — same name, different document, different number, worth keeping straight.</p>
+          <p>Even at 85% or above, re-check that list before agreeing to generate. If more than one or two remaining items are genuine scope blockers — the BRD's own Section 13.4 (Approval Readiness) definition, "would materially change scope if answered one way vs. the other" — don't proceed regardless of the percentage.</p>
+          <p>Treat the threshold as a floor, not a green light: the same caution applies here as to the Domain Confidence Score in the previous chapter. Read what a number is built on before you trust it.</p>
         </div>
       </section>
 
       <section class="block" id="variation">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Known Variation vs. an ordinary follow-up</h2>
-        <div class="rule-callout">Does the answer fit inside a topic subsection that already exists, or does it need a topic that isn't there?<span class="src">The test</span></div>
-        <div class="prose"><p>If it's an unusual <em>value</em> on an axis that already exists, resolve it in the session, write it down, and move on. If it's a structurally new <em>axis</em> the domain knowledge doesn't model at all, flag it for a domain knowledge update rather than just a BRD note — otherwise the next project in this domain will hit the exact same gap.</p></div>
+        <div class="prose">
+          <p>The two terms mean different things. A <strong>Known Variation</strong> is a specific artifact: an entry in the domain knowledge document's own Section 10 (Known Variations) — something the domain doc already anticipated clients in this domain would differ on. <code>/gen-brd-playbook</code> turns every one of those entries into a topic in the playbook's own Section 4, which is what gets asked during the session. An <strong>ordinary follow-up</strong> is just a normal clarifying question inside a topic that's already there — it doesn't touch that structure at all.</p>
+          <p>Both happen constantly during a live session: Step 6 of <code>/run-brd-discovery</code> instructs the AI to probe immediately whenever an answer is ambiguous or contradicts something said earlier. That's the right instinct for surfacing something worth a closer look — but it says nothing about what you should do with what the probe turns up. Some of it is just a follow-up on a topic the playbook already covers. Some of it is a variation the domain document never modeled to begin with — and telling the two apart, in the moment, is your call, not the AI's.</p>
+        </div>
+        <div class="rule-callout">Does the answer fit inside a topic subsection that already exists in the playbook's Section 4, or does it need a topic that isn't there at all?<span class="src">The test</span></div>
+        <div class="prose"><p>If it's an unusual <em>value</em> on an axis that already exists, resolve it in the session, write it down, and move on — nothing structural changes. If it's a structurally new <em>axis</em> the domain knowledge doesn't model at all, flag it for a domain knowledge update rather than just a BRD note. The gap isn't specific to this client — the next project in this domain will hit the same undiscovered variation.</p></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ An unusual value — still one axis</div>
+            <div class="gb-quote">"Our VAT rate actually depends on whether the client is in Northern Ireland or the rest of the UK."</div>
+            <p class="gb-why">Still inside 4.1, VAT and Tax Model — an unusual value on an axis the playbook already asks about. The AI probes it in the moment, records it as a business rule, and the session moves on.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ A new axis entirely</div>
+            <div class="gb-quote">"For some clients we don't invoice them directly — we invoice their main contractor, and the client we're doing the work for never sees an invoice at all."</div>
+            <p class="gb-why">A new relationship pattern — indirect/third-party billing — that none of the playbook's eight topics address. Not a BRD Open Question: a candidate for a domain knowledge update, before anyone tries to write a clean requirement for something the domain model doesn't cover yet.</p>
+          </div>
+        </div>
+        <div class="caution"><p>Writing the requirement first, on an unmodeled concept, means inventing domain rules mid-draft with no grounding — the same failure mode the Section 5.21 vs. Parking Lot test exists to catch (see below).</p></div>
       </section>
 
       <section class="block" id="circuit">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>The circuit breaker</div>
-          <p>Two signals mean the problem isn't discovery — it's that you're talking to someone who can't give a stable answer: <strong>the same topic revised more than twice</strong> across sessions, or <strong>a Scope Risk Flag flipping status more than once.</strong> When either happens, stop scheduling sessions and escalate to a decision-maker above the immediate contact.</p>
+          <p>Nothing in the "Resuming across sessions" guidance says when to stop scheduling more sessions — it tells the AI how to record a revision when one happens, but treats every revision as equally routine. It isn't. Two signals mean the real problem isn't discovery — it's that you're talking to someone who can't give you a stable answer.</p>
+          <p><strong>The same topic gets revised more than twice across sessions.</strong> One correction is normal — people remember details differently on a second call. Three passes at the same topic means either the client hasn't actually decided, or the person in the room isn't the one who owns the decision.</p>
+          <p><strong>A Scope Risk Flag flips status more than once</strong> — Open → Resolved → Open again, or similar. That usually means the "resolution" wasn't real: someone agreed to something in the room that got overturned after the call.</p>
+          <p>When either happens, stop scheduling more sessions and escalate — ask to bring in a decision-maker above the immediate contact, their manager or a director, whoever actually owns the scope call. This isn't about being difficult with the client; it protects the relationship. Re-litigating the same point session after session erodes trust faster than one honest "we need someone with authority to settle this."</p>
         </div>
       </section>
 
       <section class="block" id="density">
         <div class="block-label"><span class="dot"></span>Density guidance — the single most important skill in this phase</div>
         <h2 class="block-title">REQ-writing density</h2>
+        <div class="prose"><p>Section 5's own guidance — "one sentence, plain English, what the system must do" — tells you the <em>form</em> a requirement takes. It says nothing about <em>how much</em> goes into that sentence. That gap matters more than almost anything else in this chapter, because <code>/gen-epics</code> treats REQ-IDs as atomic units, and stories are written one-to-one against them. Get the density wrong and you're not fixing a wording problem later — you're re-splitting or re-merging work that epics and stories have already been built around.</p></div>
         <div class="rule-callout">One REQ = one independently testable, independently story-able capability.<span class="src">The rule</span></div>
         <div class="gb-wrap">
           <div class="gb-card good">
             <div class="gb-head">✓ Correctly dense — REQ-002</div>
             <div class="gb-quote">"The system must detect duplicate Payers on registration. The deduplication key is configurable per organisation: phone number, email, or both. Default is phone number."</div>
             <p class="gb-why">Three sentences, but every clause is a facet of one capability. Strip any part out and a developer has to ask which key to check.</p>
+          </div>
+          <div class="gb-card good">
+            <div class="gb-head">✓ Correctly dense — REQ-007</div>
+            <div class="gb-quote">"The system must calculate subtotal, VAT at 20%, and total automatically. These values must recalculate in real time as line items change and must not be editable by the user."</div>
+            <p class="gb-why">Same pattern: three calculated fields, a real-time recalculation behavior, and a non-editability constraint — still one capability, automatic invoice totals, not three.</p>
           </div>
           <div class="gb-card bad">
             <div class="gb-head">✗ Over-fat — REQ-BAD-FAT</div>
@@ -116,43 +163,147 @@
           <div class="gb-card bad">
             <div class="gb-head">✗ Over-thin — REQ-BAD-THIN</div>
             <div class="gb-quote">"Invoices above a threshold require Director approval."</div>
-            <p class="gb-why">Passes a superficial "short enough" read but silently omits the number that makes it usable. A developer can't write a single AC from this.</p>
+            <p class="gb-why">Omits the number that makes it usable — the threshold, how many approvers, inclusive or exclusive at that figure. Worse than vague language like "appropriate" or "standard," because nothing about this sentence's shape trips any checklist. It just quietly fails, and a developer reading only this can't write a single acceptance criterion.</p>
           </div>
         </div>
         <div class="prose"><p><strong>The test:</strong> could each half of the sentence ship, get tested, and get demoed on its own, with the other half simply not built yet? If yes to both, split. If the second half is meaningless without the first, fold it in.</p></div>
+      </section>
+
+      <section class="block" id="walking-skeleton">
+        <div class="block-label"><span class="dot"></span>The one decision this phase makes</div>
+        <h2 class="block-title">Walking Skeleton: where the tag gets decided</h2>
+        <div class="prose">
+          <p>Domain Discovery's own closing note names this term and says it "isn't decided until Stage 3 (BRD) at the earliest." This is that stage. A Walking Skeleton is the one thin, real, end-to-end path a project proves works before anything else gets built out to full breadth (<code>FW-048</code>). The full downstream mechanics live in <a href="04-product-structuring.html">Product Structuring</a> and <a href="07-sprint-planning.html">Sprint Planning</a>, which both assume the tag already exists — what belongs here is only how it gets assigned in the first place.</p>
+          <p><strong>Where it lives in the BRD:</strong> exactly one journey heading in Section 4 (User Journeys) is suffixed <code>(Walking Skeleton)</code>. Every requirement in Section 5 that's part of that thin path is tagged <code>Yes</code> in its Walking Skeleton column; every other requirement gets a dash, not "No."</p>
+          <p><strong>Where it gets decided:</strong> Step 6 of <code>/run-brd-discovery</code>, once all the primary journeys have been walked through. The AI asks the PO directly which journey — or which trimmed, cross-persona core cutting across two of the journeys just walked — is the thinnest real path that would prove the whole system works end to end if nothing else were built yet. It's a judgment call made explicitly in the session, not something inferred from journey content afterward.</p>
+        </div>
+        <div class="rule-callout">Would the journey still run end-to-end without this requirement? If yes, it doesn't belong in the Walking Skeleton, no matter how important it feels.<span class="src">The membership test</span></div>
+        <div class="casecard">
+          <span class="filechip">brd-discovery-state.example.md — Journey 6.1</span>
+          <p>Harborview's Walking Skeleton is Journey 6.1 (Standard Invoice — Creation to Payment), trimmed to its core chain: create the invoice, send it, collect real payment. Director approval (6.2) and overdue reminders (6.3) are both real, confirmed capabilities — but neither has to work before the basic create-send-pay loop is proven end to end, so neither is tagged.</p>
+        </div>
       </section>
 
       <section class="block" id="scope">
         <div class="block-label"><span class="dot"></span>Full working depth</div>
         <h2 class="block-title">Scope vs. Priority vs. Layer</h2>
         <div class="distgrid">
-          <div class="distcard"><h4>Should Have vs. Out of Scope — deferred</h4><p>Should Have is a Priority value — it only applies to something already In Scope, and it ships this phase if time allows. Out of Scope — deferred is different: the item simply isn't being built this phase at all.</p></div>
-          <div class="distcard"><h4>§5.21 vs. §15 Parking Lot</h4><p>Can you write one factual sentence backed by the domain doc or this session? If yes, §5.21 (gets a REQ-ID). If you're guessing, §15 (no fields until promoted).</p></div>
+          <div class="distcard"><h4>Should Have vs. Out of Scope — deferred</h4><p>Should Have is a Priority value — it only applies to something already In Scope, and it ships this phase if time allows. Out of Scope — deferred is different: the item isn't being built this phase at all.</p></div>
+        </div>
+
+        <h3 class="sub-title">Section 5.21 (Future Capabilities) vs. Section 15 (Parking Lot)</h3>
+        <div class="prose">
+          <p>Both hold things that aren't being built this phase. What separates them is how much is actually known about the thing being deferred.</p>
+          <p><strong>Section 5.21 (Future Capabilities)</strong> holds a capability the client already discussed and confirmed wanting — just not yet. Because it's already discovered, it carries the same shape as a real requirement: a REQ-ID from the same sequential numbering as everything else in Section 5, a Priority, a Source tag, a Layer — everything Section 5 requires, except a Walking Skeleton tag, which by definition can't apply to something not being built this phase.</p>
+          <p><strong>Section 15 (Parking Lot)</strong> holds an idea nobody has scoped yet. It typically surfaces outside discovery entirely — an aside during epic review, a comment mid-sprint — and fails on two counts at once: no entity, lifecycle, or rule in the domain knowledge document backs it, and no discovery session, client or PO, has explored it. Because nothing about it is known yet, it stays deliberately low-ceremony: no REQ-ID, no Priority, Source, or Layer. Tagging those fields on something nobody has scoped would be inventing structure that doesn't exist.</p>
         </div>
         <div class="rule-callout">Can you write one factual sentence describing exactly how it will behave, backed by something already in the domain knowledge document or this discovery session? If yes, Section 5.21. If you're guessing, Section 15.<span class="src">FW-024</span></div>
         <div class="casecard"><span class="filechip">REQ-022, brd.example.md §5.21</span><p>Accounting export (Xero) — Out of Scope for Phase 1, but grounded: the domain doc already models the integration point, and the client named Xero during discovery. Full REQ-ID, full fields.</p></div>
         <div class="casecard"><span class="filechip">PL-001, brd.example.md §15</span><p>An admin-assistant-submits-invoices idea, surfaced during UAT prep, months after discovery closed. No domain backing, no REQ-ID — a Promotion Path note instead, since it can never become a REQ through <code>/assess-change</code> alone.</p></div>
+        <div class="prose"><p>The distinction has a real downstream consequence, not just a formatting one. A Section 5.21 item promotes straight into a real Section 5.N feature area the moment the client confirms it's now in scope — the REQ-ID travels with it unchanged, no fresh discovery required, because the grounding already exists. A Section 15 entry can never become a REQ-ID through <code>/assess-change</code> alone: it has to go through an actual discovery pass first, earning the same modeling rigor every other requirement received, before it can be promoted.</p></div>
+
+        <h3 class="sub-title">When Layer and Priority genuinely conflict</h3>
+        <div class="prose">
+          <p><a href="00-orientation.html">Orientation</a> already covers the resolution rule for a Must-Have <code>Ext:PK</code> requirement — Layer wins for build order, Priority governs sequencing within what's buildable. Worth adding here: when you hit that conflict while drafting a BRD requirement, treat it as a signal to consider splitting the REQ itself. The same density judgment from above applies.</p>
+          <p>Often the part that's genuinely urgent is Core-buildable right now, and only the extension-specific part has to wait on the Ext seam. Splitting the REQ at that boundary — rather than leaving one requirement carrying a contradictory Priority/Layer pairing — keeps both axes honest, and keeps the density rule intact: one REQ, one capability, not one REQ straddling two build orders.</p>
+        </div>
       </section>
 
       <section class="block" id="epic-boundary">
         <div class="block-label"><span class="dot"></span>Downstream impact</div>
         <h2 class="block-title">What the BRD commits you to: the epic boundary you're already drawing</h2>
-        <div class="prose"><p>Each Section 5.N feature-area heading becomes one epic, 1:1, when <code>/gen-epics</code> runs. Choose feature-area boundaries the way you'd choose epic boundaries — not chapter headings. Harborview's five feature areas are five genuinely independent capabilities; that's why they became five clean epics.</p></div>
-        <div class="rule-callout">Could this feature area ship and be demoed as a complete, independently useful capability on its own?<span class="src">Ask this of every Section 5 heading</span></div>
+        <div class="prose"><p>Worth stating plainly, because nothing in <code>gen-brd.md</code> says it explicitly: <strong>each Section 5.N feature-area heading becomes one epic, 1:1, when <code>/gen-epics</code> runs.</strong> This isn't an editorial grouping you can rearrange freely later — it's a mechanical mapping, consistent with <code>SDLC.md</code> Stage 4's description of epics as "cohesive delivery units, each representing a complete, independently useful capability." Choose feature-area boundaries the way you'd choose epic boundaries, not the way you'd choose chapter headings.</p></div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 900 300" role="img" aria-label="Section 5 feature-area headings map one-to-one onto epics when gen-epics runs. Clean, independent headings produce clean, independently demoable epics at no extra cost. A glued-together heading like Miscellaneous produces one bloated, incoherent epic that inherits the same mess, and fixing it after generation costs a real re-scoping conversation weeks later, instead of renaming a heading now, which costs nothing." font-family="IBM Plex Sans, sans-serif" font-size="12">
+            <defs>
+              <marker id="eb-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+              </marker>
+              <marker id="eb-arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--bad)"/>
+              </marker>
+            </defs>
+
+            <rect x="20" y="20" width="230" height="60" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6"/>
+            <text x="135" y="46" text-anchor="middle">Section 5.1–5.3</text>
+            <text x="135" y="62" text-anchor="middle">three independent capabilities</text>
+
+            <rect x="20" y="200" width="230" height="70" rx="8" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.6"/>
+            <text x="135" y="228" text-anchor="middle">Section 5.4 "Miscellaneous"</text>
+            <text x="135" y="244" text-anchor="middle">two capabilities glued</text>
+            <text x="135" y="260" text-anchor="middle">together for convenience</text>
+
+            <rect x="345" y="115" width="150" height="60" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="420" y="150" text-anchor="middle">/gen-epics</text>
+
+            <rect x="620" y="20" width="250" height="60" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6"/>
+            <text x="745" y="46" text-anchor="middle">Epic 1, 2, 3</text>
+            <text x="745" y="62" text-anchor="middle">clean, independently demoable</text>
+
+            <rect x="620" y="140" width="250" height="60" rx="8" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.6"/>
+            <text x="745" y="166" text-anchor="middle">Epic 4</text>
+            <text x="745" y="182" text-anchor="middle">bloated, incoherent</text>
+
+            <rect x="620" y="235" width="250" height="50" rx="8" fill="var(--bad-soft, var(--surface))" stroke="var(--bad)" stroke-width="1.6"/>
+            <text x="745" y="257" text-anchor="middle">Real re-scoping conversation,</text>
+            <text x="745" y="272" text-anchor="middle">weeks later</text>
+
+            <path d="M250,55 C300,70 320,100 343,130" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#eb-arrow-accent)"/>
+            <path d="M250,225 C300,205 320,175 343,160" fill="none" stroke="var(--bad)" stroke-width="1.6" marker-end="url(#eb-arrow-bad)"/>
+
+            <path d="M495,135 C550,110 570,70 618,50" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#eb-arrow-accent)"/>
+            <text x="565" y="95" text-anchor="middle" font-size="10.5" fill="var(--accent)">1:1, cleanly</text>
+
+            <path d="M495,160 C550,165 570,168 618,168" fill="none" stroke="var(--bad)" stroke-width="1.6" marker-end="url(#eb-arrow-bad)"/>
+            <text x="565" y="195" text-anchor="middle" font-size="10.5" fill="var(--bad)">1:1 — inherits the mess</text>
+
+            <path d="M745,200 L745,233" fill="none" stroke="var(--bad)" stroke-width="1.6" marker-end="url(#eb-arrow-bad)"/>
+          </svg>
+          <figcaption>Both headings go through the exact same command. What differs is entirely upstream, at BRD-draft time. A heading that's really two glued-together capabilities isn't caught or fixed by <code>/gen-epics</code> — it produces one bloated epic that inherits the ambiguity, and untangling it after the fact costs a real re-scoping conversation instead of a renamed heading.</figcaption>
+        </figure>
+
+        <div class="rule-callout">Could this feature area ship and be demoed as a complete, independently useful capability on its own? Ask this of every Section 5 heading.<span class="src">The test</span></div>
+        <div class="prose">
+          <p>What this means while Section 5 is still being drafted: if a heading is really covering two unrelated capabilities glued together for convenience — or worse, a catch-all "Miscellaneous" or "Other" heading — split it now, while it costs nothing but renaming a <code>###</code>. Fixing it after <code>/gen-epics</code> has already generated (and a PO has already reviewed) a bloated or incoherent epic costs a real re-scoping conversation.</p>
+          <p>Harborview's five feature areas — Payer Management, Invoice Management, Payment Collection, Overdue Management, Dashboards — are five genuinely independent capabilities, and that's exactly why they became five clean epics. That's not an accident of how the example was written; it's the pattern to copy.</p>
+        </div>
       </section>
 
       <section class="block" id="reviewing">
         <div class="block-label"><span class="dot"></span>What "good" looks like</div>
         <h2 class="block-title">Reviewing and approving</h2>
-        <div class="prose"><p>You should be able to restate what each requirement will actually produce, in your own words, without looking back at the REQ text. By the end of the review, Section 16's Flags table should be empty or fully resolved, there should be no unresolved scope blockers, and every <code>[Assumed]</code> tag should have actually been looked at, not just scrolled past.</p></div>
-        <div class="caution"><p><strong>The gap: what to do when you don't disagree, you just don't know.</strong> Don't force yourself into Confirm/Change/Remove. Tell the AI you're uncertain and want it routed to Section 12 (Open Questions) with the <strong>client</strong> as owner — a legitimate outcome of the review, not a failure to complete it.</p></div>
+        <div class="prose">
+          <p><code>/review-brd</code> walks you through the BRD feature-area by feature-area, in real-world framing — "The Finance Manager will be able to register a new payer... does this match what was agreed with the client?" — not as a document to read cold and rubber-stamp. What "good" looks like at the end of that walkthrough:</p>
+          <ul>
+            <li>You can restate what each requirement will actually produce, in your own words, without looking back at the REQ text.</li>
+            <li>Section 17 (Review Record)'s Flags table is empty, or every flag has been resolved — not just acknowledged.</li>
+            <li>Section 12 (Open Questions) has no unresolved scope blockers.</li>
+            <li>Every <code>[Assumed]</code> tag has been looked at — confirmed, corrected, or moved to Open Questions — not silently accepted because it was easier not to.</li>
+          </ul>
+        </div>
+        <div class="caution">
+          <p><strong>The gap: what to do when you don't disagree, you just don't know.</strong> The response table (Confirm / Change / Remove / Too vague to frame) assumes you're equipped to make a call on every requirement. Sometimes you aren't — you weren't on the discovery call that produced a particular answer, or the requirement touches a decision that's genuinely the client's to make, not yours to second-guess. Being forced into one of those three boxes there means either rubber-stamping something you don't know is right, or guessing at a change the client never asked for.</p>
+          <p><strong>The move:</strong> don't force yourself into Confirm/Change/Remove. Tell the AI you're uncertain and want it routed to Section 12 (Open Questions) with the <strong>client</strong> as owner — not you. Mechanically this is just a "Change" applied through the normal walkthrough: the content of the change is moving the item out of Section 5 and into Open Questions, not editing the requirement text. It's a legitimate outcome of the review, not a failure to complete it.</p>
+        </div>
+      </section>
+
+      <section class="block" id="density-log">
+        <div class="block-label"><span class="dot"></span>What <code>/judgment-check</code> writes</div>
+        <h2 class="block-title">Section 16: the Density &amp; Judgment Log</h2>
+        <div class="prose">
+          <p>Section 16 is reserved in every BRD from generation onward, but <code>/gen-brd</code> never fills it — it's written only by <code>/judgment-check</code>, run separately, testing the document against this chapter's own rules: REQ density, the Scope/Priority/Layer distinction, the Section 5.21-vs-15 test, and everything else covered above. What it produces is a dated log of questions raised for the PO to weigh — never verdicts, and never a silent rewrite of the requirement itself.</p>
+          <p>Each finding is resolved in place, not replaced: the same row is amended with one of three outcomes — <strong>Confirmed as-is</strong>, <strong>Revised</strong>, or <strong>Acknowledged tradeoff</strong> — and once resolved, that row is never edited again.</p>
+        </div>
+        <div class="casecard"><span class="filechip">brd.example.md — Section 16</span><p>REQ-016's <code>[Assumed]</code> tag (see Harborview in practice, below) is this in action: <code>/judgment-check</code> raised the question of whether an inference this consequential should have been routed to Section 12 instead, and the logged outcome was <strong>Acknowledged tradeoff</strong> — kept as <code>[Assumed]</code> deliberately, with the reasoning written down, not silently dropped.</p></div>
       </section>
 
       <section class="block">
         <div class="block-label"><span class="dot"></span>Terminology recap</div>
         <ul class="recaplist">
-          <li><b>§5.21 vs. §15 Parking Lot</b><span>Both hold Out of Scope items, but only 5.21 has domain/discovery grounding and a REQ-ID.</span></li>
+          <li><b>Section 5.21 (Future Capabilities) vs. Section 15 (Parking Lot)</b><span>Both hold Out of Scope items, but only 5.21 has domain/discovery grounding and a REQ-ID.</span></li>
           <li><b>Requirement Confidence Score</b><span>A coverage measure, not a resolution measure. Don't conflate the two.</span></li>
+          <li><b>Walking Skeleton</b><span>Decided in this phase (Step 6 of <code>/run-brd-discovery</code>), used in every phase after — one journey tag in Section 4, one column of <code>Yes</code>/<code>—</code> in Section 5.</span></li>
         </ul>
       </section>
 
@@ -169,14 +320,28 @@
             <li>Letting a feature-area heading sprawl into a "Miscellaneous" catch-all.</li>
             <li>Approving a BRD with <code>[Assumed]</code> tags nobody actually re-examined.</li>
             <li>Scheduling a fourth or fifth discovery session on the same unresolved topic instead of escalating.</li>
+            <li>Tagging a requirement Walking Skeleton because it feels important, without checking whether the journey would still run end-to-end without it.</li>
+            <li>Treating "live discovery" vs. "AI-synthesis-and-review" as a system mode to invoke, rather than a discipline about whose words you're typing back into the session.</li>
           </ul>
         </details>
       </section>
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">brd.example.md — REQ-002, REQ-016</span><p>Source-tagging discipline: REQ-002 shows correctly dense <code>[Client-Stated]</code> text; REQ-016 shows <code>[Assumed]</code> used sparingly, for a low-risk inference rather than something that should have been confirmed.</p></div>
-        <div class="casecard"><span class="filechip">brd-playbook.example.md + brd-discovery-state.example.md</span><p>Worth reading alongside the BRD — the full chain from a scope risk flag that didn't trigger (SRF-004) through to the requirement that made it into the final document.</p></div>
+        <div class="casecard">
+          <span class="filechip">brd.example.md — REQ-002, REQ-016</span>
+          <p>Source-tagging discipline, side by side. REQ-002 (§5.1) is the correctly dense <code>[Client-Stated]</code> example from the density section above. REQ-016 (§5.3) is the honest use of <code>[Assumed]</code>: "If the payment amount confirmed by Stripe is less than the invoice total, the system must not mark the invoice as Paid. The discrepancy must be logged and the Finance Manager alerted for manual resolution." Nobody asked the client this directly — it's a sensible default for handling an underpayment, not a client-stated rule.</p>
+          <p>Section 16's own Density &amp; Judgment Log records the actual tradeoff reasoning: kept as <code>[Assumed]</code> deliberately, because the inference is low-risk, and re-confirming it would cost a follow-up call for something reversible later at negligible cost if wrong. A higher-risk assumption would have been routed to Section 12 instead.</p>
+        </div>
+        <div class="casecard">
+          <span class="filechip">brd-discovery-state.example.md — SRF-004</span>
+          <p>The clearest example of a Scope Risk Flag doing its job without ever firing. SRF-004 (per-client dunning) "was close: James mentioned one preferred-call client but confirmed per-client dunning is not needed in Phase 1." That's the circuit-breaker logic working correctly on the first pass — a flag gets raised, probed once, resolved, and never has to flip status again. This is what a flag looks like when it resolves cleanly, not the pattern that should trigger escalation.</p>
+        </div>
+        <div class="casecard">
+          <span class="filechip">brd.example.md — §5.21 REQ-022 vs. §15 PL-001</span>
+          <p>The Section 5.21 vs. Parking Lot test, worked both directions. REQ-022 passes it — grounded in the domain doc's Integration Points and a client-named vendor. PL-001 fails it, correctly: an admin-assistant-submits-invoices idea "surfaced as an aside during UAT prep — never discussed during discovery, and the domain model has no 'act on behalf of' or delegated-drafting concept for invoice creation." No REQ-ID, no Priority, Source, or Layer — just a Promotion Path note requiring an actual discovery pass before it can become real.</p>
+        </div>
+        <div class="prose"><p>Locking scope isn't a single decision made at <code>/review-brd</code> time. It's the sum of a lot of small, correct calls made throughout discovery and drafting: tagging REQ-016 honestly instead of overstating its confidence, letting SRF-004 resolve instead of forcing a premature answer, and keeping PL-001 out of Section 5 instead of writing a requirement nobody had actually discussed yet. The BRD that emerges from those calls is the one epics and stories can actually trust.</p></div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/03-brd-and-scope-lock.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

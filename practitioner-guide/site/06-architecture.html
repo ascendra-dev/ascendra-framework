@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,8 +40,8 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 6</div>
       <h1 class="title">Architecture</h1>
-      <p class="dek">The densest phase in the framework — the last artifact with no code behind it, and the first one every later command treats as literal, binding fact. "Every table name, column, endpoint, auth rule, and enum value becomes law." Get a judgment call wrong here and it costs a schema migration, not a re-write of a document.</p>
-      <div class="chapter-links"><a href="../../.claude/commands/gen-architecture.md"><code>/gen-architecture</code></a> and <a href="../../.claude/commands/review-architecture.md"><code>/review-architecture</code></a> — a 34-check audit across five concerns.</div>
+      <p class="dek">The densest phase in the framework — the last artifact with no code behind it, and the first one every later command treats as literal, binding fact. <code>/review-architecture</code>'s own framing says it plainly: "every table name, column, endpoint, auth rule, and enum value becomes law for every story and every line of code." Get a judgment call wrong here and the correction chain runs BRD update → architecture revision → story updates → re-implementation → re-verify → re-PR → re-UAT — the most expensive path in the whole framework. If that sounds intimidating, it should focus your attention, not your anxiety — most of this document is either derived for you or structurally checked. This chapter is about the handful of places that genuinely need your judgment.</p>
+      <div class="chapter-links"><a href="../../.claude/commands/gen-architecture.md"><code>/gen-architecture</code></a> and <a href="../../.claude/commands/review-architecture.md"><code>/review-architecture</code></a> — a 35-check audit across five concerns.</div>
 
       <nav class="jumpnav">
         <a href="#foundations">What architecture is</a>
@@ -45,7 +50,7 @@
         <a href="#actor">Actor Identity Shape</a>
         <a href="#deviation">Deviation's blind spot</a>
         <a href="#composable">Composable capabilities</a>
-        <a href="#review">Using the 34-check review</a>
+        <a href="#review">Using the 35-check review</a>
         <a href="#extension">Core/Extension</a>
         <a href="#honest-limit">The honest limit</a>
         <a href="#mistakes">Common mistakes</a>
@@ -57,81 +62,150 @@
         <h2 class="block-title">What architecture is, and why it's the one hard bridge in the framework</h2>
         <div class="prose">
           <p><strong>What is architecture, in this framework?</strong> It's the single document that decides every technical fact the system will be built on: the tech stack, the full data model, every API endpoint and its contract, the security and permissions model, infrastructure. Nothing before this stage has depended on any of it — the BRD, epics, and screen design were all written without knowing what database or framework would be used.</p>
-          <p><strong>Why is this the one stage everything else waits on?</strong> Every stage before this one — Intake, Domain Discovery, BRD, Product Structuring, Screen Design — has zero architecture dependency, by design. This is the first hard dependency point: nothing in Stories, Development, Testing, or Release can start until this document is Locked. That's a structural boundary the framework draws deliberately, not just a process preference.</p>
-          <p><strong>Where does the content come from?</strong> The tech stack and every standards file are decided conversationally, live, while the command runs — you don't need to write anything beforehand. It reads the approved BRD, epics, domain knowledge, and Screen Design, and derives everything else by asking you directly.</p>
+          <p><strong>Why is this the one stage everything else waits on?</strong> Every stage before this one has zero architecture dependency, by design. This is the first hard dependency point: nothing in Stories, Development, Testing, or Release can start until this document is Locked. That's a structural boundary the framework draws deliberately, not just a process preference.</p>
+          <p><strong>Two commands, two jobs, same split as Epics.</strong> <code>/gen-architecture</code> derives and proposes — reading the approved BRD, epics, domain knowledge, and Screen Design, then deriving everything else by asking you directly. <code>/review-architecture</code> runs a 35-check structural audit across five concerns before you lock the document. This chapter is about the judgment calls embedded in both — several of which are dense, bundled into compound confirmations, or resolved by heuristics the command never surfaces as a decision point at all.</p>
         </div>
       </section>
 
       <section class="block" id="prepare">
-        <div class="caution">
-          <div class="block-label"><span class="dot"></span>Process decision — before the command runs</div>
-          <p><strong>Pre-authoring <code>standards/</code> is optional, not required</strong> — despite how <code>CLAUDE.md</code>'s Workspace Setup reads. Steps 4–7 derive the stack, pattern, and every standards file conversationally. Pre-authoring only earns its keep when you have a hard, non-negotiable mandate you want locked in before the AI proposes something else.</p>
+        <div class="block-label"><span class="dot"></span>Process decision — before the command runs</div>
+        <h2 class="block-title">What to prepare beforehand, and what the command figures out on its own</h2>
+        <div class="prose">
+          <p><strong>Pre-authoring <code>standards/</code> is optional, not required</strong> — despite how <code>CLAUDE.md</code>'s Workspace Setup reads. <code>/gen-architecture</code> works from a completely empty <code>standards/</code> folder by default: Steps 4 through 7 derive the tech stack, the architecture pattern, and every standards file conversationally, presenting what it derived and asking only what it can't infer. A first-time PO who reads <code>CLAUDE.md</code> literally and tries to hand-write <code>api-standards.md</code> or <code>security-standards.md</code> from a bare template before running the command is doing work the command will do for you, against a template with no worked instance to calibrate against.</p>
+          <p>Pre-authoring earns its keep in exactly one situation: you have a hard, non-negotiable mandate — an existing cloud vendor contract, a database the client has already paid for, a compliance requirement that rules out an option the AI might otherwise recommend — and you want it locked in <em>before</em> the AI proposes something else and you have to walk back a recommendation mid-conversation. If that's your situation, write only the file carrying that mandate; the command reads whatever exists and asks whether to proceed with it rather than silently overwriting it.</p>
         </div>
-        <div class="casecard"><span class="filechip">technical-standard.example.md</span><p>Harborview's <code>api-standards.md</code> — cites the fixed wire contract rather than restating it, a Correct/Incorrect pair, one complete worked endpoint applying every rule together.</p></div>
+        <div class="prose"><p>If you do want to hand-author something, or want to sanity-check a generated file against a real bar, two worked examples exist for exactly this:</p></div>
+        <div class="casecard"><span class="filechip">technical-standard.example.md</span><p>Harborview's <code>api-standards.md</code> — cites the fixed wire contract rather than restating it, a Correct/Incorrect pair for the rule generation gets wrong most often, and one complete controller/service/DTO example applying every rule together.</p></div>
         <div class="casecard"><span class="filechip">architectural-pattern.example.md</span><p>Harborview's idempotent Stripe webhook handling — a genuinely warranted Tier 3 document (money-moving, externally-triggered, retry-prone), not a generic "might be useful" addition.</p></div>
+        <div class="prose"><p>Both are dense in the same way REQ-002 was dense in Chapter 3 — every sentence is doing real work, not padding a template out to look thorough. That's the bar to calibrate against.</p></div>
       </section>
 
       <section class="block" id="commons">
         <div class="block-label"><span class="dot"></span>Optional, stack-gated</div>
         <h2 class="block-title"><code>ascendra-commons</code> module adoption</h2>
-        <div class="prose"><p>Applies only when the confirmed backend is NestJS + Drizzle on Postgres or Supabase — full stop, no partial match, no "translate the concept" fallback. Most projects will never see it mentioned. When the gate passes, each of the fifteen modules is evaluated on its own against a real BRD/domain signal — declining a module is as normal an outcome as adopting one.</p></div>
-        <div class="rule-callout">Every module's public surface is its .core package. Everything past that is an implementation this project's own code never imports directly — the seam that lets a future Model 1 → Model 2 swap happen without touching business logic.<span class="src">The one rule worth remembering</span></div>
+        <div class="prose"><p>Applies only when the confirmed backend is NestJS + Drizzle on Postgres or Supabase — full stop, no partial match, no "translate the concept" fallback for a different stack. Most projects will never see it mentioned anywhere in their own output, and that's the expected, correct outcome, not a gap. When the gate does pass, each of the fifteen modules is evaluated on its own against a real BRD or domain-knowledge signal — never as a package deal. Declining a module is as normal an outcome as adopting one; most projects on the matching stack still adopt only a handful of the fifteen.</p></div>
+
+        <h3 class="sub-title">What you're actually confirming when a module shows up</h3>
+        <div class="prose"><p>Don't read a module row the way you'd read a routine baseline standard generated whether you engage with it or not. What's actually being decided isn't just whether to adopt the module — it's <strong>which Model</strong>. Every module's own README states plainly what its Model 1 ships and the concrete trigger for Model 2, and the command reads that README to settle the question against this project's actual scale, not a guess. That's exactly the kind of choice worth asking "why this and not the other" about before you confirm — the same instinct this chapter already asks you to apply to the stack table below, and for the same reason: a module-adoption row is a baseline-forming confirmation too.</p></div>
+
+        <h3 class="sub-title">Why the generated file cites, rather than invents</h3>
+        <div class="prose"><p>A module's standards file follows the same shape as any project-invented pattern document, but its content is read directly from the real module's README and cited, not re-derived — the same "cite, don't restate" discipline <code>api-standards.md</code> already applies to the fixed API contract. The generated file also records which <code>ascendra-commons</code> commit or date that README was read at, because the library has no release or versioning tooling yet — without a frozen reference, a later change to the source repo could make an already-Locked project's citation silently stale. This is the same discipline that already governs this project's own architecture document versioning.</p></div>
+
+        <div class="rule-callout">Every module's public surface is its <code>.core</code> package. Everything past that is an implementation this project's own code never imports directly — the seam that lets a future Model 1 → Model 2 swap happen without touching business logic.<span class="src">The one rule worth remembering</span></div>
+
+        <div class="caution"><p><strong>Where this doesn't show up:</strong> Harborview itself is stack-neutral by design — its architecture never confirms NestJS + Drizzle as excluding some other option, so it never exercises this gate at all, and none of its example files show an adopted module. There's no Harborview instance to point you to here; treat that absence as accurate, not as something missing from this guide.</p></div>
       </section>
 
       <section class="block" id="actor">
         <div class="block-label"><span class="dot"></span>A schema decision disguised as one bullet</div>
         <h2 class="block-title">Actor Identity Shape</h2>
-        <div class="prose"><p>Step 4 derives five things together and asks four explicit questions in the same breath — Actor Identity Shape is the fifth derivation, and it's easy to read past as background noise. What's actually being decided is simple to picture even if the name isn't: every record in the system has a "created by" or "updated by" field. Should that field link to a real, clickable account — the way clicking a commit author takes you to their profile — or should it just store a name as plain text?</p></div>
-        <div class="caution"><p><strong>A single link-style field can't point at three different kinds of actor at once.</strong> An authenticated staff member, a customer who only ever clicks a one-time emailed link (never logs in, never gets an account), and a scheduled background job all need to show up in that "created by" field — but only one of them has an account to link to. Getting this wrong isn't caught by any later check. It's a migration touching every table in the schema that tracks who-did-what, project-wide, all at once. Stop on this line separately from the four questions below it — it deserves its own moment of attention, not a nod on the way past.</p></div>
+        <div class="prose"><p>Step 4 derives five things together and asks four explicit questions in the same breath — Actor Identity Shape is the fifth derivation, not one of the four questions, which makes it easy to read past as background noise rather than a decision you're being asked to make.</p></div>
+        <div class="prose"><p><strong>What's actually being decided:</strong> every Master table in the system — invoices, payers, staff records, every primary domain record — carries audit columns for who created, updated, and deleted the row. There are two shapes for those columns, and only one is right for a given project:</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>A clickable reference</h4><p>A <code>uuid</code> foreign key into one user table. Works only if every actor in the system is the same kind of authenticated, in-tenant user.</p></div>
+          <div class="distcard"><h4>A plain name string</h4><p>A <code>varchar</code>, no foreign key. Required the moment there's more than one kind of actor — an authenticated staff member, a customer who only ever clicks a one-time emailed link, and a scheduled background job all need to show up in that field, but only one of them has an account to link to.</p></div>
+        </div>
+        <div class="caution"><p><strong>A single link-style field can't point at three different kinds of actor at once</strong> — for any action taken by the second or third kind, the column would just silently be <code>NULL</code>. Getting this wrong isn't caught by any later check: <code>/review-architecture</code> check 18 only confirms the mandatory audit columns exist, not that their shape is right for this project's real actor population. Fixing it later isn't a config flag — it's a migration touching every table in the schema that tracks who-did-what, project-wide, all at once. The full reasoning, including why a third option (a type-discriminator column) was considered and rejected on cost grounds, lives in <code>FW-037</code> — but nothing in the command surfaces that reasoning to you in the moment. Stop on this line separately from the four questions below it; it deserves its own moment of attention, not a nod on the way past.</p></div>
       </section>
 
       <section class="block" id="deviation">
         <div class="block-label"><span class="dot"></span>What Section 9 structurally cannot catch</div>
         <h2 class="block-title">Deviation detection's blind spot</h2>
-        <div class="prose"><p>Section 9 flags anything that differs from <code>system-architecture.md</code> — but Step 5's twelve-row tech-stack table <em>is</em> that file, the moment you confirm it. Picture it this way: if you approve the wrong database choice at Step 5, Section 9 can never catch it later, because Section 9 only flags drift <em>away from</em> the baseline — and the baseline itself is whatever you just approved. There's nothing else to compare it against. The wrong choice and the yardstick are the same document.</p></div>
+        <div class="prose"><p>Section 9 (Deviation Declarations) flags anything in the architecture document that differs from <code>standards/system-architecture.md</code>. That's a genuinely useful mechanism for catching <em>later</em> drift — someone hand-edits the document after generation, or a standards file gets updated and the document doesn't follow. <code>/gen-architecture</code>'s own Step 3 (Standards Drift Check) exists specifically for that case, and it works.</p></div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 900 220" role="img" aria-label="When a standards file is hand-edited or updated after generation, Section 9 correctly flags the resulting drift against the architecture document. But when the Step 5 stack table is confirmed, that confirmation becomes system-architecture.md itself — the same document Section 9 checks against. If a row was wrong and got approved anyway, Section 9 has nothing to compare it to, because the wrong choice and the baseline are the same file." font-family="IBM Plex Sans, sans-serif" font-size="12">
+            <defs>
+              <marker id="dv-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+              </marker>
+              <marker id="dv-arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--bad)"/>
+              </marker>
+            </defs>
+
+            <rect x="20" y="15" width="230" height="55" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6"/>
+            <text x="135" y="47" text-anchor="middle">Standards file hand-edited</text>
+            <text x="135" y="63" text-anchor="middle">or updated after generation</text>
+
+            <rect x="320" y="15" width="230" height="55" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="435" y="41" text-anchor="middle">system-architecture.md</text>
+            <text x="435" y="57" text-anchor="middle">now differs from the doc</text>
+
+            <rect x="620" y="15" width="240" height="55" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.6"/>
+            <text x="740" y="41" text-anchor="middle">Section 9 flags</text>
+            <text x="740" y="57" text-anchor="middle">real drift — working correctly</text>
+
+            <rect x="20" y="150" width="230" height="55" rx="8" fill="var(--surface)" stroke="var(--bad)" stroke-width="1.6"/>
+            <text x="135" y="182" text-anchor="middle">Step 5 — 12-row stack table</text>
+            <text x="135" y="198" text-anchor="middle">confirmed by the PO</text>
+
+            <rect x="320" y="150" width="230" height="55" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+            <text x="435" y="176" text-anchor="middle">BECOMES</text>
+            <text x="435" y="192" text-anchor="middle">system-architecture.md</text>
+
+            <rect x="620" y="150" width="240" height="55" rx="8" fill="var(--bad-soft, var(--surface))" stroke="var(--bad)" stroke-width="1.6"/>
+            <text x="740" y="172" text-anchor="middle">Nothing to compare against —</text>
+            <text x="740" y="188" text-anchor="middle">a bad row ships silently</text>
+
+            <path d="M250,42 L318,42" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#dv-arrow-accent)"/>
+            <path d="M550,42 L618,42" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#dv-arrow-accent)"/>
+            <path d="M250,177 L318,177" fill="none" stroke="var(--bad)" stroke-width="1.6" marker-end="url(#dv-arrow-bad)"/>
+            <path d="M550,177 L618,177" fill="none" stroke="var(--bad)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#dv-arrow-bad)"/>
+          </svg>
+          <figcaption>Same file, two very different outcomes. When the baseline changes after the fact, Section 9 has an old version to compare against. When the baseline is wrong the moment Step 5 confirms it, there is no "before" — the choice and the yardstick are the same document.</figcaption>
+        </figure>
+
         <div class="rule-callout">If you're not sure why a row was recommended, ask "why this and not X" before you confirm, not after.<span class="src">The only real guardrail</span></div>
+        <div class="prose"><p>The only real guardrail on the twelve-row stack confirmation is your own attention in the moment it's presented. Nothing downstream re-litigates it — not <code>/review-architecture</code>, not a later Section 9 flag, because by design it can't.</p></div>
       </section>
 
       <section class="block" id="composable">
         <div class="block-label"><span class="dot"></span>A silent fork off BRD wording</div>
         <h2 class="block-title">Composable capability detection</h2>
-        <div class="prose"><p>Here's the concrete question hiding behind the jargon: can someone be handed the single permission "approve invoices" without also being made a full Director — or does every permission only ever come bundled into a fixed role like Director, Finance Manager, Staff? Section 6.1 answers this by scanning the BRD for phrases like "independently assignable" — and if it finds a match, that one word quietly switches the entire shape of how login sessions carry permissions, and every access check built on top of it. It's decided once, silently, by pattern-matching a phrase, and it only resurfaces as an already-settled fact later on, when Concern D frames it during review. Check it against your own memory of how the client actually described permissions during discovery — reversing this decision after stories are already written means rewriting every access check in the system.</p></div>
+        <div class="prose"><p>Here's the concrete question hiding behind the jargon: can someone be handed the single permission "approve invoices" without also being made a full Director — or does every permission only ever come bundled into a fixed role like Director, Finance Manager, Staff? Section 6.1 answers this by scanning the BRD for phrases like "independently assignable" — and if it finds a match, that one word quietly switches the entire shape of how login sessions carry permissions, and every access check built on top of it. It's decided once, silently, by pattern-matching a phrase, and it only resurfaces as an already-settled fact later, when Concern D frames it during review.</p></div>
+        <div class="prose"><p><strong>What to do:</strong> check it against your own memory of how the client actually described permissions during discovery. If the BRD says a Staff member can be granted two capabilities independently and the framing says composable, that's correct. If the framing says composable off a looser phrase that doesn't really mean independent assignment, say so before Concern D closes — reversing this after stories are written means rewriting every access check in the system, not editing one sentence.</p></div>
       </section>
 
       <section class="block" id="review">
         <div class="block-label"><span class="dot"></span>Using the review without redoing the AI's work</div>
         <h2 class="block-title">What's genuinely reviewable vs. what you're meant to trust</h2>
-        <div class="prose"><p>The 34 checks run off-screen — you see "no flags," not the work. Give yourself permission to stop trying to parse Drizzle schema blocks and DTO decorators you're not equipped to audit.</p></div>
+        <div class="prose"><p>The 35 checks run off-screen — you see "no flags," not the work. You cannot independently verify that without re-deriving every REQ-to-table mapping and every column list yourself, which is exactly the work the review exists to do <em>for</em> you. Give yourself permission to stop trying to parse Drizzle schema blocks and DTO decorators you're not equipped to audit, and redirect that effort to the parts actually written for you.</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Section</th><th>Genuinely reviewable?</th><th>Why</th></tr>
-          <tr><td>1 — System Overview</td><td>Yes</td><td>Plain prose, written for a non-technical stakeholder</td></tr>
+          <tr><td>1 — System Overview</td><td>Yes</td><td>Plain prose, written for a non-technical stakeholder by design</td></tr>
+          <tr><td>3.1.3 — Screen &amp; Nav Map</td><td>Yes (carry-over check)</td><td>Already approved in <code>/review-screen-design</code>; here you're confirming nothing was lost in the carry, not re-deriving it</td></tr>
           <tr><td>4.2 — Table Definitions</td><td>Trust</td><td>Drizzle/TypeScript code — structurally checked, not written for PO reading</td></tr>
           <tr><td>5 — API Contracts / DTOs</td><td>Trust</td><td>Decorator blocks — same reason</td></tr>
-          <tr><td>6.1/6.2 — roles &amp; actions</td><td>Yes</td><td>Plain-English sentences, exactly for this purpose</td></tr>
-          <tr><td>8 — Open Decisions</td><td>Yes</td><td>Must be empty before lock — read every row</td></tr>
+          <tr><td>6.1 — role/capability list</td><td>Yes</td><td>A plain list of names — check it against who you know uses the system</td></tr>
+          <tr><td>6.2 — Permitted Actions</td><td>Yes</td><td>Plain-English sentences per role, exactly for this purpose</td></tr>
+          <tr><td>8 — Open Decisions</td><td>Yes</td><td>Must be empty before lock — read every row, there should be none</td></tr>
           <tr><td>9 — Deviation Declarations</td><td>Yes</td><td>Plain statements of what differs and why</td></tr>
+          <tr><td>10 — Approval</td><td>Yes</td><td>Just confirm it's blank until you fill it</td></tr>
         </table></div>
-        <div class="prose"><p>Spend real attention on the <strong>targeted PO question at the end of each concern</strong> — the plain-language checkpoints built for exactly this. If "no flags" doesn't sit right, ask which specific check numbers ran and what each found.</p></div>
-        <div class="caution"><p><strong>The lock confirmation now captures an optional rationale</strong> — <code>lock: {what you specifically verified}</code>. Given what locking commits you to, that sentence is worth writing.</p></div>
+        <div class="prose"><p><strong>How to engage with each concern:</strong> read the "Frame this concern" paragraph in full every time — it's written to be understood without engineering background, and it's the thing most worth your attention. When FLAGS come back empty, don't take that as proof nothing's wrong — take it as "nothing the structural checks are built to catch is wrong." Spend your real attention on the <strong>targeted PO question at the end of each concern</strong> — the plain-language checkpoints built for exactly the kind of gap a structural check can't find, things like "is there a capability you discussed with the client that doesn't have an obvious home."</p>
+        <p>If something feels off and "no flags" doesn't sit right, ask the AI directly which specific check numbers ran for that concern and what each found — the checks are numbered and documented, and nothing stops you from asking for the receipts on any one of them. Use that when a summary feels too clean, not as a routine step on every concern.</p></div>
+        <div class="caution"><p><strong>The lock confirmation now captures an optional rationale</strong> — reply <code>lock: {what you specifically verified}</code>, or a bare <code>lock</code> with no rationale; both are accepted. Given what locking commits you to, that sentence is worth writing — it's what you point back to later if a decision gets questioned mid-project and nobody remembers exactly what was checked before the document became binding.</p></div>
       </section>
 
       <section class="block" id="extension">
         <div class="block-label"><span class="dot"></span>Genuinely PO-readable, most POs never find out</div>
         <h2 class="block-title">Core/Extension methodology</h2>
         <div class="rule-callout">Would every deployment of this base system need this, regardless of which extension is active? If yes → Core. If no → Extension.<span class="src">The Membership Test — two sentences, run it yourself</span></div>
-        <div class="prose"><p>Concern A's framing gives you a one-sentence summary per extension point — enough to confirm the table exists, not enough to judge whether the seam is drawn right. Open <code>layered-domain-architecture.md</code> yourself and apply the test to the least-obvious seams.</p></div>
+        <div class="prose"><p>Concern A's framing gives you a one-sentence summary per extension point — enough to confirm the table exists, not enough to judge whether the seam is drawn in the right place. Don't stop at the summary. Open the reference document yourself and apply the Membership Test to the least-obvious seams — the ones where you're not immediately sure why something landed on the Core side of the line rather than the Extension side. It reads in minutes and the test is yours to run, not something you need an architect to run for you.</p>
+        <p>For a worked instance against a real, non-Harborview project, see <a href="case-studies/harder-cases.html">Harder Cases</a>' Case 2 — the Ascendra Pay Pakistan extension — which walks the boundary test against a real Core/Extension split, rather than Harborview's single, unexercised extension point.</p></div>
       </section>
 
       <section class="block" id="honest-limit">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>The honest limit</div>
-          <p><strong>"No undocumented deviations" is enforced by your own review, not a standing structural gate.</strong> Locking makes the document binding in principle — it creates no command that continuously checks real running code against it.</p>
+          <p><strong>"No undocumented deviations" is enforced by your own review, not a standing structural gate.</strong> Locking makes the document binding in principle — it creates no command that continuously checks real running code against it. The evidence is a repeated pattern across three separate decisions, each describing the same failure shape:</p>
           <ul>
-            <li><strong>FW-033</strong> — the standard specified JWKS verification; the code used a shared secret. Caught only when a real login failed.</li>
-            <li><strong>FW-040</strong> — five UI-implementation gaps found only by manually comparing screens against real component source.</li>
-            <li><strong>FW-041</strong> — a documented exception filter and structured logging that existed nowhere in the actual codebase, for months, on a live project.</li>
+            <li><strong>FW-033</strong> — the standard specified JWKS token verification; the implemented code used a shared-secret check instead. Caught only when a real login failed in practice, not by any structural check.</li>
+            <li><strong>FW-040</strong> — five separate UI-implementation gaps found only by manually comparing implemented screens against real component source.</li>
+            <li><strong>FW-041</strong> — a documented global exception filter and structured logging that existed nowhere in the actual codebase, for months, on a live project. Found by manual review, not by any test, lint, or gate.</li>
           </ul>
-          <p>Spot-check real code against the Locked document periodically — at sprint boundaries is reasonable. There is no command that does this for you.</p>
+          <p>In every case, the standard said X, the real code did something else, and the gap was closed by a person reading source code directly or a real failure forcing the issue — never by a command whose job was to confirm running code still matches the Locked document. Spot-check real code against the Locked document periodically — at sprint boundaries is reasonable. There is no command that does this for you.</p>
         </div>
       </section>
 
@@ -140,7 +214,9 @@
         <ul class="recaplist">
           <li><b>Actor Identity Shape</b><span>FK into one user table, or a self-contained actor-label string — required the moment there's more than one kind of actor.</span></li>
           <li><b>Deviation (Section 9)</b><span>Only catches drift after the baseline exists — structurally cannot flag a bad choice made in the same confirmation that produces the baseline.</span></li>
-          <li><b>Standards Tiers vs. Fix tiers</b><span>Tiers 1–3 classify a generated standards file. Fix tiers 1–4 (shared with <code>/review-epics</code>) classify a review-time correction. Same word, different axis.</span></li>
+          <li><b>Composable capability model</b><span>The <code>capabilities: string[]</code> JWT shape, used instead of a single <code>role: string</code> when the BRD describes permissions as independently assignable. Detected automatically from wording — confirm it against your own memory of the actual conversation.</span></li>
+          <li><b>Standards Tiers (1–3)</b><span>Classify a generated <code>standards/</code> file: Tier 1 baseline (every project), Tier 2 per confirmed technology, Tier 3 AI-determined project-specific or <code>ascendra-commons</code> patterns.</span></li>
+          <li><b>Fix tiers (1–4)</b><span>The same pattern as <code>/review-epics</code>, reused here: Tier 1 applies silently, Tier 2 confirms before applying, Tier 3 is a PO decision, Tier 4 halts the review. A different axis from Standards Tiers, despite the shared word.</span></li>
         </ul>
       </section>
 
@@ -163,7 +239,14 @@
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">arch.example.md</span><p><code>varchar</code> actor-label columns (not FK) on every Master table — Harborview has more than one actor kind (Staff, and System acting on its own). Section 3.2's one real Extension Point (<code>AccountingExportStrategy</code>) is the seam for the deferred Xero export REQ from Chapter 3.</p></div>
+        <div class="prose"><p><code>arch.example.md</code> is a complete, current reference — 788 lines — and worth reading end to end once, not just consulting section by section.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Section 4.2</span><p><code>varchar</code> actor-label columns, not a <code>uuid</code> foreign key, on every Master table — the concrete outcome of the Actor Identity Shape derivation above, because Harborview has more than one actor kind: authenticated Staff, and <code>System</code> (the dunning scheduler, the Stripe webhook) acting on its own.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Section 3.1.3</span><p>Carried over verbatim from the approved <code>screen-design.md</code> — Portals, Navigation Map, and Screen Inventory (SCR-001–SCR-005) are untouched from Screen Design; only Action Gating and Cross-Cutting UI Rules are generated fresh here, once Section 6's security model exists to generate them from.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Section 3.2</span><p>One real Extension Point, <code>AccountingExportStrategy</code> — the seam for the Xero/QuickBooks export REQ already named as a grounded-but-deferred capability back in Chapter 3. A small, single-point instance of the Core/Extension methodology.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Section 5</span><p><code>If-Match</code> headers on every mutating endpoint against the version-tracked <code>payers</code> and <code>invoices</code> tables — the concrete wire-level result of the fixed API contract's optimistic-locking rule, cited rather than restated, exactly the pattern <code>api-standards.md</code> itself demonstrates.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Section 6.5</span><p>Logging &amp; Exception Handling as a real, concrete summary — request-correlation IDs, a global exception filter, a business-rule exception type, a real logging and error-tracking tool — rather than the aspirational gap FW-041 found on a real project. This section exists specifically so that gap gets caught here, at generation and review time.</p></div>
+        <div class="casecard"><span class="filechip">arch.example.md — Verification</span><p>Every checkbox annotated with the specific table, section, or column it verified against — the same standard of specificity <code>/review-epics</code>' checks held Chapter 4's epic example to.</p></div>
+        <div class="prose"><p>Alongside it, <code>technical-standard.example.md</code> and <code>architectural-pattern.example.md</code> are the two files to read for what a hand-authored or generated standards file should actually look like — dense, cited against the fixed contract rather than restating it, and grounded in one real, complete worked path each.</p></div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/06-architecture.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

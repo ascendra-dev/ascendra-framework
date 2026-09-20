@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,8 +40,8 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 8</div>
       <h1 class="title">Development</h1>
-      <p class="dek">Four commands run in sequence, once per story: plan, implement, verify, describe. <code>/implement-story</code> hard-gates on the plan being Confirmed, with no PO override — the plan is cheap enough to produce and review that there's no legitimate "not worth it" case.</p>
-      <div class="chapter-links"><a href="../../.claude/commands/gen-story-plan.md"><code>/gen-story-plan</code></a>, <a href="../../.claude/commands/implement-story.md"><code>/implement-story</code></a>, <a href="../../.claude/commands/verify-story.md"><code>/verify-story</code></a>, <a href="../../.claude/commands/gen-pr-description.md"><code>/gen-pr-description</code></a>.</div>
+      <p class="dek">Four commands run in sequence, once per story, for the life of the project: plan, implement, verify, describe. It's tempting to read that as three commands' worth of real work plus one bookkeeping step bolted on the front — it isn't. <code>/gen-story-plan</code> exists because a PO explicitly asked to see what a story would produce before implementation started, not find out after the fact. That's why <code>/implement-story</code> hard-gates on the plan being Confirmed, with no override — the plan is cheap enough to produce and review that there's no legitimate "not worth it" case. If that sounds like process for its own sake, keep reading — this chapter starts from zero.</p>
+      <div class="chapter-links"><a href="../../.claude/commands/gen-story-plan.md"><code>/gen-story-plan</code></a>, <a href="../../.claude/commands/implement-story.md"><code>/implement-story</code></a>, <a href="../../.claude/commands/verify-story.md"><code>/verify-story</code></a>, <a href="../../.claude/commands/gen-pr-description.md"><code>/gen-pr-description</code></a>. Assumes stories are already Reviewed and sprint-assigned per Chapter 7.</div>
 
       <nav class="jumpnav">
         <a href="#foundations">The four commands</a>
@@ -54,8 +59,8 @@
         <div class="block-label"><span class="dot"></span>Start here</div>
         <h2 class="block-title">Four commands, one story, always in the same order</h2>
         <div class="prose">
-          <p><strong>What happens in this stage?</strong> Once a sprint is Active, every story runs through the same sequence: <code>/gen-story-plan</code> figures out what the story will actually touch — which pages, endpoints, and queries — before any code is written. <code>/implement-story</code> writes the code, exactly to that plan. <code>/verify-story</code> checks the result against the plan's own test scenarios. <code>/gen-pr-description</code> writes up the PR from what actually changed. This repeats once per story, for every story in the sprint.</p>
-          <p><strong>Why does the plan get its own gate, separate from the story itself?</strong> A story's acceptance criteria describe what the user experiences — not which endpoint, which table, which screen. FW-031 exists because the PO explicitly wanted to see what a story would actually produce before implementation started, not find out after the fact. That's why <code>/implement-story</code> hard-gates on the plan being Confirmed, with no override — the plan is cheap enough to produce and review that there's no legitimate "not worth it" case.</p>
+          <p><strong>What happens in this stage?</strong> Once a sprint is Active, every story runs through the same sequence. <code>/gen-story-plan</code> states <em>what</em> gets built — which endpoints, tables, screens, or jobs, in what order, tested how — extracted from the already-Locked architecture and the story's own acceptance criteria. <code>/implement-story</code> states <em>how</em> to build it, in this project's confirmed stack idiom. <code>/verify-story</code> checks the result against the plan's own test scenarios. <code>/gen-pr-description</code> writes up the PR from what actually changed. A plan never invents architecture — anything the architecture doesn't already define is a gap flagged in the plan's own Risks section, not a decision made on the spot.</p>
+          <p><strong>Why does the plan get its own gate, separate from the story itself?</strong> A story's acceptance criteria describe what the user experiences — not which endpoint, which table, which screen. The gate this buys you is unusually strict for this framework: <code>/implement-story</code> hard-gates on the plan being Confirmed, with no PO override — unlike the softer dependency-cleared and Open-Decision gates in the same command, which do allow one. That strictness was a deliberate choice, not a default: a plan is materially cheaper to produce than a BRD or architecture document, so there's no legitimate "not worth it for this story" case.</p>
           <p><strong>Where does a story plan's content come from?</strong> Entirely extracted from the already-Locked architecture document — the exact endpoints, tables, and screens this one story needs, filtered down to just its own scope. Nothing in a plan is invented; it's the architecture's own facts, narrowed to one story.</p>
         </div>
       </section>
@@ -63,63 +68,75 @@
       <section class="block" id="checklist">
         <div class="block-label"><span class="dot"></span>The real gate isn't Step 9</div>
         <h2 class="block-title">The story-plan confirmation checklist</h2>
-        <div class="prose"><p>Step 9's summary confirms every AC has a row, not that the row is right. The actual decision happens after, against the written file, via <code>update-status ... Confirmed</code>.</p></div>
+        <div class="prose"><p>Step 9's summary asks "does this plan structure look right?" — that's a structure check, not a content review. It confirms every AC has a row, not that the row is right. And the plan is written with Plan Status: Draft regardless of how you answer — the actual decision happens afterward, against the written file, via <code>update-status ... Confirmed</code>. That's the moment this checklist is for, after you've opened the real file and can read the API/Web/Worker blocks, not the one-line summary.</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Check against</th><th>Ask yourself</th></tr>
           <tr><td>Each API block's Auth line</td><td>Does the guard/role match who you'd actually expect — not a plausible placeholder?</td></tr>
-          <tr><td>Each API block's Queries line</td><td>Is tenant-scoping actually present when this project has a tenant boundary?</td></tr>
+          <tr><td>Each API block's Queries line</td><td>Is tenant-scoping present when this project has a tenant boundary?</td></tr>
           <tr><td>Each WEB block's Route/Surface</td><td>Does this match the approved mock — same path, same Page/Dialog/Sheet/Drawer?</td></tr>
           <tr><td>Each WEB block's Data layer</td><td>Does the hook name and the API call it references actually line up?</td></tr>
           <tr><td>AC → Artifact Traceability</td><td>Does every AC map to something that genuinely satisfies it?</td></tr>
           <tr><td>Risks / Open Questions</td><td>Anything you'd resolve differently than proposed?</td></tr>
         </table></div>
-        <div class="caution"><p>A plan you correct <em>after</em> implementation started costs the same re-implementation chain a wrong architecture decision does — just scoped to one story.</p></div>
+        <div class="prose"><p>If any answer is "no" or "I'm not sure," that's a Change through the normal review conversation with the AI, applied before you type <code>Confirmed</code> — not a note to fix during implementation.</p></div>
+        <div class="caution"><p>A plan you correct <em>after</em> implementation started costs the same re-implementation chain a wrong architecture decision does — just scoped to one story instead of the whole system.</p></div>
       </section>
 
       <section class="block" id="scaffold">
-        <div class="caution">
-          <div class="block-label"><span class="dot"></span>What to expect on first touch</div>
-          <p><strong>If this is the first story for a given repo, expect the diff to include an entire scaffolded project</strong> — module structure, exception filter, logging, auth module, <code>.env.example</code> — not just this story's own endpoint. That's expected bootstrap cost every later story won't pay, not scope creep. If a <em>later</em> story on an already-scaffolded repo produces a similarly oversized diff, that's the actual signal worth chasing.</p>
-        </div>
+        <div class="block-label"><span class="dot"></span>What to expect on first touch</div>
+        <h2 class="block-title">Repo scaffolding, and why the diff looks so big the first time</h2>
+        <div class="prose"><p><code>/implement-story</code> bootstraps a repository the first time any story touches it. Nothing upstream of that — not the gate-check messages, not the story plan — tells you in advance that this is coming, so say it plainly before you hit it: <strong>if this is the first story for a given repo, expect the diff to include an entire scaffolded project, not just this story's own endpoint or screen.</strong></p>
+        <p>A one-endpoint story can produce a diff touching dozens of files once you count the module structure, the global exception filter and structured logging, the frontend auth session module and typed API client, the test tooling, and the <code>.env.example</code>. That's expected bootstrap work — the first story is quietly paying down a setup cost every later story in the same repo won't have to — not scope creep, and not a sign the AI over-built the story.</p>
+        <p>This doesn't get hidden from you either: <code>/gen-pr-description</code>'s own diff-fidelity discipline means a first-touch PR's "What Changed" section will honestly list the scaffold alongside the story's own work, rather than inferring a smaller change from the ACs alone. Read that as the safeguard it is — <strong>if a later story on an already-scaffolded repo produces a similarly oversized diff, that's the actual signal worth chasing.</strong></p></div>
       </section>
 
       <section class="block" id="vendor">
         <div class="block-label"><span class="dot"></span>Finer-grained than scaffolding</div>
         <h2 class="block-title">Vendoring an <code>ascendra-commons</code> module</h2>
-        <div class="prose"><p>Only relevant if the project adopted a module during architecture. Vendoring happens once per <strong>module</strong>, at whichever story first needs it — not once per repo, and not for every adopted module up front. Look for a separate <code>chore: vendor ascendra-commons/{module}</code> commit, kept apart from the story's own work.</p></div>
-        <div class="caution"><p>Every import should resolve to that module's <code>.core</code> package — never a concrete implementation package reached past it for convenience. This is one of the things <code>/implement-story</code>'s own Standards Compliance Self-Check re-reads against the actual diff, "not from memory of what was written earlier in the same session."</p></div>
+        <div class="prose"><p>Only relevant if the project adopted a module during architecture — check <code>standards/</code> for a <code>*-pattern.md</code> file citing <code>ascendra-commons</code>; if none exist, this doesn't apply. Where repo scaffolding happens once per repo, vendoring happens at a finer grain: the first <strong>story</strong> that needs a specific adopted module — not the whole project, and not at repo-bootstrap time — triggers copying just that module's packages into <code>src/ascendra-commons/{module}/</code>.</p>
+        <p>A Model 1 adoption typically needs <code>{module}.core</code> plus its Model 1 family package; some modules also need <code>.api</code> consumed directly even under Model 1, if the module's own README names it explicitly. A project that adopted 2 of the 15 modules never touches the other 13. If a later story needs the same module, <code>/implement-story</code> checks whether it's already vendored and skips — once per module, not once per story that touches it.</p>
+        <p><strong>What to expect in the diff:</strong> the first story that vendors a module produces a separate commit, <code>chore: vendor ascendra-commons/{module}</code>, kept apart from the story's own commit — mirroring how a Web repo's <code>ascendra-ui</code> scaffold commit is kept separate too. Look for that commit specifically when reviewing a PR that's the first to touch a module.</p></div>
+        <div class="caution"><p><strong>The <code>.core</code>-only rule, at the level you'll actually see it:</strong> every import from a vendored module in this project's own code should resolve to that module's <code>.core</code> package — never a concrete implementation package reached past it for convenience. You don't have to catch this yourself line by line; it's one of the things <code>/implement-story</code>'s own Standards Compliance Self-Check re-reads against the actual diff before reporting a story done, "not from memory of what was written earlier in the same session." If a PR's diff shows a direct import reaching past <code>.core</code> where it shouldn't, that's the same class of defect that compiles, lints, and passes tests cleanly regardless — worth a second look specifically because nothing automated catches it.</p></div>
       </section>
 
       <section class="block" id="recovery">
         <div class="block-label"><span class="dot"></span>The asymmetric recovery loop</div>
+        <h2 class="block-title">What to actually do when something fails</h2>
+        <div class="prose"><p><code>/implement-story</code> and <code>/verify-story</code> fail in genuinely different ways, and the framework only gives you a clean procedure for one of them.</p></div>
         <div class="distgrid">
-          <div class="distcard"><h4>Implementation failure</h4><p>Clear and bounded: two attempts, then it stops and reports exactly what failed and why. You always know where you stand.</p></div>
-          <div class="distcard"><h4>Verification failure</h4><p>No stated procedure. The instinct to re-run <code>/implement-story</code> is wrong — it hits the <code>In Progress</code> gate and refuses.</p></div>
+          <div class="distcard"><h4>Implementation failure</h4><p>Clear and bounded: "if you cannot fix a failure after two attempts, report it explicitly — state exactly what failed and why." Two tries, then it stops and tells you. You always know where you stand.</p></div>
+          <div class="distcard"><h4>Verification failure</h4><p>No stated procedure — the failing-AC message just says "resolve these before raising the PR." The instinct to re-run <code>/implement-story</code> is wrong: a story that's already been implemented is In Progress, and that command's own gate check requires Reviewed. It hits the gate and refuses.</p></div>
         </div>
-        <div class="prose"><p><strong>The actual recovery path:</strong> fix directly on the same story branch, re-run lint/build/test, commit, then re-run <code>/verify-story</code>.</p></div>
-        <div class="caution"><p><strong>If the same AC fails verification twice in a row</strong>, that's a plan-correctness signal, not an implementation-effort signal. Stop attempting a third blind fix. Regenerate the plan instead.</p></div>
+        <div class="prose"><p><strong>The actual recovery path:</strong> fix directly on the same story branch — edit the code yourself or direct the AI to make the specific correction, re-run lint/build/test, commit — then re-run <code>/verify-story</code> against the fix. You're not re-planning or re-scaffolding; you're correcting code that already exists on a branch that already exists.</p></div>
+        <div class="caution"><p><strong>If the same AC fails verification twice in a row</strong>, that's a plan-correctness signal, not an implementation-effort signal. A misread requirement, a wrong endpoint assumption, a guard name that doesn't actually exist — these are plan-level errors that no amount of re-fixing the code will resolve, because the code is faithfully building the wrong thing. Stop attempting a third blind fix. Regenerate the plan instead — a new Document Control row, Plan Status reset to Draft — walk through what changed against the checklist above, confirm it again, and only then resume implementation.</p></div>
       </section>
 
       <section class="block" id="mismatch">
         <div class="block-label"><span class="dot"></span>Two real template mismatches</div>
+        <h2 class="block-title">Where the templates and commands currently disagree</h2>
+        <div class="prose"><p>The framework's generating commands and their templates are supposed to agree. Two places in this stage they currently don't — worth knowing since neither file flags the other.</p></div>
         <div class="distgrid">
-          <div class="distcard"><h4>Story-plan template's Data Layer field</h4><p>Hardcoded to React Query language. The command's own conditional instruction is correct — on a hookless project, describe the real fetch mechanism instead. No worked hookless example exists to copy from.</p></div>
-          <div class="distcard"><h4>PR description's Pre-Merge Checklist</h4><p>Two items hardcode <code>orgId</code>/React Query as unconditional. Tick "— N/A" honestly on a project that uses neither, rather than forcing a match.</p></div>
+          <div class="distcard"><h4>Story-plan template's Data Layer field</h4><p>The template's placeholder literally names React Query: "<code>[React Query hook name], [query / mutation], calls [API-N above]</code>." But the command's own instruction is the correct, conditional one — if the confirmed approach is hookless (e.g. Server Components only), describe the real fetch mechanism instead, never assume React Query. There's no worked hookless example in the example file to copy from — expect to improvise the format the first time you hit one.</p></div>
+          <div class="distcard"><h4>PR description's Pre-Merge Checklist</h4><p>Two items hardcode <code>orgId</code>-from-JWT and React-Query-cache-invalidation as plain, unconditioned checklist lines — exactly the kind of unconditional assumption the framework's own stack-agnostic principle bans everywhere else in this stage. On a project with a different tenancy scheme or no React Query, tick "— N/A" honestly rather than forcing a match that doesn't describe what the diff does — the template's own guidance for an inapplicable item already tells you to do exactly this.</p></div>
         </div>
       </section>
 
       <section class="block" id="agnostic">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>What "stack-agnostic" means at run time</div>
-          <p><code>/implement-story</code> reads Section 2 before doing anything else — NestJS/Next.js is a reference path for the common case, never a hardcoded universal rule. Seeing a Spring or Angular idiom in the command's own reasoning on a non-default project is the intended behavior, not the command drifting from a "real" standard.</p>
+          <p><code>/implement-story</code> reads the architecture document's Section 2 before doing anything else — NestJS/Next.js is a reference path for the common case, never a hardcoded universal rule, even though it's the framework's common default and the stack Harborview itself confirms. Every stack-specific instruction is explicitly conditioned, with a stated fallback to apply the same underlying principle using whatever framework the project's own architecture document documents.</p>
+          <p>If you're running this against a project confirming a Java/Spring backend or an Angular frontend, don't be alarmed when the command's own internal reasoning names <code>spring init</code> and a <code>@RestController</code> annotation instead of NestJS's idioms — NestJS was never the "real" standard, just the worked example this framework's own home project happens to use. The command working correctly on a non-default stack looks exactly like it <em>not</em> following the NestJS/Next.js content in this chapter — that's the intended behavior, not the command drifting from something it should have followed.</p>
         </div>
       </section>
 
       <section class="block">
         <div class="block-label"><span class="dot"></span>Terminology recap</div>
         <ul class="recaplist">
-          <li><b>Plan Status vs. Story Status</b><span>A story can be Reviewed while its plan is still Draft — two independent gate fields.</span></li>
+          <li><b>Plan Status vs. Story Status</b><span>A story can be Reviewed while its plan is still Draft — two independent gate fields. <code>/implement-story</code> checks the plan's Plan Status, not the story's Status, for its own gate.</span></li>
+          <li><b>Target (API/Web/Worker)</b><span>Set once, at <code>/gen-stories</code> time, from the Locked architecture's repo topology. Every later command cross-checks it rather than re-deriving it.</span></li>
+          <li><b>Plan Conformance</b><span>The section <code>/verify-story</code> adds, comparing what the plan declared against what was actually delivered. A documented deviation is a Match-with-rationale, not a Defect; an undeclared one is.</span></li>
           <li><b>Scaffolding vs. vendoring</b><span>Scaffolding: once per repo. Vendoring: once per <code>ascendra-commons</code> module. A repo can be long-scaffolded and still vendor a new module on story forty.</span></li>
+          <li><b>Deviations from Plan</b><span>Where <code>/implement-story</code> records any point it had to diverge from the Confirmed plan, and why. Blank at generation; filled in only if execution genuinely needs to depart.</span></li>
         </ul>
       </section>
 
@@ -134,14 +151,22 @@
             <li>Copying the Data Layer field's React Query wording literally on a hookless project.</li>
             <li>Forcing a Pre-Merge Checklist match on a project that uses neither <code>orgId</code> nor React Query.</li>
             <li>Reading a non-NestJS/Next.js idiom in the command's reasoning as a defect.</li>
+            <li>Confirming a plan without checking its Auth, Queries, Route, and Data-layer lines against what you actually remember agreeing to during architecture review.</li>
           </ul>
         </details>
       </section>
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">story-plan.example.md — US-01-002</span><p>Run the checklist above against it directly: Auth names the exact expected role, Queries shows real tenant-scoping, Route/Surface match a real screen ID, Data layer is the React Query case the template was written for.</p></div>
-        <div class="casecard"><span class="filechip">pr-description.example.md — US-01-001</span><p>Shows the template's own N/A instruction already in honest practice: both hardcoded checklist items ticked with "— N/A (migration only)" / "— N/A (backend-only PR)."</p></div>
+        <div class="casecard">
+          <span class="filechip">story-plan.example.md — US-01-002</span>
+          <p>Run the checklist above against it directly: the Auth line on API-1 (<code>JwtAuthGuard</code>, <code>@Roles('finance_manager')</code>) names the exact role you'd expect for invoice creation. The Queries line ("insert scoped to caller's <code>orgId</code>") shows tenant-scoping present. WEB-1's Route (<code>/invoices/new</code>) and Surface (Page, Screen ID SCR-014) match a real screen ID rather than an invented path.</p>
+          <p>WEB-1's Data layer (<code>useCreateInvoice</code> mutation hook, calling API-1) is the React Query case the template's field wording was written for — contrast this against the hookless case, which you won't find worked out anywhere in this file. Section 5 (Risks / Open Questions) is honestly "None." here — a real instance of a plan with nothing left to flag, not every plan you write will be this clean.</p>
+        </div>
+        <div class="casecard">
+          <span class="filechip">pr-description.example.md — US-01-001</span>
+          <p>Shows the template's own N/A instruction already in honest practice on the two hardcoded checklist items: <code>orgId</code> from JWT ticked "— N/A (migration only, no API endpoint)," and React Query cache invalidation ticked "— N/A (backend-only PR)." This is the exact move to make on your own project whenever either item genuinely doesn't apply to what the diff does.</p>
+        </div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/08-development.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

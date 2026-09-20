@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,7 +40,7 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 9–10</div>
       <h1 class="title">Testing, QA &amp; UAT</h1>
-      <p class="dek">Two separate gates, not one step with two names. QA asks a technical question: does the code do what the stories said? UAT asks a business question: does the running system, operated by the PO's own hands, actually deliver what the BRD promised? A sprint can pass one and fail the other.</p>
+      <p class="dek">Two separate gates, not one step with two names. Stage 9 (QA) asks a technical question: does the merged code do what the stories said it would? Stage 10 (UAT) asks a different question entirely: does the running system, operated by the PO's own hands, actually deliver the business outcome the BRD promised? A sprint can clear QA cleanly — full suite green, zero open Critical/High, coverage met — and still fail UAT, because a feature can be technically correct against its acceptance criteria and still be missing an obvious step, or contradict what the client actually meant. Collapsing the two into one step means skipping one confirmation or the other. If that distinction feels academic right now, keep reading — this chapter starts from zero.</p>
       <div class="chapter-links"><a href="../../.claude/commands/gen-uat-checklist.md"><code>/gen-uat-checklist</code></a> and <a href="../../reference/defect-severity.md">defect severity</a>.</div>
 
       <nav class="jumpnav">
@@ -55,7 +60,7 @@
         <h2 class="block-title">Where a UAT checklist actually comes from</h2>
         <div class="prose">
           <p><strong>What generates it?</strong> <code>/gen-uat-checklist</code> reads every story file for the sprint and turns each acceptance criterion into one test case — real steps, an observable expected result. It runs once all sprint stories are Merged, after Stage 9's QA confirmation is recorded.</p>
-          <p><strong>Why two separate gates instead of one?</strong> QA and UAT check genuinely different things, and they can genuinely disagree. Every test can pass — the code does exactly what the stories said — while UAT still fails, because what the stories said wasn't actually what the client needed. Passing one gate is never evidence you'll pass the other.</p>
+          <p><strong>Why two separate gates instead of one?</strong> QA and UAT check genuinely different things, and they can genuinely disagree. Every test can pass — the code does exactly what the stories said — while UAT still fails, because what the stories said wasn't actually what the client needed. Collapsing the two into one step means either skipping the technical confirmation (UAT starts on code nobody has confirmed is stable) or skipping the business confirmation (a sprint ships on automated passes alone, with no one but the AI ever having operated the actual feature). Passing one gate is never evidence you'll pass the other.</p>
         </div>
       </section>
 
@@ -69,12 +74,20 @@
           <tr><td>Medium</td><td>Degraded, workaround exists</td><td>No</td></tr>
           <tr><td>Low</td><td>Cosmetic</td><td>No</td></tr>
         </table></div>
-        <div class="caution"><p>Two automatic escalations easy to under-apply: a defect found in <strong>production</strong> escalates one level; any <strong>security or cross-tenant data</strong> defect is always Critical, no proportionality exception.</p></div>
+        <div class="caution"><p>Two automatic escalations easy to under-apply: a defect found in <strong>production</strong> escalates one level; any <strong>security or cross-tenant data</strong> defect is always Critical, no proportionality exception — don't classify a cross-tenant leak as Medium because only one field was exposed.</p></div>
       </section>
 
       <section class="block" id="deferral">
         <div class="block-label"><span class="dot"></span>The Deferred Defect Process</div>
-        <div class="rule-callout">Critical defects can never be deferred, under any condition. A High defect needs explicit Product Owner agreement recorded against that one specific defect — not covered by a blanket sprint sign-off.<span class="src">Read condition 3 literally</span></div>
+        <h2 class="block-title">The current, corrected rule</h2>
+        <div class="prose"><p>A defect can be set to Deferred only when all four conditions hold:</p></div>
+        <ul class="recaplist">
+          <li><b>1. Severity</b><span>Medium or Low, or High with the explicit agreement condition 3 requires. Critical can never be deferred, under any condition.</span></li>
+          <li><b>2. Client informed</b><span>If the project has an external client, they've been told about the defect and its deferral.</span></li>
+          <li><b>3. PO approval, individually recorded</b><span>For a High defect specifically, explicit and recorded against that one defect's own entry — not covered by a blanket sprint sign-off.</span></li>
+          <li><b>4. Target sprint agreed</b><span>A specific sprint for the fix, recorded in the defect log.</span></li>
+        </ul>
+        <div class="rule-callout">A High defect does not get deferred by the PO signing the overall sign-off line at the bottom, or by approving the sprint as a whole with the defect merely listed somewhere in it. The QA sign-off checklist's own exception line is explicit: a High defect can be overridden to Deferred only by explicit PO decision, recorded in the Defects table with who made the call and when.<span class="src">Read condition 3 literally</span></div>
         <div class="gb-wrap">
           <div class="gb-card good">
             <div class="gb-head">✓ Correctly deferred — DEF-14, High</div>
@@ -87,13 +100,16 @@
             <p class="gb-why">No real workaround exists (the user can't even detect the failure). A silent, undetectable failure on a money-moving action should fail the PO's honest risk-weighing.</p>
           </div>
         </div>
+        <div class="prose"><p>The difference between the two isn't the severity label — both are High. It's whether a real workaround exists and whether the PO can honestly say, in writing, why shipping without the fix is safe for the time between now and the target sprint. If you can't write that sentence honestly, don't defer it — fix it now.</p></div>
       </section>
 
       <section class="block" id="report">
         <div class="block-label"><span class="dot"></span>Process decision</div>
         <h2 class="block-title">When the full test execution report is warranted</h2>
-        <div class="rule-callout">Is there an external stakeholder who expects to be shown quality evidence? Is there a compliance or contractual reason a formal record has to exist? If no to both, a one-line sprint-plan note is sufficient.<span class="src">The trigger test</span></div>
-        <div class="caution"><p>Skipping the full report doesn't mean a lighter bar — the suite still has to pass, Critical/High still has to be zero (or deferred), coverage still has to clear the threshold.</p></div>
+        <div class="prose"><p>Stage 9's own guidance says the fuller report is for a "formal, client-facing QA record," but neither the command nor the template states a crisp trigger — the one real gap the framework's own audit found in an otherwise well-explained relationship.</p></div>
+        <div class="rule-callout">Is there an external stakeholder who expects to be shown quality evidence, not just told it happened? Is there a compliance or contractual reason a formal record has to exist? If no to both, a one-line sprint-plan note is sufficient.<span class="src">The trigger test</span></div>
+        <div class="prose"><p>If either answer is yes, produce the full report — it's the gate artifact UAT actually reads in that case, giving a client or auditor the aggregated pass rate, defects, and blocked items instead of story-level files to reconcile themselves. Producing a six-section formal report nobody on the client side will ever open is ceremony, not QA — it costs real PO time synthesizing a document, and that time comes from somewhere.</p></div>
+        <div class="caution"><p>Skipping the full report doesn't mean a lighter bar — the suite still has to pass, Critical/High still has to be zero (or deferred), coverage still has to clear the threshold, before that one line gets written.</p></div>
       </section>
 
       <section class="block" id="density">
@@ -107,16 +123,22 @@
           <div class="gb-card good">
             <div class="gb-head">✓ The UAT translation</div>
             <div class="gb-quote">1. Navigate to Payments. 2. Find an already-Paid invoice. 3. Attempt to record a new payment. 4. Submit.<br>Expected: an error is shown, no payment recorded, status unchanged.</div>
-            <p class="gb-why">Numbered single-action steps, a concrete reproducible instance (not an abstract category), and an observable expected result — nothing about a 409 or an exception class.</p>
           </div>
         </div>
+        <div class="prose"><p>Three things make this work, and all three generalize to any AC you translate yourself:</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Numbered, single-action steps</h4><p>Each line is one physical action — "Navigate to X," "Submit." Nothing requires the reader to understand why the system behaves this way, only what to click.</p></div>
+          <div class="distcard"><h4>A concrete, reproducible condition</h4><p>The AC says "when status is not Open" — a category. The steps pick one concrete instance (an already-Paid invoice) rather than leaving the tester to invent their own, which might exercise a different code path entirely.</p></div>
+          <div class="distcard"><h4>An observable expected result</h4><p>"An error is shown, status unchanged" — every clause is something the tester can literally see. Nothing about a 409 or an exception class, which would be correct but invisible to this audience.</p></div>
+        </div>
+        <div class="prose"><p>The same principle generalizes to cases that don't map onto "click a button, see a message": a scheduled-job AC is written as what the user observes the next business day, not how the job runs; an email AC is written as what the recipient receives, not how the email is sent — describe the world as the tester can observe it, never the mechanism that produced it.</p></div>
         <div class="rule-callout">Could someone who has never seen the codebase execute every step and judge Pass/Fail purely from what's in front of them?<span class="src">The check before you consider a translation done</span></div>
       </section>
 
       <section class="block" id="loop">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>What it actually costs</div>
-          <p>A Critical or High UAT finding doesn't mean a quick patch — it re-runs the <strong>entire</strong> pipeline for that story: fix, re-verify (the whole AC set, not just the failing one, since a fix can regress a passing AC), re-raise the PR, the suite-wide QA checks again, and UAT often resumes from scratch since a mid-checklist fix can change behavior already marked Pass. Budget UAT with slack at the end of a sprint, not flush against a hard release date.</p>
+          <p>A Critical or High UAT finding doesn't mean a quick patch — it re-runs the <strong>entire</strong> pipeline for that story: fix, re-verify (the whole AC set, not just the failing one, since a fix can regress a passing AC), re-raise the PR, the suite-wide QA checks again, and UAT often resumes from scratch since a mid-checklist fix can change behavior already marked Pass. A single Critical finding on day one of a "half-day UAT slot" can consume the rest of the sprint's remaining calendar time. Budget UAT with slack at the end of a sprint, not flush against a hard release date — and take Stage 9's exit criteria seriously before UAT starts, since every defect caught there is a full fail-and-return cycle you never have to pay for.</p>
         </div>
       </section>
 
@@ -131,7 +153,8 @@
         <div class="block-label"><span class="dot"></span>Terminology recap</div>
         <ul class="recaplist">
           <li><b>Deferred</b><span>Allowed to cross UAT sign-off without being fixed, under the four-condition process. Never available to Critical.</span></li>
-          <li><b>QA confirmation vs. UAT sign-off</b><span>Two separate confirmations — the first technical, the second the PO operating the running system.</span></li>
+          <li><b>QA confirmation vs. UAT sign-off</b><span>Two separate confirmations — the first technical (Stage 9's exit criteria), the second the PO operating the running system (Stage 10).</span></li>
+          <li><b>Coverage threshold</b><span>A per-project number from <code>test-strategy.md</code>, not a framework-wide constant.</span></li>
         </ul>
       </section>
 
@@ -142,6 +165,7 @@
             <li>Treating a High defect's deferral as approved because the PO signed the overall sprint sign-off.</li>
             <li>Deferring a High defect where no real workaround exists.</li>
             <li>Producing the full test execution report for a project with no external stakeholder who'll ever read it.</li>
+            <li>Skipping any form of QA confirmation because "the one-line note felt like overkill too" — the lighter artifact is still gated on the same exit criteria.</li>
             <li>Writing a UAT step around an internal mechanism instead of what the tester can observe.</li>
             <li>Letting a tester invent their own test data for an AC's condition.</li>
             <li>Budgeting UAT as a flush-to-deadline half-day.</li>
@@ -152,8 +176,8 @@
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">uat-checklist.example.md</span><p>TC-1 and TC-2 on US-03-002 show the full observable-expected-result pattern for both a happy path and a rejection AC.</p></div>
-        <div class="casecard"><span class="filechip">test-execution-report.example.md</span><p>DEF-1 (Medium) logged and left Open — the routine case the deferral rule doesn't even need to engage for. Section 5's sign-off checklist item 3 checked because Sprint 01 genuinely had zero High defects.</p></div>
+        <div class="casecard"><span class="filechip">uat-checklist.example.md — US-03-002</span><p>TC-1 (happy path) shows the full observable-expected-result pattern in practice: a success toast reading exactly "Invoice saved as Draft," a line total of 500.00 that recalculates to 600.00 with VAT, and the new invoice appearing in the list at that total. TC-2 (rejection — Client field required) applies the same pattern to a validation failure: form doesn't submit, an inline error reads "Client is required," no invoice created.</p></div>
+        <div class="casecard"><span class="filechip">test-execution-report.example.md</span><p>DEF-1 (Medium — an inline validation error that doesn't clear on input change) logged and left Open — the routine case the deferral rule doesn't even need to engage for. Section 5's sign-off checklist item 3 ("no High defects Open") is checked because Sprint 01 genuinely had zero High defects, not because one was quietly waved through.</p></div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/09-testing-qa-and-uat.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

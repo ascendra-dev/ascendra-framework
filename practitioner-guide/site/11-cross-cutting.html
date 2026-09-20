@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html" class="active"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,7 +40,7 @@
     <div class="readcol">
       <div class="chapter-eyebrow">No stage — every stage</div>
       <h1 class="title">Cross-Cutting Commands</h1>
-      <p class="dek">Nothing puts <code>/assess-change</code>, <code>/update-status</code>, or <code>/project-status</code> in front of you the way a staged command is. You have to remember to reach for them yourself — usually at the exact moment reaching for the right tool matters most.</p>
+      <p class="dek">A command tied to a stage gets run because you're in that stage — you run <code>/gen-architecture</code> because you just finished Screen Design and it's obviously next. Nothing puts <code>/assess-change</code>, <code>/update-status</code>, or <code>/project-status</code> in front of you that way. You have to remember to reach for them yourself, usually at the exact moment reaching for the right tool matters most: mid-sprint, a client on the phone asking for something new, a story that's clearly stuck. All four earn their place the same way — they're what keeps the other twenty-nine commands honest once real change, real drift, or quiet quality erosion enters the picture. If that sounds like a lot to hold in your head, keep reading — this chapter starts from zero.</p>
       <div class="chapter-links"><a href="../../.claude/commands/assess-change.md"><code>/assess-change</code></a>, <a href="../../.claude/commands/update-status.md"><code>/update-status</code></a>, <a href="../../.claude/commands/project-status.md"><code>/project-status</code></a>, <a href="../../.claude/commands/judgment-check.md"><code>/judgment-check</code></a>.</div>
 
       <nav class="jumpnav">
@@ -45,6 +50,8 @@
         <a href="#status">update-status: when</a>
         <a href="#attention">ATTENTION flags</a>
         <a href="#judgment">judgment-check habit</a>
+        <a href="#gatesummary">Gate Summary</a>
+        <a href="#terms">Terminology recap</a>
         <a href="#mistakes">Common mistakes</a>
         <a href="#together">How they work together</a>
       </nav>
@@ -53,20 +60,27 @@
         <div class="block-label"><span class="dot"></span>Start here</div>
         <h2 class="block-title">What these four commands are actually for</h2>
         <div class="prose">
-          <p><strong><code>/assess-change</code></strong> is how scope changes after a gate has already closed. It classifies any described change into one of four patterns, each with its own formality level. Pattern 1 (Fix) — informal, no version bump. Pattern 2 (Gap) — informal, something the BRD already implied but nobody wrote into an epic. Pattern 3 (Scope Shift) — formal at the epic level: a version bump and an explicit confirmation gate. Pattern 4 (Requirement Change) — formal at the BRD level: PO sign-off required before anything downstream updates. The pattern decides how much ceremony the change gets — not how big the change feels.</p>
-          <p><strong><code>/update-status</code>, <code>/project-status</code>, and <code>/judgment-check</code></strong> are simpler by comparison: one records gate decisions, one gives you a live dashboard, one runs a density check before a review. What makes all four "cross-cutting" is the same thing — nothing in the staged pipeline reminds you to reach for them. You have to already know they exist.</p>
+          <p><strong><code>/assess-change</code></strong> is what happens when the world doesn't respect the document pipeline you locked in good faith — scope changing after a gate has already closed. It classifies any described change into one of four patterns, each with its own formality level. Pattern 1 (Fix) — informal, no version bump. Pattern 2 (Gap) — informal, something the BRD already implied but nobody wrote into an epic.</p>
+          <p>Pattern 3 (Scope Shift) — formal at the epic level: a version bump and an explicit confirmation gate. Pattern 4 (Requirement Change) — formal at the BRD level: PO sign-off required before anything downstream updates. The pattern decides how much ceremony the change gets — not how big the change feels.</p>
+          <p><strong><code>/update-status</code></strong> is the largely manual mechanism that keeps every gate in the project lifecycle actually true of the files on disk. <strong><code>/project-status</code></strong> is the one place that reads the whole project back to you honestly, blockers included.</p>
+          <p><strong><code>/judgment-check</code></strong> catches an artifact quietly getting vaguer or denser than this guide's own tests would allow, before that artifact locks in through its own gate. What makes all four "cross-cutting" is the same thing: nothing in the staged pipeline reminds you to reach for them. You have to already know they exist.</p>
         </div>
       </section>
 
       <section class="block" id="pattern">
         <div class="block-label"><span class="dot"></span>The actual test</div>
         <h2 class="block-title">Pattern 2 (Gap) vs. Pattern 3 (Scope Shift)</h2>
-        <div class="prose"><p>The one pair with no built-in test — and the pair a PO hits constantly. Under deadline pressure the natural drift is toward Pattern 2 every time, because it's cheaper.</p></div>
+        <div class="prose"><p>The one pair with no built-in test — and the pair a PO hits constantly. The command's own examples for each read like paraphrases of each other, and under deadline pressure the natural drift is toward Pattern 2 every time, because it's cheaper: no version bump, no formal gate.</p></div>
         <div class="rule-callout">Can you point to the specific sentence in an approved BRD requirement that already implies this behavior? If yes — Pattern 2. If you're inferring intent — Pattern 3.<span class="src">Mirrored on FW-024's Parking Lot test</span></div>
+        <div class="prose">
+          <p>Grounded in Harborview's EPIC-001: REQ-004 reads, in full, "the system must allow the Finance Manager to import Payers from a CSV file... duplicate rows are flagged and not imported — manual resolution required." If nobody wrote a story covering what the Finance Manager actually sees when a row is flagged, that's Pattern 2 — the behavior is already sitting in REQ-004's own sentence, the story generation pass simply missed it.</p>
+          <p>But if the request is "let the Finance Manager select several flagged rows and resolve them all in one bulk action," nothing in REQ-004 says anything about bulk resolution — that's scope you'd be inferring makes sense, not scope you can point to. That's Pattern 3.</p>
+        </div>
         <div class="tblwrap"><table class="dtable">
           <tr><th></th><th>Pattern 2 (Gap)</th><th>Pattern 3 (Scope Shift)</th></tr>
           <tr><td>BRD</td><td>Untouched</td><td>Untouched</td></tr>
           <tr><td>Epic</td><td>No version bump; gap-fill row only if a new story added</td><td>Version bump, Document Control row</td></tr>
+          <tr><td>Story</td><td>Updated in place per normal story-state rules</td><td>Created/deprecated/updated per normal story-state rules</td></tr>
           <tr><td>Confirmation gate</td><td>None</td><td>An explicit "confirm this is intentional" gate</td></tr>
           <tr><td>Epic Status</td><td>Unchanged</td><td>Unchanged — formal ≠ un-approval</td></tr>
         </table></div>
@@ -76,6 +90,7 @@
         <div class="caution">
           <div class="block-label"><span class="dot"></span>The Promotion Gate surprise</div>
           <p>If the change is already sitting in the BRD's Parking Lot, <code>/assess-change</code> stops mid-session to redirect you to a discovery pass first — right behavior, but a wasted read-and-classify cycle if it surprises you. <strong>The habit that avoids it:</strong> glance at Section 15 yourself before describing the change.</p>
+          <p>Harborview's own worked instance is PL-001, the admin-assistant-submits-invoices idea, parked with no REQ-ID — if the idea you're describing is already sitting there, say so up front: "this is PL-001, is it ready to promote or does it still need discovery?"</p>
         </div>
       </section>
 
@@ -88,17 +103,20 @@
           <tr><td>Brief (Content Status)</td><td>Draft → Brief complete</td><td><code>/run-intake</code> Step 8</td></tr>
           <tr><td>BRD</td><td>→ Approved</td><td><code>/review-brd</code>, on 'approved'</td></tr>
           <tr><td>Epic</td><td>Draft → Approved</td><td><code>/review-epics</code></td></tr>
+          <tr><td>Screen Design</td><td>→ Approved</td><td><code>/review-screen-design</code>, on 'approve'</td></tr>
           <tr><td>Architecture</td><td>→ Locked</td><td><code>/review-architecture</code>, on lock</td></tr>
           <tr><td>Story</td><td>Draft → Reviewed</td><td><code>/review-stories</code></td></tr>
         </table></div>
         <h3 class="sub-title">Always manual — nothing else does it</h3>
         <div class="tblwrap"><table class="dtable">
-          <tr><th>Artifact</th><th>Transition</th></tr>
-          <tr><td>Epic</td><td>Approved → In Progress → Done, or → Deprecated</td></tr>
-          <tr><td>Story</td><td>Reviewed → In Progress → PR Created → Merged → Done — every step</td></tr>
-          <tr><td>Sprint</td><td>Planning → Active → Complete</td></tr>
-          <tr><td>Story Plan</td><td>Draft → Confirmed (hard gate, no override)</td></tr>
-          <tr><td>Brief (Status)</td><td>Every project-lifecycle transition, always</td></tr>
+          <tr><th>Artifact</th><th>Transition</th><th>Notes</th></tr>
+          <tr><td>Brief (Content Status)</td><td>Brief complete → Approved</td><td>The actual gate <code>/gen-domain-knowledge</code> checks</td></tr>
+          <tr><td>Brief (Status)</td><td>Active / On Hold / Complete / Cancelled</td><td>Every project-lifecycle transition, always</td></tr>
+          <tr><td>BRD</td><td>Approved → Locked</td><td><code>/review-brd</code> only ever sets Approved, never Locked</td></tr>
+          <tr><td>Epic</td><td>Approved → In Progress → Done, or → Deprecated</td><td>Warns if a dependency epic isn't Done yet</td></tr>
+          <tr><td>Story Plan</td><td>Draft → Confirmed</td><td>Hard gate, no override (FW-031)</td></tr>
+          <tr><td>Story</td><td>Reviewed → In Progress → PR Created → Merged → Done</td><td>Every step, including Merged — raising and merging a PR are both manual</td></tr>
+          <tr><td>Sprint</td><td>Planning → Active → Complete</td><td>Complete warns if any story isn't Done/Deprecated</td></tr>
         </table></div>
         <div class="rule-callout">A review command sets the status it exists to grant. Everything that isn't the specific thing a review command was built to grant is on you.<span class="src">The one-sentence pattern</span></div>
       </section>
@@ -106,6 +124,7 @@
       <section class="block" id="attention">
         <div class="block-label"><span class="dot"></span>A real action for each flag</div>
         <h2 class="block-title"><code>/project-status</code>'s ATTENTION section</h2>
+        <div class="prose"><p>The command's own closing line — "run <code>/update-status</code> or <code>/assess-change</code>" — reads as if it covers every flag. It doesn't; two of the five triggers map to neither.</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Trigger</th><th>Real action</th></tr>
           <tr><td>L-sized stories not yet split</td><td>Split now — a story-authoring fix, not necessarily a scope change</td></tr>
@@ -117,10 +136,26 @@
       </section>
 
       <section class="block" id="judgment">
-        <div class="caution">
-          <div class="block-label"><span class="dot"></span>The two-invocation habit</div>
-          <p><strong>A single invocation never both finds and resolves.</strong> Analysis Mode surfaces findings and logs them Open; Resolve Mode walks you through them. Stop after the first and move to <code>/review-X</code>, and those findings sit Open forever — logged, never weighed. When anchor drives it, both passes happen automatically; running standalone, you're the one who has to remember the second invocation.</p>
+        <div class="block-label"><span class="dot"></span>The two-invocation habit</div>
+        <h2 class="block-title">Running <code>/judgment-check</code> without letting findings sit</h2>
+        <div class="caution"><p><strong>A single invocation never both finds and resolves.</strong> Analysis Mode surfaces findings and logs them Open; Resolve Mode walks you through them. Stop after the first and move to <code>/review-X</code>, and those findings sit Open forever — logged, never weighed. When anchor drives it, both passes happen automatically; running standalone, you're the one who has to remember the second invocation.</p></div>
+        <div class="prose">
+          <p><strong>It checks one artifact, not the project.</strong> It deliberately reads only the target artifact, its one matching chapter, and Orientation — never another artifact in the same project, even when a chapter's own worked example cross-references one. A finding here is never "this epic contradicts an assumption in the BRD" — that's a cross-artifact concern, and it's what anchor's own drift-checking exists for, not this command.</p>
+          <p><strong>A finding is a question, never a verdict.</strong> A model checking its own or a sibling model's output can't certify correctness the way independent human judgment can. Zero findings means nothing checkable against this specific content stood out against the chapter's tests — it doesn't mean the whole chapter's test suite passed, and it's not something to chase down to zero the way you'd chase a build error.</p>
         </div>
+      </section>
+
+      <section class="block" id="gatesummary">
+        <div class="prose"><p><strong>The Gate Summary table is now a complete reference.</strong> <code>PROJECT-LIFECYCLE.md</code>'s Gate Summary table now includes every hard gate in the pipeline, including the Story Plan Confirmed gate (7a, per FW-031) that was missing before this guide's own audit pass. You can treat the table as genuinely complete for the one question it exists to answer — "what status do I need in place before I can run X" — without checking elsewhere for a gate that might be missing from it.</p></div>
+      </section>
+
+      <section class="block" id="terms">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Content Status vs. Status</b><span>The brief's two-field split. Every other artifact above uses a single Status field for both readiness and gate state — the split is unique to the brief.</span></li>
+          <li><b>Section 5.21 vs. Parking Lot</b><span>The test deciding whether a not-yet-built idea has a REQ-ID at all. Pattern 2/3 is a different judgment call, made after something is already in the BRD — don't conflate the two.</span></li>
+          <li><b>Analysis Mode vs. Resolve Mode</b><span><code>/judgment-check</code>'s two mutually exclusive modes. Open / Confirmed as-is / Revised / Acknowledged tradeoff are the only Outcome values a finding can carry once resolved.</span></li>
+        </ul>
       </section>
 
       <section class="block" id="mistakes">
@@ -131,19 +166,26 @@
             <li>Describing a change without first checking whether it's already a Parking Lot entry.</li>
             <li>Assuming a <code>/review-X</code> command advances every status field, when it only sets the one it exists to grant.</li>
             <li>Treating a GitHub PR merge as the story-file status update — they're two separate actions.</li>
+            <li>Pointing every ATTENTION flag at the same "run <code>/update-status</code> or <code>/assess-change</code>" line instead of checking which, if either, actually applies.</li>
             <li>Inventing a remedy command for sprint slip risk because the dashboard's generic line implies one exists.</li>
+            <li>Reading a stale "Epic In Progress, no stories In Progress" flag as always meaning the same thing — it's genuinely either a data fix or a real blocker, and the dashboard can't tell you which.</li>
             <li>Running <code>/judgment-check</code> once and moving straight to <code>/review-X</code> without a second invocation to resolve findings.</li>
             <li>Treating "no findings" as a quality certification rather than "nothing checkable stood out."</li>
+            <li>Expecting <code>/judgment-check</code> to catch a cross-artifact inconsistency — that's anchor's drift-checking's job, not this command's.</li>
           </ul>
         </details>
       </section>
 
       <section class="block" id="together">
         <div class="block-label"><span class="dot"></span>How these four work together</div>
-        <div class="prose"><p><code>/project-status</code> is where a real Tuesday starts — you run it, work down the ATTENTION list, and most items resolve into either <code>/update-status</code> (a stale field) or <code>/assess-change</code> (a real scope change). <code>/judgment-check</code> sits at a different point in the same discipline — not a Tuesday habit, a pre-gate one: it runs against whatever's about to go through <code>/review-X</code>, gets resolved, and only then does the walkthrough proceed.</p></div>
+        <div class="prose">
+          <p><code>/project-status</code> is where a real Tuesday starts — you run it, work down the ATTENTION list, and most items resolve into either <code>/update-status</code> (a stale field) or <code>/assess-change</code> (a real scope change). <code>/judgment-check</code> sits at a different point in the same discipline — not a Tuesday habit, a pre-gate one: it runs against whatever's about to go through <code>/review-X</code>, gets resolved, and only then does the walkthrough proceed.</p>
+          <p>None of the four is useful alone for very long, and none of them overlaps another's territory — one classifies a change, one records a gate decision, one reads the whole project back to you, one checks density before a lock.</p>
+          <p>Harborview's own worked material only exercises one corner of this directly — PL-001 in the BRD's Parking Lot — because the rest of this chapter's judgment calls are the kind of thing that shows up only once a project is actually running, past the point where a single fixed example can capture every case. That's true of these four commands generally: they exist precisely for the parts of a project that don't fit a template.</p>
+        </div>
       </section>
 
-      <footer class="pagefoot">Adapted from <code>practitioner-guide/11-cross-cutting.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads. This is the guide's twelfth and final chapter — the phase chapters keep getting corrected as real projects run against them.</footer>
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/11-cross-cutting.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads. This is the guide's twelfth and final phase chapter — the phase chapters keep getting corrected as real projects run against them.</footer>
     </div>
   </main>
 </div>

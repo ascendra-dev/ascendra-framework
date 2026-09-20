@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priming Code Session — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html" class="active">Priming Code Session</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">No stage — Problem Domain only</div>
+      <h1 class="title">Priming Code Session</h1>
+      <p class="dek"><code>/run-priming-session</code> and this command produce the same output — a <code>priming-package.md</code> — but solve a different problem. A PO narrating their business already knows what matters and why; a legacy codebase has no author in the room to ask, and it accumulated unintentional behavior right alongside its real business rules. This command reverse-engineers business capability from code structure, without ever reading the whole repository. If that sounds like a harder problem than prose priming, it is — keep reading, because this chapter starts from zero.</p>
+      <div class="chapter-links"><a href="../../.claude/commands/run-priming-code-session.md"><code>/run-priming-code-session</code></a>. Governed by the same contract as <a href="priming-session.html">Priming Session</a> — read that chapter first.</div>
+
+      <nav class="jumpnav">
+        <a href="#foundations">What's different here</a>
+        <a href="#chunking">Entity-centric chunking</a>
+        <a href="#heuristic">Rule vs. accident</a>
+        <a href="#signals">Signal trust order</a>
+        <a href="#sections">The two owned subsections</a>
+        <a href="#checkpoint">Checkpointing per unit</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What's genuinely different about reading code</h2>
+        <div class="prose">
+          <p><strong>Why does this need its own command, rather than pointing the prose-priming session at a code file?</strong> Two problems that prose priming never had to solve. First, telling a real business rule apart from an accident — a human writing prose has intent behind every sentence; code accumulates unintentional behavior too, with nobody around to ask which is which. Second, chunking a codebase too large to read in full, without silently presenting a guess as if it were precision.</p>
+          <p><strong>Where does its output go?</strong> The same <code>priming/priming-package.md</code> its prose sibling writes to — read by the same three later commands. But this command also keeps its own working-state file, <code>code-priming-state.md</code>, tracking progress unit by unit so a large codebase walk can checkpoint and resume any number of times.</p>
+          <p><strong>Does it need the PO in the room?</strong> Not the way prose priming does. A codebase doesn't need someone narrating it, and this command is built to walk one unattended across many checkpointed sessions. A live PO is still useful for resolving flags cheaply and narrowing scope up front, but continuous presence isn't required.</p>
+        </div>
+      </section>
+
+      <section class="block" id="chunking">
+        <div class="block-label"><span class="dot"></span>Preferred, not assumed</div>
+        <h2 class="block-title">Entity-centric chunking, with honest degradation</h2>
+        <div class="prose"><p>The Map pass is structural only — no file contents read yet. It walks the directory structure, and for each module looks for recognizable schema or ORM patterns: an annotated entity class, a models file, a schema definition, a migration file. These are framework-agnostic concepts, not stack-specific rules — recognizing them is ordinary pattern-reading in any language.</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Entity layer discoverable</h4><p>Chunking proceeds entity by entity — the finest, most useful granularity.</p></div>
+          <div class="distcard"><h4>Entity layer not discoverable</h4><p>Attempt entity inference within the module first — including from table names in raw SQL strings. Only when boundaries genuinely can't be found does it degrade to Module/Layer granularity.</p></div>
+        </div>
+        <div class="rule-callout">A module-level row is never dressed up as an entity-level one. If the walk couldn't find the boundary, the record says so — in the Entity Ledger's own Granularity column.<span class="src">Honesty over false precision</span></div>
+      </section>
+
+      <section class="block" id="heuristic">
+        <div class="block-label"><span class="dot"></span>The problem prose priming never had to solve</div>
+        <h2 class="block-title">Telling a rule from an accident</h2>
+        <div class="prose"><p>A human writing prose had intent behind every sentence. Code accumulates unintentional behavior too — the walk has to guess which is which from the evidence in front of it.</p></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ Leans toward a real rule</div>
+            <div class="gb-quote">Enforced redundantly across layers (DB constraint + application validation + UI disabling an action). A business-language error message. Named consistently across unrelated parts of the codebase. Traceable to a comment or commit citing a business reason.</div>
+            <p class="gb-why">A candidate for <code>AI Knowledge Correction</code> if it diverges from generic domain understanding.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Leans toward a legacy flaw</div>
+            <div class="gb-quote">Inconsistent enforcement — checked on one path, skipped on another. An unexplained magic number, or a HACK/TODO marker. Contradicts what's generically true elsewhere. Duplicated data with no stated reason.</div>
+            <p class="gb-why">A candidate for <code>Legacy Design Question</code> — never carried forward as fact, always a negotiation.</p>
+          </div>
+        </div>
+        <div class="prose"><p>If a PO happens to be live during the walk, ask directly — cheaper resolution than deferring to a flag. If no PO is present — the expected default here, unlike prose priming — the flag waits for whichever later session actually reads it.</p></div>
+      </section>
+
+      <section class="block" id="signals">
+        <div class="block-label"><span class="dot"></span>Not every unit has all seven</div>
+        <h2 class="block-title">Signal sources, ranked by trust</h2>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Rank</th><th>Signal</th><th>Why</th></tr>
+          <tr><td>1</td><td>Schema/ORM definitions</td><td>Highest trust — entities, lifecycle states, relationships</td></tr>
+          <tr><td>2</td><td>Validation logic</td><td>Guards, DTO decorators, DB constraints</td></tr>
+          <tr><td>3</td><td>State machines</td><td>Enums plus transition guards</td></tr>
+          <tr><td>4</td><td>Test names and assertions</td><td>First-class, not a fallback — often clearer than the implementation</td></tr>
+          <tr><td>5</td><td>Comments and commit messages</td><td>Cross-checked against current behavior, since comments rot</td></tr>
+          <tr><td>6</td><td>Feature flags / per-tenant config</td><td>Maps directly onto Known Variations</td></tr>
+          <tr><td>7</td><td>API surface</td><td>Medium signal — can be generic scaffolding</td></tr>
+        </table></div>
+        <div class="prose"><p>The ranking matters because it tells you which signal to trust when two disagree — a schema constraint outranks a stale comment; a test assertion outranks an API route that might just be boilerplate.</p></div>
+      </section>
+
+      <section class="block" id="sections">
+        <div class="block-label"><span class="dot"></span>The one real exception</div>
+        <h2 class="block-title">The two subsections this command actually owns</h2>
+        <div class="prose"><p>Its prose sibling owns no Section 10 (Source-Specific Material) subsection at all — everything it extracts maps onto Sections 4–6. This command is the exception, and owns two.</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Code Structure Reference</h4><p>Existing API surface and schema-as-implemented. Captured only incidentally while extracting for domain purposes — never pursued on purpose. Priming is scoped to Problem Domain only; going looking for this on purpose would mean quietly doing architecture's job early.</p></div>
+          <div class="distcard"><h4>Sub-Domain Split Recommendation</h4><p>A non-binding note, derived from the code's own module boundaries, that the eventual domain document(s) may need splitting. Routes specifically to <code>/run-domain-discovery</code> — the one case in this framework where a priming artifact names its own destination phase.</p></div>
+        </div>
+      </section>
+
+      <section class="block" id="checkpoint">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>Per unit, not per session</div>
+          <p>Progress lives in a dedicated working-state file, <code>code-priming-state.md</code>, kept distinct from <code>priming-package.md</code> itself — the same relationship a discovery-state file has to its own finished artifact. Every unit's row is written to Extracted immediately after it finishes, before moving to the next one. The ledger, not conversation history, is what makes a large codebase resumable — a genuinely large file taking more than one session to fully triage is normal, not a sign something went wrong. Do not hold more than one unit's extraction in working context at a time; resist the urge to batch several units together to save a round trip.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Domain-likely vs. infrastructure-likely</b><span>Would every deployment need this, regardless of extension? Infrastructure gets one boundary note; domain-likely proceeds to full Extract.</span></li>
+          <li><b>Entity vs. Module/Layer granularity</b><span>Recorded explicitly, never silently upgraded. Module/Layer is an honest admission, not a shortcut.</span></li>
+          <li><b><code>code-priming-state.md</code> vs. <code>priming-package.md</code></b><span>A working ledger vs. the actual PO-facing deliverable. Only the priming package is read by later commands.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Reading a module's whole "home" directory instead of a targeted search for the unit's own name and references.</li>
+            <li>Presenting a Module/Layer-granularity result as if it achieved entity-level precision.</li>
+            <li>Carrying forward an inconsistently-enforced rule as fact instead of flagging it as a Legacy Design Question.</li>
+            <li>Trusting a comment over a schema constraint when the two disagree.</li>
+            <li>Going looking for architecture-flavored facts on purpose instead of noting them only when they surface incidentally.</li>
+            <li>Batching several units' extraction together instead of checkpointing after each one.</li>
+            <li>Treating the Sub-Domain Split Recommendation as a decision this command makes, rather than a note for <code>/run-domain-discovery</code> to weigh.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="caution"><p><strong>Be honest about what's actually here:</strong> Harborview's domain was judged well-known enough to skip even the prose priming sub-flow's deepest path, and no legacy codebase was ever part of its worked material — there's no <code>code-priming-state.example.md</code> in this repository, and this command hasn't yet been validated against a real legacy walk. That's a real, stated gap in the framework itself, not something glossed over here.</p></div>
+        <div class="prose"><p>A brief, clearly-labeled hypothetical, not drawn from any real file: imagine Harborview's old process had instead been a ten-year-old PHP invoicing tool nobody remembers the reasoning behind.</p></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ <code>getInvoiceTotal()</code></div>
+            <div class="gb-quote">VAT computed with a hardcoded 0.20 multiplier — no config, no per-client override anywhere in the codebase.</div>
+            <p class="gb-why">Enforced the same way everywhere it's called, and matches what James actually confirmed live in the real priming session. <code>AI Knowledge Correction</code>, not a flaw.</p>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ <code>applyLegacyDiscount()</code></div>
+            <div class="gb-quote">Invoked from exactly one billing path, silently zeroing VAT for a hardcoded list of three client IDs, with a comment reading "// TEMP - remove after Q3."</div>
+            <p class="gb-why">Inconsistent enforcement, an unexplained exception, a years-old TEMP marker. Flagged <code>Legacy Design Question</code>, put to whoever's live — never carried forward as if Harborview genuinely has a VAT exemption rule.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/priming-code-session.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

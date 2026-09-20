@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html" class="active"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,7 +40,7 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 11–12</div>
       <h1 class="title">Release, Support &amp; Hotfix</h1>
-      <p class="dek">Three things that look like they could be one "ship it and watch it" step. Get the hotfix git logic wrong and the fix you deployed can vanish from <code>main</code> without anyone touching it on purpose — the single most consequential thing in this chapter to get right.</p>
+      <p class="dek">Three things that look like they could be one "ship it and watch it" step — the framework deliberately keeps them apart, because each does a job the other two can't. Sprint Closure checks this sprint's learnings against not-yet-built scope. Support is a standing posture, not an event. The Hotfix Cycle is a deliberate emergency deviation — no sprint planning, no UAT — for the moment when waiting for the normal pipeline is the wrong call. Get the hotfix git logic wrong and the fix you deployed can vanish from <code>main</code> without anyone touching it on purpose — the single most consequential thing in this chapter to get right. If that sounds alarming, good — keep reading, because the mechanism is simple once you see it, and this chapter starts from zero.</p>
       <div class="chapter-links"><a href="../../.claude/commands/close-sprint.md"><code>/close-sprint</code></a>, <a href="../../.claude/commands/gen-release-notes.md"><code>/gen-release-notes</code></a>, and the manual Hotfix Cycle.</div>
 
       <nav class="jumpnav">
@@ -57,27 +62,53 @@
       <section class="block" id="learnings">
         <div class="block-label"><span class="dot"></span><code>/close-sprint</code> Step 8</div>
         <h2 class="block-title">Forward-looking learnings, vs. sprint-specific noise</h2>
+        <div class="prose"><p><code>/gen-stories</code> generates a wave from the Locked architecture and Approved BRD as they stand at that moment — it never re-reads a prior sprint's retrospective. Step 8 is the one deliberate place that catches staleness before the next wave builds on it, and it hands you <code>/assess-change</code> as the fix. Step 6's retrospective, by contrast, only logs process notes — it corrects nothing on its own.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th>Signal</th><th>Flag it, or noise?</th></tr>
+          <tr><td>Client clarifies a business rule mid-UAT that a <strong>later</strong> epic's logic depends on (e.g. a rounding rule that a future interest calculation also needs)</td><td>Flag — the not-yet-built epic inherits the wrong assumption if nobody tells it</td></tr>
+          <tr><td>A defect in this sprint's own stories, already fixed on the story branch before merge</td><td>Noise — already resolved, nothing to propagate</td></tr>
+          <tr><td>A UI preference about this sprint's screens (button copy, column order)</td><td>Noise — sprint-local, handled through normal PR review</td></tr>
+          <tr><td>UAT reveals a domain concept discovery never modeled (a new actor type, a relationship pattern) that a future epic will need</td><td>Flag — the same "structurally new axis" test from Chapter 3, one stage later</td></tr>
+          <tr><td>A carry-forward story moving to next sprint purely for capacity reasons, no new information</td><td>Noise — ordinary capacity management, already handled in Step 7</td></tr>
+        </table></div>
         <div class="rule-callout">Does this new information change what a not-yet-built epic should have been told, or does it only affect work already built or already has its own fix in hand?<span class="src">The test that separates the two</span></div>
-        <div class="prose"><p><code>/gen-stories</code> generates a wave from the Locked architecture and Approved BRD as they stand at that moment — it never re-reads a prior sprint's retrospective. Step 8 is the one deliberate place that catches staleness before the next wave builds on it, and it hands you <code>/assess-change</code> as the fix.</p></div>
+        <div class="prose"><p><code>/close-sprint</code> will not run <code>/assess-change</code> for you — Step 8 explicitly waits for the PO to either run it or say to proceed without it. Don't let "I'll deal with it later" become the default answer; the whole point of asking before the next wave, not after, is that <code>/gen-stories</code> for that wave hasn't run yet, so the correction is still cheap.</p></div>
       </section>
 
       <section class="block" id="versioning">
         <div class="block-label"><span class="dot"></span>Not by sprint</div>
         <h2 class="block-title">Release notes are versioned by release</h2>
+        <div class="prose"><p>The output path is keyed by version string, not sprint number — the template says why directly: "since a release doesn't always map 1:1 to a sprint." Every time a sprint closes, there are really two decisions to make: is this the moment a release goes out, or does this sprint's work bundle with a later one — and if a release is going out now, what version number does it get?</p></div>
         <div class="distgrid">
           <div class="distcard"><h4>A sprint ships as its own release</h4><p>UAT passes, the client wants it live immediately. One sprint, one version, one deploy — the common case.</p></div>
           <div class="distcard"><h4>Two sprints batch into one release</h4><p>A client's monthly change-window policy means both land in the same deploy. Treat the deploy, not the sprint boundary, as the trigger — one version, not two back to back.</p></div>
         </div>
-        <div class="caution"><p><code>/gen-release-notes</code> reads exactly one sprint plan file. If batching, it won't fold the earlier sprint in for you — point it at the later sprint and manually merge, or read both files in the same session first.</p></div>
+        <div class="caution"><p><code>/gen-release-notes</code> reads exactly one sprint plan file. If batching, it won't fold the earlier sprint in for you — point it at the later sprint and manually merge the earlier sprint's stories into the What's New and Change Summary sections yourself, or read both files in the same session first.</p></div>
+        <div class="prose"><p><strong>The version number itself</strong> is an ordinary semver call, not a framework-prescribed scheme: a first production release is 1.0.0; a deploy that only adds capability bumps the minor number; a hotfix-only deploy bumps the patch number. The number belongs to the deploy event, not to whichever sprint number happens to be freshest.</p></div>
       </section>
 
       <section class="block" id="hotfix">
         <div class="block-label"><span class="dot"></span>Git process, explained clearly</div>
         <h2 class="block-title">The Hotfix Cycle</h2>
-        <div class="prose"><p>Trunk-based: one branch per story, cut from <code>main</code>, merged directly back. There is no persistent sprint-integration branch. A hotfix branch is cut from <code>main</code> like any story branch, fixed, verified, PR'd, and merged — the moment it merges, every story branch created <em>after</em> that point already contains it. Nothing to do for those.</p></div>
+        <div class="prose"><p>Trunk-based: one branch per story, cut from <code>main</code>, merged directly back. There is no persistent sprint-integration branch. This section was rewritten in the framework's own files because the old wording described a git object — "the current sprint's working branch" — that doesn't exist anywhere in this git model. Once you hold that fact fixed, the logic is genuinely simple, but only if you walk it through step by step.</p></div>
+        <div class="prose">
+        <ol>
+          <li>A Critical or High defect is confirmed in production; the PO confirms a hotfix should proceed.</li>
+          <li>A hotfix branch is cut from <code>main</code> — <code>hotfix/{PROJECT_CODE}-{issue-description}</code> — the same starting point every story branch uses.</li>
+          <li>The fix is implemented and verified on that branch, scoped strictly to the defect's own acceptance criteria.</li>
+          <li>A PR is raised against <code>main</code>. The PO reviews and approves it — the same gate as any other PR.</li>
+          <li>The PR merges into <code>main</code>. This is the moment the fix becomes part of the trunk.</li>
+          <li>The PO approves production deployment, rollback plan in hand; smoke tests confirm it's healthy.</li>
+          <li>Because every story branch is cut from <code>main</code> and merges back into <code>main</code> — there's no separate branch to "merge the hotfix into" — every story branch cut <em>after</em> step 5 already contains the fix automatically. Nothing to do for those.</li>
+        </ol>
+        </div>
         <div class="caution">
           <div class="block-label"><span class="dot"></span>The one thing that needs a manual check</div>
-          <p>A story branch cut <strong>before</strong> the hotfix merged has a frozen copy of <code>main</code> with no knowledge the fix happened. If it touches the same lines and merges without pulling <code>main</code> in first, its version silently wins — overwriting the hotfix. <strong>Rule of thumb:</strong> the instant a hotfix PR merges, pull <code>main</code> into every story branch that was already open at that moment, before its own PR is allowed to merge.</p>
+          <p>A story branch cut <strong>before</strong> the hotfix merged has a frozen copy of <code>main</code> with no knowledge the fix happened. If it touches the same lines and merges without pulling <code>main</code> in first, git has no way to know the hotfix's version should win — its version silently wins instead, overwriting the fix. <strong>Rule of thumb:</strong> the instant a hotfix PR merges, pull <code>main</code> into every story branch that was already open at that moment, before its own PR is allowed to merge — don't wait to discover which files actually collided.</p>
+        </div>
+        <div class="prose">
+          <p><strong>A worked timeline.</strong> Harborview is mid-Sprint 02 when a Critical defect surfaces in production: an invoice's VAT total is calculated wrong for a rounding edge case. Two Sprint 02 story branches are already open — <code>story/US-01-011</code> (cut from <code>main</code> Monday) and <code>story/US-01-014</code> (not yet started). The hotfix branch is cut Tuesday morning, fixed, reviewed, and merged into <code>main</code> Tuesday afternoon.</p>
+          <p><code>story/US-01-014</code> gets cut Wednesday, after the merge — it already includes the VAT fix, nothing to do. <code>story/US-01-011</code> was cut Monday, before the merge — even though its own work has nothing to do with VAT calculation, skipping the pull-<code>main</code> step means whatever that branch currently has for the VAT logic (the pre-fix version, frozen from Monday) is what lands once its PR merges, silently undoing Tuesday's hotfix. It isn't about the hotfix "not reaching" the rest of the codebase — <code>main</code> already has it the moment the PR merges. It's about one specific class of branch, already open and forked before the fix landed, being able to overwrite it on its own way in.</p>
         </div>
       </section>
 
@@ -91,24 +122,31 @@
           <tr><td>Medium</td><td>Fix within current sprint</td><td>Batched into a future sprint</td></tr>
           <tr><td>Low</td><td>Next sprint or backlog</td><td>Batched</td></tr>
         </table></div>
-        <div class="caution"><p>A production defect is automatically escalated one severity level. Log a batched defect in the Support Log with a target sprint — it doesn't automatically show up in a future sprint's story list the way a UAT carry-forward story does.</p></div>
+        <div class="caution"><p>A production defect is automatically escalated one severity level — a bug that would have been Medium in UAT can be High once live. Check the escalated severity, not the pre-release one, before deciding whether it's a hotfix.</p></div>
+        <div class="prose"><p><strong>What "batched" actually means:</strong> a Medium/Low production defect isn't dropped just because it isn't urgent. Log it in the Support Log with a target sprint, the same discipline the Deferred Defect Process requires during UAT. It doesn't automatically show up in a future sprint's story list the way a UAT carry-forward story does, because it was never a story in the first place — when that target sprint is planned, the PO is responsible for pulling it in explicitly, typically through <code>/assess-change</code> if it needs real implementation work.</p></div>
       </section>
 
       <section class="block" id="support">
         <div class="block-label"><span class="dot"></span>Reference</div>
         <h2 class="block-title">Support's two end states</h2>
+        <div class="prose"><p>Stage 12 is entered once per project, after the final sprint's deployment, and runs for a monitoring window (default 30 days). The practical trigger for choosing between its two end states: is there a firm end date with no further paid engagement, or is the relationship ongoing?</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th></th><th>Closure</th><th>Retainer</th></tr>
           <tr><td>Trigger</td><td>Scope delivered, window elapses clean, no further agreement</td><td>Client wants ongoing work, new agreement in place</td></tr>
           <tr><td>What changes</td><td>Brief Status → <code>Complete</code></td><td>New/addendum brief; project stays Active</td></tr>
+          <tr><td>What gets produced</td><td>A formal closure document — what was delivered, open known issues, handover notes</td><td>No closure document; the normal stage cycle applies to whatever the retainer covers</td></tr>
         </table></div>
+        <div class="prose"><p>The decision isn't really a framework mechanic — it's a business-relationship fact you already know by the end of the monitoring window. A project that's functionally done but never gets its brief status set to Complete looks, to anyone reading the project registry later, like a project still in delivery.</p></div>
       </section>
 
       <section class="block">
         <div class="block-label"><span class="dot"></span>Terminology recap</div>
         <ul class="recaplist">
+          <li><b>Forward-looking learning</b><span>Information from this sprint that would change what a not-yet-built epic should have been told. Distinct from the retrospective, which corrects nothing on its own.</span></li>
+          <li><b>Release version vs. sprint number</b><span>A release is keyed by <code>v{version}</code>, decided when a deploy actually happens. A sprint closing doesn't by itself trigger one.</span></li>
           <li><b>Hotfix branch</b><span>Cut from <code>main</code> like any story branch. No persistent sprint-integration branch exists to merge into.</span></li>
           <li><b>Support Log</b><span>The running defect log for the monitoring period — where a batched production defect is tracked so it doesn't disappear.</span></li>
+          <li><b>Closure vs. Retainer</b><span>The two end states of Stage 12, distinguished by whether paid engagement continues, not by any technical condition.</span></li>
         </ul>
       </section>
 
@@ -117,11 +155,14 @@
           <summary>Common mistakes <span class="chev">▸</span></summary>
           <ul>
             <li>Treating the retrospective as if it already corrects stale scope — Step 8 and <code>/assess-change</code> are the actual path.</li>
+            <li>Letting a real forward-looking learning slide because "we'll catch it when we get to that epic" — nothing else re-checks it.</li>
+            <li>Flagging ordinary sprint-specific feedback as a Step 8 item, adding noise to a check meant for genuine scope corrections.</li>
             <li>Assuming one release note per sprint is the default.</li>
             <li>Running <code>/gen-release-notes</code> once and assuming it picked up an earlier batched sprint too.</li>
             <li>Looking for a sprint-integration branch that doesn't exist in this framework's git model.</li>
             <li>Assuming a hotfix "reaching" the codebase is the risk — it already has, the moment its PR merges. The risk is an older, already-open branch overwriting it.</li>
             <li>Not escalating a defect's severity when found in production.</li>
+            <li>Logging a batched production defect nowhere durable, letting it silently vanish before its target sprint.</li>
             <li>Leaving a project's brief Status at Active after the support window closes cleanly.</li>
           </ul>
         </details>
@@ -129,7 +170,11 @@
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">release-notes.example.md</span><p>Section 6 honestly records "Epics completed: 0 (partially delivered)" rather than rounding up. No real Hotfix or Stage 12 closure example exists in the repo — the walkthroughs above are this chapter's own construction, built to the same rigor.</p></div>
+        <div class="casecard"><span class="filechip">release-notes.example.md — Section 1 (What's New)</span><p>Groups by feature area, no story IDs, no table names, no API routes anywhere in the client-facing sections — the discipline this chapter's release-notes guidance is built around.</p></div>
+        <div class="casecard"><span class="filechip">Section 4 (Known Limitations)</span><p>Names what didn't ship — dunning reminders, payment collection — as real limitations with a planned epic, rather than silently omitting them.</p></div>
+        <div class="casecard"><span class="filechip">Section 5 (Deployment Notes)</span><p>A real, populated environment variable change (<code>INVOICE_NUMBER_PREFIX</code>) with an explicit required action — the level of specificity to hold every Deployment Notes section to, hotfix or ordinary release alike.</p></div>
+        <div class="casecard"><span class="filechip">Section 6 (Change Summary)</span><p>Honestly records "Epics completed: 0 (EPIC-002 and EPIC-003 partially delivered)" rather than rounding up — the same "don't invent, don't round up" discipline that matters even more once a release starts batching multiple sprints' partial delivery together.</p></div>
+        <div class="prose"><p>Harborview's own worked examples stop at Sprint 01, so there's no real Hotfix Cycle or Stage 12 closure example in the repo — the walkthrough and worked timeline above are this chapter's own construction, built to the same rigor, for exactly the gap Harborview's single-sprint example can't fill.</p></div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/10-release-support-hotfix.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

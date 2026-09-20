@@ -13,8 +13,7 @@
     <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
     <span class="wordmark-sub">Ascendra Framework</span>
     <ul class="navlist">
-      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
-      <li><a href="lifecycle-map.html"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
       <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
       <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
       <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
@@ -27,6 +26,12 @@
       <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
       <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
     </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
     <div class="navgroup-label">Case studies</div>
     <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
   </aside>
@@ -35,8 +40,8 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 7</div>
       <h1 class="title">Sprint Planning</h1>
-      <p class="dek">Stories are where the BRD's scope finally becomes something a developer can pick up without a follow-up question. Most of the risk in this phase is doing one command's job at the wrong point in the sequence, or trusting a number the framework hands you without a way to check it.</p>
-      <div class="chapter-links"><a href="../../.claude/commands/gen-stories.md"><code>/gen-stories</code></a>, <a href="../../.claude/commands/review-stories.md"><code>/review-stories</code></a>, <a href="../../.claude/commands/gen-sprint-plan.md"><code>/gen-sprint-plan</code></a>.</div>
+      <p class="dek">Stories are where the BRD's scope finally becomes something a developer can pick up without a follow-up question — the first Solution Domain artifact, gated on Locked architecture because a story's acceptance criteria have to be testable against something real. Three commands, three different jobs: <code>/gen-stories</code> proposes, <code>/review-stories</code> audits and sprint-assigns, <code>/gen-sprint-plan</code> turns the assignment into a kickoff document. As with epics, most of the risk here is doing one command's job at the wrong point in the sequence, or trusting a number the framework hands you without a way to check it. If that sounds abstract right now, keep reading — this chapter starts from zero.</p>
+      <div class="chapter-links"><a href="../../.claude/commands/gen-stories.md"><code>/gen-stories</code></a>, <a href="../../.claude/commands/review-stories.md"><code>/review-stories</code></a>, <a href="../../.claude/commands/gen-sprint-plan.md"><code>/gen-sprint-plan</code></a>. Uses Chapter 4's story-level interleaving mechanism as a given.</div>
 
       <nav class="jumpnav">
         <a href="#foundations">What a story is</a>
@@ -64,21 +69,34 @@
       <section class="block" id="estimation">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Choosing an estimation model</h2>
-        <div class="caution"><p><strong>Time-Based is disqualified in the normal case.</strong> Its own reference file says AI implementation speed doesn't map linearly to human hours — every project here has an AI implementer. The one exception: a contract that requires hour-denominated billing regardless of accuracy — treat hours as a complexity proxy, not a time prediction.</p></div>
-        <div class="rule-callout">Does this specific engagement already have a real Scrum velocity baseline? If yes, Fibonacci is viable. If no — the default state of every new project — choose T-Shirt.<span class="src">T-Shirt vs. Fibonacci, the real test</span></div>
+        <div class="prose"><p><code>/gen-stories</code> presents three options — T-Shirt Sizing, Fibonacci Story Points, Time-Based — as a menu with a one-line description each, and asks you to type a, b, or c. Read as a menu, all three look equally legitimate. Read the reference files themselves, and one of them almost always isn't.</p></div>
+
+        <h3 class="sub-title">Time-Based is disqualified in the normal case</h3>
+        <div class="caution">
+          <p>Its own reference file states this about itself: "not suited for projects where the implementer is an AI assistant — AI implementation speed does not map linearly to human hours, making hour-based capacity planning unreliable." Every project run through this framework has an AI implementer, so this isn't a caveat that applies to some projects — it disqualifies the model for the normal case before you even get to comparing it against the other two.</p>
+          <p><strong>The one legitimate exception:</strong> a client contract that requires hour-denominated billing or reporting regardless of accuracy — the same reference file names this directly ("client billing by hour, government contracts... clients who require hour estimates per story for approval"). If that's your situation, choose it, but hold the number the way the file itself instructs: treat hours as a complexity proxy, not a literal time prediction. You're not measuring how long the AI will take — you're producing a number the client's process requires.</p>
+        </div>
+
+        <h3 class="sub-title">T-Shirt vs. Fibonacci: the real test</h3>
+        <div class="rule-callout">Does this specific engagement already have a real Scrum velocity baseline — from a prior phase with this same client and team, or a client mandate that requires point-based reporting? If yes, Fibonacci is viable. If no — the default state of every new project — choose T-Shirt.<span class="src">The test</span></div>
+        <div class="prose"><p>Both reference files state their own fit conditions plainly. T-Shirt is "best suited for AI-assisted delivery where implementation scope drives sizing more than human effort hours" — its capacity model is PO review throughput (PRs and change-request cycles per sprint), the constraint that genuinely governs an AI-implemented, single-PO-reviewed project. Fibonacci is explicitly "not suited for first sprints with no velocity history" by its own admission — capacity planning degrades to guesswork exactly when every new engagement starts. That's why T-Shirt is the framework's actual recommended default, not a cosmetic preference: Fibonacci measures a quantity this framework's delivery shape doesn't produce until several sprints in.</p>
+        <p>One more thing worth being honest about: even when Fibonacci is the right call because a real baseline exists, that baseline was almost certainly built on a different team/tool/domain combination than this specific AI-assisted engagement. Expect the first sprint or two to be noisy even with "real" velocity history — a baseline transfers imperfectly across a change in implementer.</p></div>
       </section>
 
       <section class="block" id="wave">
         <div class="block-label"><span class="dot"></span>Using the real mechanism</div>
         <h2 class="block-title">The wave-vs-epic boundary</h2>
-        <div class="prose"><p>A wave is normally one epic — one <code>/gen-stories</code> run. It only legitimately grows larger than that when the pair of epics carries a documented interleaving note.</p></div>
+        <div class="prose"><p>A <strong>wave</strong> is the unit <code>/gen-stories</code> generates against in one run — normally one epic. It reads exactly one epic file, plans stories against exactly that epic's In Scope bullets, and reports on exactly that epic's story set. One command run, one wave, one epic — that's the default and it holds almost all the time.</p>
+        <p>It's legitimately more than one epic only when the pair carries a documented story-level interleaving note (Chapter 4). Once you've generated stories for an epic, the report tells you what to do next based on exactly that: if the epic carries an interleaving note with another epic, it says "generate stories for its paired epic now — their cross-epic dependencies mean they must be reviewed together." If it doesn't, it says review now. Until recently a PO had nothing to check that branch against except trusting the AI read the note correctly. Now you do.</p></div>
         <div class="rule-callout">Confirm the note names one specific story in the depended-on epic, not the whole epic. If it reads like a generic "these are related" gesture, push back before committing to paired generation.<span class="src">What to check at Step 8, before following either instruction</span></div>
+        <div class="prose"><p>Open <code>epics/index.md</code> Section 3 yourself and read the interleaving note for the pair. If it names one specific story that has to land before another specific story, "generate the paired epic first" is doing its job — reviewing the pair together lets the epic-level Dependency Chain Coherence check verify that link once both files exist. If the note is vague, that's the same failure mode Chapter 4 taught you to catch at the source: don't let a soft note push you into generating and reviewing two epics together when the real dependency resolves cleanly at the epic level and one wave, reviewed alone, would have been correct.</p></div>
       </section>
 
       <section class="block" id="split">
         <div class="block-label"><span class="dot"></span>Sprint Assignment — well-designed, with one real gap</div>
         <h2 class="block-title">The split-boundary heuristic</h2>
-        <div class="prose"><p>Capacity is sourced from <code>estimation.md</code>, not invented. Three branches — at/near target, below target, above target — each with a deterministic action. The one gap: "above target" gives you the decision but not the tool.</p></div>
+        <div class="prose"><p><code>/review-stories</code> Part F is the single best-designed mechanism in this phase. Capacity is sourced from <code>estimation.md</code>, not invented — the same file you set at the start. Three branches — at/near target, below target, above target — each have one deterministic action, not a vague "use judgment" instruction. Leftover stories are handled honestly: the "below target" branch surfaces the choice explicitly rather than silently rounding up or leaving a wave stranded.</p>
+        <p><strong>The one gap: "above target" gives you the decision but not the tool.</strong> When an epic alone exceeds capacity, Part F's exact prompt asks where the split should fall — a real question with no worked answer anywhere in the command file. The naive answer, "put the first 8–10 rows in the table into the sprint, carry the rest," is exactly the arbitrary cutoff the estimation references themselves warn against.</p></div>
         <div class="rule-callout">The split should fall where the epic's own intra-epic dependency order already shows a natural seam — everything before it one coherent, demoable action, everything after it a distinct next action — not at whatever story happens to be eighth or tenth in the table.<span class="src">The seam heuristic, scaled up from the estimation standard's own Split Triggers</span></div>
         <div class="gb-wrap">
           <div class="gb-card bad">
@@ -95,23 +113,26 @@
       </section>
 
       <section class="block" id="skeleton">
-        <div class="caution">
-          <div class="block-label"><span class="dot"></span>The check that actually enforces FW-048</div>
-          <p>A REQ can be correctly tagged, land in the right epic, and still produce a story that quietly depends on an untagged story. <code>/review-stories</code> check #7: for every <code>Walking Skeleton: Yes</code> story, every dependency — intra-epic or cross-epic — must itself be tagged. Not "practically fine" — a single non-tagged dependency is a finding, full stop.</p>
-        </div>
+        <div class="block-label"><span class="dot"></span>The check that actually enforces FW-048</div>
+        <h2 class="block-title">Walking Skeleton Independence</h2>
+        <div class="prose"><p>Every phase before this one has already done something with the Walking Skeleton: the BRD tagged the requirements that compose it (Chapter 3), epics carried the tag forward and got sequenced first (Chapter 4). None of that guarantees anything real on its own. A REQ can be correctly tagged, land in the right epic, and still produce a story that quietly depends on a story nobody tagged — and the moment that happens, the "thin, real, end-to-end path" stops being either thin or independently provable.</p></div>
+        <div class="caution"><p><code>/review-stories</code>' epic-level check #7 (Walking Skeleton Independence — distinct from per-story check #7, Out of Scope Integrity, a different numbering track entirely) is where this actually gets caught: for every <code>Walking Skeleton: Yes</code> story, every dependency — intra-epic or cross-epic — must itself be tagged. Not "practically fine" — a single non-tagged dependency is a finding, full stop, because it means the path you're about to build first secretly isn't buildable first.</p></div>
+        <div class="prose"><p><strong>Where you'll actually see this bite:</strong> a Walking Skeleton story that needs some supporting capability — an audit log entry, a notification, a lookup table — where the natural story to depend on wasn't itself part of the tagged chain. The fix is never to quietly accept the dependency; it's to ask whether that supporting capability genuinely belongs in the skeleton (tag it too, using Chapter 3's own test — does the journey still run end-to-end without it) or whether the Walking Skeleton story's own scope was drawn too wide.</p>
+        <p>Part F also carries a lighter, upstream half of this discipline: Walking Skeleton ordering into sprints isn't a separate decision Part F makes — it's inherited automatically from the epic build order, as long as epics are worked through in that order. The one thing worth watching for yourself: a request to jump ahead and review a later epic out of sequence can quietly displace Walking Skeleton stories from the sprint that's supposed to prove them first.</p></div>
       </section>
 
       <section class="block" id="sizing">
         <div class="block-label"><span class="dot"></span>Proactive, not just reactive</div>
         <h2 class="block-title">Story sizing before any file is generated</h2>
+        <div class="prose"><p>The story template's sizing rules aren't the gap — the AC-count proxy (3–10 ACs, XL must split) is checked consistently at generation, at review, and again at the sprint gate. The gap is that every one of those checks sits <em>after</em> the story breakdown is already fixed and files already exist. A story that's obviously going to come out L or XL gets caught once it's a real file with real ACs written against a scope boundary nobody questioned at the point where questioning it was cheapest.</p></div>
         <div class="rule-callout">Does the bullet describe a brand-new pattern for this codebase? Does it plausibly touch more than half a dozen files? Does it read as two or three things joined by "and"?<span class="src">Apply at the Step 4 planning table, not after review flags it</span></div>
-        <div class="prose"><p>Catching this at the table costs a slightly longer planning conversation. Catching it at <code>/review-stories</code> costs a Tier 3 fix on a story that already has ACs, an Out of Scope section, and dependencies written against the wrong boundary.</p></div>
+        <div class="prose"><p>You don't have ACs yet at the planning table to run the formal proxy, but you don't need them to catch the obvious cases — the same over-fat tell Chapter 3 taught you to catch in a REQ, one level down. If more than two stories in the planning table already look L or XL on this rough read, propose splitting them right there. Catching this at the table costs a slightly longer planning conversation. Catching it at <code>/review-stories</code> costs a Tier 3 fix on a story that already has ACs, an Out of Scope section, and dependencies written against the wrong boundary.</p></div>
       </section>
 
       <section class="block" id="terms">
         <div class="block-label"><span class="dot"></span>Full working depth</div>
         <h2 class="block-title">Wave vs. Sprint vs. Epic</h2>
-        <div class="prose"><p><strong>Epic</strong> — fixed scope, decided once at approval. <strong>Wave</strong> — a unit of story generation, decided at <code>/gen-stories</code> time. <strong>Sprint</strong> — a unit of delivery cadence, decided later, purely from real story count vs. capacity. A wave and a sprint are not the same size and are not decided at the same time.</p></div>
+        <div class="prose"><p><strong>Epic</strong> — fixed scope, decided once at approval. <strong>Wave</strong> — a unit of story generation, decided at <code>/gen-stories</code> time. <strong>Sprint</strong> — a unit of delivery cadence, decided later, purely from real story count vs. capacity. A wave and a sprint are not the same size and are not decided at the same time — nothing forces the two numbers to align, and in a real project they usually won't.</p></div>
         <div class="tblwrap"><table class="dtable">
           <tr><th>Step</th><th>What happens</th><th>Wave</th><th>Sprint</th></tr>
           <tr><td>1</td><td><code>/gen-stories</code> on EPIC-003 — 6 stories</td><td>Wave A</td><td>—</td></tr>
@@ -123,20 +144,31 @@
           <tr><td>7</td><td><code>/gen-stories</code> on EPIC-006 — 4 stories</td><td>Wave D</td><td>—</td></tr>
           <tr><td>8</td><td>Review: 4, below target. PO folds in Wave C's leftover 6</td><td>—</td><td>Sprint 03 = 6 (Wave C tail) + 4 (Wave D)</td></tr>
         </table></div>
-        <div class="prose"><p>Two divergent cases both show up here: one sprint absorbing two full waves (row 4), and one wave splitting across two sprints with the second sprint also absorbing a fresh wave (rows 6–8). Neither is a special case — it's Part F's three branches doing exactly what they're designed to do.</p></div>
+        <div class="prose"><p>Two divergent cases both show up here: one sprint absorbing two full waves (row 4), and one wave splitting across two sprints with the second sprint also absorbing a fresh wave (rows 6–8). Neither is a special case — it's Part F's three branches doing exactly what they're designed to do. The only discipline required of you is not assuming, walking into <code>/review-stories</code>, that "this epic" and "this sprint" mean the same thing — they don't, until Part F actually says so.</p></div>
       </section>
 
       <section class="block" id="tiebreak">
         <div class="block-label"><span class="dot"></span>Worked, two personas, one capability</div>
         <h2 class="block-title">The tie-break rule</h2>
         <div class="rule-callout">If two personas need the same capability, check whether the permission model actually distinguishes them — if not, pick the lower-privilege role.<span class="src">story.template.md §1</span></div>
-        <div class="prose"><p>A "view an approved invoice's detail" screen (no Payer contact info) — both Finance Manager and Director genuinely need it, and the permission model doesn't distinguish them on this specific, narrowed scope. Written from the Director's side (the narrower role) forces the ACs to be built against the more restrictive permission set from the start, so a broader role is never the one implicitly excluded.</p></div>
+        <div class="prose"><p>None of Harborview's three worked story examples ever exercises this rule — each has exactly one persona with no ambiguity about who else might want the same thing. Here's a hypothetical grounded in Harborview's real roles, clearly labeled as invented for this purpose.</p>
+        <p>Harborview's BRD defines Finance Manager (create, edit, void invoices; full data visibility including Payer contact details) and Director (approve or reject; view-only; Payer contact details explicitly not visible). Hypothetical story: "view an approved invoice's detail" — reference number, line items, totals, approval decision, approver name, with no Payer contact information anywhere on the screen. Both roles genuinely need it: a Director to confirm what they approved, a Finance Manager to confirm approval status before sending.</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>1. Do both personas need the same capability?</h4><p>Yes — the same screen, the same fields, for both roles.</p></div>
+          <div class="distcard"><h4>2. Does the permission model distinguish them here?</h4><p>Check the data-visibility lines, don't assume. Director's restriction only bites if Payer contact details are shown — and this screen's scope deliberately excludes them. Scoped that way, nothing differentiates who can see it. The permission model does not distinguish them on this specific capability.</p></div>
+          <div class="distcard"><h4>3. Pick the lower-privilege role</h4><p>Director is the narrower role overall — view and approve/reject only, no create, edit, void, or Payer-management authority. Write the story from the Director's side.</p></div>
+        </div>
+        <div class="prose">
+          <p><strong>Why this is the correct call, not an arbitrary one:</strong> writing the story for the broader role risks a developer implicitly gating the screen to that persona alone, since that's who's named in the ACs — silently locking the narrower role out of a capability they equally need. Writing it for the narrower role forces the acceptance criteria to be built against the more restrictive permission set from the start; the broader role, whose permissions are a superset for everything this screen touches, is never the one who ends up implicitly excluded.</p>
+          <p>If a later story needs to add something the narrower role genuinely can't see, that's a signal the capability has actually diverged and deserves a second story — not a reason to abandon the shared one.</p>
+        </div>
       </section>
 
       <section class="block">
         <div class="block-label"><span class="dot"></span>Terminology recap</div>
         <ul class="recaplist">
-          <li><b>Sprint Assignment (Part F)</b><span>The three-branch mechanism that actually decides sprint boundaries. Nothing upstream commits to a sprint number.</span></li>
+          <li><b>Story-level interleaving note</b><span>Defined in Chapter 4; this chapter shows what to check with it at <code>/gen-stories</code> Step 8, not what it is.</span></li>
+          <li><b>Sprint Assignment (Part F)</b><span>The three-branch mechanism that actually decides sprint boundaries. Nothing upstream — not the epic, not the wave, not <code>stories/index.md</code>'s <code>TBD</code> placeholder — commits to a sprint number.</span></li>
         </ul>
       </section>
 
@@ -158,7 +190,12 @@
 
       <section class="block" id="harborview">
         <div class="block-label"><span class="dot"></span>Harborview in practice</div>
-        <div class="casecard"><span class="filechip">story.example.md</span><p>Three shapes: US-01-005 (backend, a Notes-section constraint with no business being an AC), US-01-002 (UI, Out of Scope naming the covering story for everything excluded), US-01-012 (Stripe webhook, all four AC categories in one story). All three are <code>Walking Skeleton: Yes</code>, and their own dependencies are entirely within the same tagged chain — a clean pass of check #7.</p></div>
+        <div class="prose"><p><code>story.example.md</code>'s three worked stories are the model for density and structure in this phase, each a different shape.</p></div>
+        <div class="casecard"><span class="filechip">US-01-005 — Generate invoice reference number</span><p>Backend logic, Size S. Its Notes section carries a real non-obvious constraint (single global database sequence, transaction-wrapped, gaps acceptable but year-boundary resets are not) that has no business being in an acceptance criterion.</p></div>
+        <div class="casecard"><span class="filechip">US-01-002 — Create invoice form</span><p>UI, Size M. Its Out of Scope section correctly names the covering story for every excluded capability rather than gesturing at "handled later."</p></div>
+        <div class="casecard"><span class="filechip">US-01-012 — Stripe webhook payment confirmation</span><p>Integration, Size M. Its ACs cover all four required categories in one story: happy path, boundary/rejection (partial payment), enforcement/idempotency (duplicate event), and audit (the audit log entry) — worth reading end to end as the reference instance of AC category coverage.</p></div>
+        <div class="prose"><p>All three are <code>Walking Skeleton: Yes</code> — they satisfy REQ-008, REQ-006, and REQ-014/REQ-015, exactly the requirements tagged as part of Harborview's Walking Skeleton journey. US-01-012 depends on US-01-001 (invoice schema) and US-01-008 (invoice sending) — both load-bearing pieces of that same chain, nothing borrowed from outside it, which is exactly what a passing instance of Walking Skeleton Independence looks like.</p></div>
+        <div class="casecard"><span class="filechip">sprint-plan.example.md</span><p>Worth reading for its Story Board and Delivery Sequence — six stories sequenced by technical dependency (schema before form, reference-number generation before the detail page that displays it) rather than by index order — and for a Sprint Notes entry showing the kind of pre-sprint operational note (seed data needed before a story is reviewable) that belongs there, not invented as an acceptance criterion.</p></div>
       </section>
 
       <footer class="pagefoot">Adapted from <code>practitioner-guide/07-sprint-planning.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>

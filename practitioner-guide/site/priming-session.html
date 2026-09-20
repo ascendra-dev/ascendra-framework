@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priming Session — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">00</span> Orientation</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Utilities</div>
+    <ul class="navlist">
+      <li><a href="lifecycle-map.html">Lifecycle Map</a></li>
+      <li><a href="priming-session.html" class="active">Priming Session</a></li>
+      <li><a href="priming-code-session.html">Priming Code Session</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">No stage — Problem Domain only</div>
+      <h1 class="title">Priming Session</h1>
+      <p class="dek">Every real discovery session starts from a blank page unless something fills it first. <code>/run-priming-session</code> is that fill — a free-form, optional, repeatable conversation, with or without raw material dropped into <code>source-material/</code>, that materializes whatever facts already exist into one file before formal discovery ever starts. Nothing in it counts as confirmed; it's a head start, not a shortcut. If that distinction feels thin right now, keep reading — this chapter starts from zero.</p>
+      <div class="chapter-links"><a href="../../.claude/commands/run-priming-session.md"><code>/run-priming-session</code></a>. Runs right after <code>/init-project</code>, before <a href="01-intake.html">Intake</a> begins.</div>
+
+      <nav class="jumpnav">
+        <a href="#foundations">What it's for</a>
+        <a href="#twoways">Two ways in</a>
+        <a href="#density">Question density</a>
+        <a href="#outofscope">Out of scope: asking vs. noticing</a>
+        <a href="#conflict">Conflicting Source</a>
+        <a href="#legacy">Legacy material flags</a>
+        <a href="#writing">Density check before writing</a>
+        <a href="#mistakes">Common mistakes</a>
+        <a href="#harborview">Harborview in practice</a>
+      </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What this session is for</h2>
+        <div class="prose">
+          <p><strong>What does it produce?</strong> One file, <code>priming/priming-package.md</code>, that <code>/run-intake</code>, <code>/run-domain-discovery</code>, and <code>/run-brd-discovery</code> all read as a head start when it exists. None of them require it, and none of them treat anything in it as confirmed — a priming package is provisional by design, re-confirmed for real once the actual discovery session reaches each topic.</p>
+          <p><strong>Why isn't this just an informal discovery session?</strong> Because a rigid script forces structure onto raw, half-formed material before it's ready for one. There's no playbook, no fixed question order, and no requirement to cover everything here — priming exists to materialize facts cheaply, in whatever order they arrive, so the real sessions start from something instead of nothing.</p>
+          <p><strong>Where does its content come from?</strong> Whatever the PO drops into <code>source-material/</code>, whatever comes up in free-form conversation, or both. Scoped to Problem Domain only — Brief, Domain, and BRD material — nothing here touches architecture or later stages.</p>
+        </div>
+      </section>
+
+      <section class="block" id="twoways">
+        <div class="block-label"><span class="dot"></span>Process decision</div>
+        <h2 class="block-title">Two ways in, and when to use which</h2>
+        <div class="prose"><p>The session opens with one question: files, conversation, or both? The answer branches into two genuinely different halves.</p></div>
+        <div class="distgrid">
+          <div class="distcard"><h4>Triaging dropped material</h4><p>A three-pass pipeline — Map (skim, build an outline), Triage (mark each unit relevant/redundant/irrelevant/ambiguous, checking for disagreement, not just redundancy), Extract (deep-read only what survived, compressed, never a verbatim transcription).</p></div>
+          <div class="distcard"><h4>The live conversation</h4><p>No script, no fixed order. The PO raises whatever they want; the job is to listen for what maps onto the priming package's sections, not march through a checklist out loud.</p></div>
+        </div>
+        <div class="rule-callout">If both files and conversation exist, triage the files first. It's cheaper to ask about genuine gaps once you know what the files already answered.<span class="src">Step 4's branch</span></div>
+      </section>
+
+      <section class="block" id="density">
+        <div class="block-label"><span class="dot"></span>Compression, not simplification</div>
+        <h2 class="block-title">Question density</h2>
+        <div class="prose"><p>The PO is not a layman being onboarded — use domain terms and their own vocabulary freely.</p></div>
+        <div class="gb-wrap">
+          <div class="gb-card good">
+            <div class="gb-head">✓ Correct</div>
+            <div class="gb-quote">"Who signs off on the expensive invoices — anyone in particular, or any one of a group?"</div>
+          </div>
+          <div class="gb-card bad">
+            <div class="gb-head">✗ Incorrect</div>
+            <div class="gb-quote">"I'd like to understand your organization's approval workflow in more detail — could you walk me through, in as much detail as you're comfortable with, exactly who is involved..."</div>
+          </div>
+        </div>
+        <div class="prose">
+          <p><strong>Bounded question loops.</strong> Ask up to roughly three short questions on one topic. If it's still not resolving, stop asking and state a short draft instead: "sounds like — any one of the three directors can approve, no specific order — right?" Correcting a draft costs the PO less than continuing to answer questions, and it closes topics that would otherwise stall the whole session.</p>
+          <p><strong>100% coverage is never the goal.</strong> If a topic genuinely doesn't come up, leave it Pending and move on — don't manufacture a question for every empty section just to fill it. A short, honest session that leaves real gaps clearly marked beats a long one padded out to look complete.</p>
+        </div>
+      </section>
+
+      <section class="block" id="outofscope">
+        <div class="block-label"><span class="dot"></span>The one rule worth its own section</div>
+        <h2 class="block-title">"Out of scope" governs asking, not noticing</h2>
+        <div class="prose"><p>Anything already Approved or Locked in a real artifact is out of scope for this session's own questions — don't re-ask about it. But that's a rule about what you go looking for, not about what you do when something surfaces anyway.</p></div>
+        <div class="rule-callout">A genuine new fact that touches an already-settled topic still gets recorded — into Section 9 (Open/Uncategorized), naming the affected artifact and its status, not silently dropped because the topic is "out of scope."<span class="src">Otherwise a fact that should trigger /assess-change never reaches anyone</span></div>
+      </section>
+
+      <section class="block" id="conflict">
+        <div class="block-label"><span class="dot"></span>A real, worked case</div>
+        <h2 class="block-title">Handling disagreement: the Conflicting Source flag</h2>
+        <div class="prose"><p>When a unit disagrees with something already captured — two places in one file, two files, or a file against something already said — never silently pick a side. Write both statements in full, each attributed to its origin, and tag the flag <code>Conflicting Source</code>. If the PO is live when it surfaces, ask directly, right then — cheaper resolution than deferring to a flag.</p></div>
+        <div class="casecard">
+          <span class="filechip">priming-package.example.md — Section 5</span>
+          <p>James stated, live, that VAT is "20%, always, no exceptions I can think of." But <code>old-invoice-tracker.xlsx</code>, one of the files he dropped in, shows a real historical invoice — <code>INV-2025-000412</code> — at a 0% VAT line item. Nobody asked James about that specific invoice, and the spreadsheet gives no reason. The session recorded both statements, flagged <code>Conflicting Source</code>, and left it for <code>/run-domain-discovery</code> to resolve directly.</p>
+        </div>
+      </section>
+
+      <section class="block" id="legacy">
+        <div class="block-label"><span class="dot"></span>Two flags, two postures</div>
+        <h2 class="block-title">Legacy material: correction vs. question</h2>
+        <div class="distgrid">
+          <div class="distcard"><h4><code>AI Knowledge Correction</code></h4><p>The material diverges from generic domain understanding for a real, stated business reason. Carry it forward as a genuine fact about this client.</p></div>
+          <div class="distcard"><h4><code>Legacy Design Question</code></h4><p>It diverges and looks like a design flaw, not a real constraint. Don't carry it forward as fact — frame it as a negotiation and raise it with the PO directly.</p></div>
+        </div>
+        <div class="casecard">
+          <span class="filechip">priming-package.example.md — Section 5</span>
+          <p>James: "we use Stripe for basically everything else already, would make sense to use it here too." Not a generic domain default (some payment processor) — a stated preference, flagged <code>AI Knowledge Correction</code> precisely because a different client in the same domain might have said something else entirely.</p>
+        </div>
+      </section>
+
+      <section class="block" id="writing">
+        <div class="caution">
+          <div class="block-label"><span class="dot"></span>Before you write anything</div>
+          <p><strong>Density check:</strong> every entry should read like a discovery-state file's "PO stated" line — one to three sentences. If an entry reads like it belongs in the actual BRD or domain knowledge document, it's too dense — compress it back down. This is the same discipline Chapter 3 taught you for a REQ, applied one phase earlier at a lower bar: a priming package entry is provisional, and writing it at final-artifact density overstates how settled it actually is.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-label"><span class="dot"></span>Terminology recap</div>
+        <ul class="recaplist">
+          <li><b>Covered / Partial / Pending</b><span>A priming topic's status values. Partial surfaces as an informed live question later — never silently treated as complete.</span></li>
+          <li><b>Section 9 vs. Section 10</b><span>Section 9 holds genuine one-off leftovers. Section 10 is reserved for a whole expected category of fact from a different extraction mechanic — this command owns no subsection there at all.</span></li>
+          <li><b>No Ubiquitous Language yet</b><span>Capture the PO's own terms as used. If a concept gets two names, flag it in Section 7 — resolving it is domain discovery's job, later.</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="mistakes">
+        <details class="mistakes">
+          <summary>Common mistakes <span class="chev">▸</span></summary>
+          <ul>
+            <li>Re-asking about a topic that's already Approved or Locked, instead of checking first.</li>
+            <li>Silently dropping a genuine new fact because it touches an already-settled topic, instead of routing it to Section 9.</li>
+            <li>Picking a side on a Conflicting Source disagreement instead of recording both statements with their origins.</li>
+            <li>Carrying forward a legacy quirk as a universal domain fact, without checking whether it's a real constraint or a design flaw.</li>
+            <li>Writing a priming entry at BRD or domain-document density instead of a one-to-three-sentence line.</li>
+            <li>Manufacturing a question for every empty section to look complete, instead of leaving a genuine gap Pending.</li>
+            <li>Treating a rushed "yes, that's right" the same as a real, reasoned answer.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="block" id="harborview">
+        <div class="block-label"><span class="dot"></span>Harborview in practice</div>
+        <div class="prose"><p><code>priming-package.example.md</code> is a real, deliberately partial session — James dropped a rambling voice-note transcript and two old Excel sheets right after <code>/init-project</code>, before any formal discovery ran.</p></div>
+        <div class="casecard"><span class="filechip">Section 4 (Brief Material)</span><p>The Partial/Covered mix in practice — Key Stakeholders is Partial because only one director's name (Sarah Chen) came up, not all three; Technology Preferences is Pending because James had no opinion yet.</p></div>
+        <div class="casecard"><span class="filechip">Section 9 (Open/Uncategorized) — PU-001</span><p>James mentioning, in passing, that Harborview might adopt accounting software "next year, not sure which one." Too vague for a real fact at the time. This is what became Chapter 3's REQ-022 (Xero export) once real discovery confirmed it — the clearest evidence in this guide that priming's job is to materialize a lead, not settle it.</p></div>
+        <div class="casecard"><span class="filechip">Section 11 (Resume Instructions)</span><p>What an honest, unfinished handoff looks like — five Pending topics named explicitly, so the real discovery sessions that followed picked up exactly where this one left off.</p></div>
+      </section>
+
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/priming-session.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>
