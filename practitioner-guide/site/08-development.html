@@ -84,7 +84,7 @@
       <section class="block" id="recovery">
         <div class="block-label"><span class="dot"></span>The asymmetric recovery loop</div>
         <div class="distgrid">
-          <div class="distcard"><h4>Implementation failure</h4><p>Clear, bounded: two attempts, then stop and report exactly what failed and why. You always know where you stand.</p></div>
+          <div class="distcard"><h4>Implementation failure</h4><p>Clear and bounded: two attempts, then it stops and reports exactly what failed and why. You always know where you stand.</p></div>
           <div class="distcard"><h4>Verification failure</h4><p>No stated procedure. The instinct to re-run <code>/implement-story</code> is wrong — it hits the <code>In Progress</code> gate and refuses.</p></div>
         </div>
         <div class="prose"><p><strong>The actual recovery path:</strong> fix directly on the same story branch, re-run lint/build/test, commit, then re-run <code>/verify-story</code>.</p></div>
@@ -135,7 +135,7 @@
         <div class="casecard"><span class="filechip">pr-description.example.md — US-01-001</span><p>Shows the template's own N/A instruction already in honest practice: both hardcoded checklist items ticked with "— N/A (migration only)" / "— N/A (backend-only PR)."</p></div>
       </section>
 
-      <footer class="pagefoot">Renders <code>practitioner-guide/08-development.md</code>. Source markdown unchanged.</footer>
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/08-development.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
     </div>
   </main>
 </div>

@@ -27,6 +27,10 @@ This guide's first full pass across all twelve SDLC stages is now complete — e
 
 - [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the judgment calls the framework's own running example (Harborview) never exercises: a regulated/niche domain, an extension project, multi-portal RBAC. Not closed off — more cases (a complex architecture review, a genuinely contentious `/review-brd` session) get added here as they're found worth writing up.
 
+## The HTML site (`site/`)
+
+`practitioner-guide/site/` is a hand-authored HTML rendering of these chapters for human reading, kept in sync manually — there is no build step or generator. See [`site/README.md`](site/README.md) before adding or updating a page: the shared shell structure, the CSS class vocabulary, relative-path rules, and a link-check snippet to run before calling a change done.
+
 ## How each chapter is structured
 
 Every phase chapter follows the same shape, so once you know one you know them all: **purpose** (why this stage exists) → **decision heuristics** (a real test for every fork the audit found under-specified, not vague advice) → **information-density guidance** (how much to write, with a good/bad worked example) → **downstream impact** (what breaks later if you get it wrong) → **terminology recap** (links back to the orientation map rather than repeating it) → **common mistakes** → **Harborview in practice** (a short pointer into the real worked example, not a duplicate of it).

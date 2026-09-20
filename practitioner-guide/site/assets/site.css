@@ -1,7 +1,8 @@
 /* Practitioner's Guide — shared site styles
-   Renders practitioner-guide/*.md for human reading. Source markdown is the
-   only authored copy; this is a presentation layer over it, regenerated
-   when a chapter changes, never hand-patched independently of the source. */
+   An editorial adaptation of practitioner-guide/*.md for human reading, not a
+   literal render — same facts and structure, independently-written plainer
+   prose (the markdown stays dense on purpose, for /judgment-check to parse).
+   See site/README.md for the full authoring convention. */
 
 :root{
   --paper:#f4f5f3; --surface:#ffffff; --surface-2:#ececea; --border:#dcdcd6;
@@ -191,6 +192,12 @@ details.mistakes li{margin-bottom:6px;}
 .status-pill{font-family:"IBM Plex Mono",monospace; font-size:0.66rem; padding:2px 8px; border-radius:999px; background:var(--good-soft); color:var(--good); font-weight:700;}
 
 footer.pagefoot{max-width:66ch; margin:60px auto 0; padding-top:20px; border-top:1px solid var(--border); font-size:0.78rem; color:var(--ink-muted);}
+
+/* inline SVG mechanism diagrams */
+figure.diagram{margin:22px 0; padding:18px 18px 14px; background:var(--surface); border:1px solid var(--border); border-radius:12px;}
+figure.diagram svg{display:block; max-width:100%; height:auto; color:var(--ink-muted);}
+figure.diagram svg .accent{color:var(--accent);}
+figure.diagram figcaption{margin-top:10px; font-size:0.8rem; color:var(--ink-muted); text-align:center;}
 
 /* stage map (lifecycle-map page) */
 .regionband{

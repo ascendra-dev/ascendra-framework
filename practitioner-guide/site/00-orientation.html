@@ -47,7 +47,9 @@
       </nav>
 
       <div class="prose">
-        <p>Every finding referenced in this guide was verified against the actual command and template files as they exist today, not assumed — the research that produced it surfaced 14 framework defects, all fixed before it was written. Two ways to run everything it teaches: typing each command directly (the default assumption throughout), or via <code>/anchor-project</code>, which invokes the same commands and follows their instructions exactly — it changes the interaction around them, not the commands themselves. A third command, <a href="../../.claude/commands/run-priming-session.md"><code>/run-priming-session</code></a>, is a free-form session that materializes facts into a priming package before formal discovery starts. A fourth, <a href="../../.claude/commands/judgment-check.md"><code>/judgment-check</code></a>, runs underneath every phase chapter without a section of its own — see <a href="11-cross-cutting.html">Cross-Cutting</a> for full coverage.</p>
+        <p>Every finding in this guide was checked against the real command and template files as they exist today — nothing here was assumed. The research behind it actually surfaced 14 framework defects, and all of them were fixed before this guide was written.</p>
+        <p>There are two ways to run everything it teaches. The default assumption throughout is that you type each command yourself. The other way is <code>/anchor-project</code>, which invokes those same commands and follows their instructions exactly as written — it changes the conversation around them, not the commands themselves.</p>
+        <p>Two more commands are worth knowing before you start. <a href="../../.claude/commands/run-priming-session.md"><code>/run-priming-session</code></a> is a free-form session that turns whatever material you already have into a priming package before formal discovery even starts. <a href="../../.claude/commands/judgment-check.md"><code>/judgment-check</code></a> runs quietly underneath every phase chapter below — it doesn't get a section of its own here, but <a href="11-cross-cutting.html">Cross-Cutting</a> covers it in full.</p>
       </div>
 
       <section class="block" id="running-example">
@@ -55,7 +57,7 @@
         <h2 class="block-title">Harborview</h2>
         <div class="prose">
           <p>Every <code>.example.md</code> file in <code>projects/TEMPLATE/</code> — all seventeen of them — traces the same fictional project: <strong>Harborview Consulting Ltd, Invoice Management System</strong>. This guide leans on it constantly, by direct reference to the real files, so what you read here and what you find on disk always agree.</p>
-          <p>Harborview is deliberately the <strong>easy case</strong> — one client, one familiar domain, no contradictions, no regulatory complexity. Exactly why it's a good teaching example for the normal path, and exactly why it can't teach the harder calls.</p>
+          <p>Harborview is deliberately the <strong>easy case</strong> — one client, one familiar domain, no contradictions, no regulatory complexity. That's exactly what makes it a good teaching example for the normal path, and exactly why it can't teach you the harder judgment calls.</p>
         </div>
         <div class="casecard">
           <span class="filechip">case-studies/harder-cases.md</span>
@@ -67,7 +69,7 @@
         <div class="block-label"><span class="dot"></span>Terminology map</div>
         <h2 class="block-title">Four things that sound related and aren't</h2>
         <div class="prose">
-          <p>Confusing them is easy and the cost is real — you can approve a BRD that's internally consistent under one reading and contradictory under another. Learn this before you touch a real project.</p>
+          <p>Confusing them is easy, and the cost is real: you can end up approving a BRD that reads as internally consistent under one interpretation and contradictory under another. Learn this table before you touch a real project — you'll come back to it more than once.</p>
         </div>
       </section>
 
@@ -108,22 +110,22 @@
         <div class="distgrid">
           <div class="distcard">
             <h4>Content Status vs. Status</h4>
-            <p>Status = the whole project's lifecycle, set once. Content Status = one document's own readiness — the field every gate actually checks. Unique to <code>brief.md</code>; every other gated artifact uses one field for both.</p>
+            <p>Status tracks the whole project's lifecycle, and it's set once and rarely touched again. Content Status tracks one document's own readiness — this is the field every gate actually checks. It's unique to <code>brief.md</code>; every other gated artifact uses a single field for both jobs.</p>
             <a class="goto" href="01-intake.html">→ Intake</a>
           </div>
           <div class="distcard">
             <h4>Wave vs. Sprint vs. Epic</h4>
-            <p>A wave is what <code>/gen-stories</code> generates against (usually one epic). A sprint is a delivery-cadence unit decided later, purely from story count vs. capacity. One wave ≠ one sprint.</p>
+            <p>A wave is what <code>/gen-stories</code> generates against — usually one epic. A sprint is a delivery-cadence unit decided later, based purely on story count versus capacity. A wave and a sprint are not the same thing.</p>
             <a class="goto" href="07-sprint-planning.html">→ Sprint Planning</a>
           </div>
           <div class="distcard">
             <h4>Portal vs. Screen vs. Surface vs. Pattern</h4>
-            <p>Portal = a nav shell. Screen = one Inventory row, full weight regardless of size. Surface = container (Page/Dialog/Sheet/Drawer). Pattern = internal content shape — independent of Surface.</p>
+            <p>A Portal is a navigation shell. A Screen is one Inventory row, full weight regardless of size. A Surface is its container — Page, Dialog, Sheet, Drawer. A Pattern is its internal content shape, independent of Surface.</p>
             <a class="goto" href="05-screen-design.html">→ Screen Design</a>
           </div>
           <div class="distcard">
             <h4>Core/Extension architecture</h4>
-            <p>Layer is a label on <em>one requirement inside one project</em>. Core/Extension is how a whole <em>separate future project</em> plugs into this one. They share vocabulary, not meaning.</p>
+            <p>Layer is a label on one requirement inside one project. Core/Extension is how a whole separate future project plugs into this one. They share vocabulary, but not meaning.</p>
             <a class="goto" href="06-architecture.html">→ Architecture</a>
           </div>
         </div>
@@ -132,7 +134,7 @@
       <section class="block" id="scores">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>A pattern to watch for across every phase</div>
-          <p><strong>Scores and thresholds you can't reproduce.</strong> Domain Discovery and BRD Discovery both hand you a percentage against a fixed gate (70%, 85%) — but the formula isn't fully specified anywhere, so you can't independently check a number you're handed. Treat any confidence score as a rough signal: read the section it claims is weak yourself, and raise your personal bar above the stated threshold whenever the domain is regulated, unfamiliar, or a wrong assumption costs more than a sprint to unwind. A 70% pass on a niche compliance domain is not the same confidence as a 70% pass on an internal expense tool, even though the gate treats them identically.</p>
+          <p><strong>Scores and thresholds you can't reproduce.</strong> Domain Discovery and BRD Discovery both hand you a percentage against a fixed gate — 70%, 85%. The formula behind either number isn't fully specified anywhere, so there's no way to independently check whether a score you're handed is actually right. Treat any confidence score as a rough signal, not a certified measurement: read the section it claims is weak yourself before trusting the number, and raise your own bar above the stated threshold whenever the domain is regulated, unfamiliar, or a wrong assumption would cost more than a sprint to unwind. A 70% pass on a niche compliance domain isn't the same confidence as a 70% pass on an internal expense tool, even though the gate treats them identically.</p>
         </div>
       </section>
 
@@ -146,7 +148,7 @@
         </ul>
       </section>
 
-      <footer class="pagefoot">Renders <code>practitioner-guide/00-orientation.md</code>. Source markdown unchanged — this page is a regenerated view of it, not a second authored copy.</footer>
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/00-orientation.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
     </div>
   </main>
 </div>

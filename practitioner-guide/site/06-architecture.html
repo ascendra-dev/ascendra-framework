@@ -70,21 +70,21 @@
       <section class="block" id="actor">
         <div class="block-label"><span class="dot"></span>A schema decision disguised as one bullet</div>
         <h2 class="block-title">Actor Identity Shape</h2>
-        <div class="prose"><p>Step 4 derives five things together and asks four explicit questions in the same breath — Actor Identity Shape is the fifth derivation, easy to read past as background. What's actually decided: whether every audit column (who created/updated/deleted a row) is a clickable foreign key, or a plain name string.</p></div>
-        <div class="caution"><p><strong>A single foreign key can't point at three different kinds of actor</strong> — an authenticated Staff member, an unauthenticated tokenized-link customer, and a scheduled job each need their own identity space. Getting this wrong isn't caught by any later check — it's a migration touching every Master table in the schema, project-wide, at once. Stop on this line separately from the four questions below it.</p></div>
+        <div class="prose"><p>Step 4 derives five things together and asks four explicit questions in the same breath — Actor Identity Shape is the fifth derivation, and it's easy to read past as background noise. What's actually being decided is simple to picture even if the name isn't: every record in the system has a "created by" or "updated by" field. Should that field link to a real, clickable account — the way clicking a commit author takes you to their profile — or should it just store a name as plain text?</p></div>
+        <div class="caution"><p><strong>A single link-style field can't point at three different kinds of actor at once.</strong> An authenticated staff member, a customer who only ever clicks a one-time emailed link (never logs in, never gets an account), and a scheduled background job all need to show up in that "created by" field — but only one of them has an account to link to. Getting this wrong isn't caught by any later check. It's a migration touching every table in the schema that tracks who-did-what, project-wide, all at once. Stop on this line separately from the four questions below it — it deserves its own moment of attention, not a nod on the way past.</p></div>
       </section>
 
       <section class="block" id="deviation">
         <div class="block-label"><span class="dot"></span>What Section 9 structurally cannot catch</div>
         <h2 class="block-title">Deviation detection's blind spot</h2>
-        <div class="prose"><p>Section 9 flags anything that differs from <code>system-architecture.md</code> — but Step 5's twelve-row tech-stack table <em>is</em> that file the moment you confirm it. If a row is wrong and you approve it anyway, there's nothing to compare it against; the wrong choice and the baseline are the same document.</p></div>
+        <div class="prose"><p>Section 9 flags anything that differs from <code>system-architecture.md</code> — but Step 5's twelve-row tech-stack table <em>is</em> that file, the moment you confirm it. Picture it this way: if you approve the wrong database choice at Step 5, Section 9 can never catch it later, because Section 9 only flags drift <em>away from</em> the baseline — and the baseline itself is whatever you just approved. There's nothing else to compare it against. The wrong choice and the yardstick are the same document.</p></div>
         <div class="rule-callout">If you're not sure why a row was recommended, ask "why this and not X" before you confirm, not after.<span class="src">The only real guardrail</span></div>
       </section>
 
       <section class="block" id="composable">
         <div class="block-label"><span class="dot"></span>A silent fork off BRD wording</div>
         <h2 class="block-title">Composable capability detection</h2>
-        <div class="prose"><p>Section 6.1 scans for phrases like "independently assignable" and, if matched, switches the entire JWT payload shape and every downstream guard — decided once, silently, by pattern-matching, surfacing only as already-settled fact when Concern D frames it. Check it against your own memory of how the client actually described permissions; reversing this after stories are written means rewriting every guard.</p></div>
+        <div class="prose"><p>Here's the concrete question hiding behind the jargon: can someone be handed the single permission "approve invoices" without also being made a full Director — or does every permission only ever come bundled into a fixed role like Director, Finance Manager, Staff? Section 6.1 answers this by scanning the BRD for phrases like "independently assignable" — and if it finds a match, that one word quietly switches the entire shape of how login sessions carry permissions, and every access check built on top of it. It's decided once, silently, by pattern-matching a phrase, and it only resurfaces as an already-settled fact later on, when Concern D frames it during review. Check it against your own memory of how the client actually described permissions during discovery — reversing this decision after stories are already written means rewriting every access check in the system.</p></div>
       </section>
 
       <section class="block" id="review">
@@ -155,7 +155,7 @@
         <div class="casecard"><span class="filechip">arch.example.md</span><p><code>varchar</code> actor-label columns (not FK) on every Master table — Harborview has more than one actor kind (Staff, and System acting on its own). Section 3.2's one real Extension Point (<code>AccountingExportStrategy</code>) is the seam for the deferred Xero export REQ from Chapter 3.</p></div>
       </section>
 
-      <footer class="pagefoot">Renders <code>practitioner-guide/06-architecture.md</code>. Source markdown unchanged.</footer>
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/06-architecture.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
     </div>
   </main>
 </div>

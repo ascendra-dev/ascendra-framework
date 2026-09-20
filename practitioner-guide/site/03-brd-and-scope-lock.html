@@ -35,7 +35,7 @@
     <div class="readcol">
       <div class="chapter-eyebrow">Stage 3</div>
       <h1 class="title">BRD &amp; Scope Lock</h1>
-      <p class="dek">The BRD is the contract between Product and Engineering. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work epics and stories trace back to by REQ-ID — and every feature-area heading becomes an epic boundary you don't get to redraw for free later.</p>
+      <p class="dek">The BRD is the contract between Product and Engineering. Once <code>/review-brd</code> sets it Approved, every requirement becomes a fixed unit of work that epics and stories will trace back to by REQ-ID — and every feature-area heading becomes an epic boundary you don't get to redraw for free later.</p>
       <div class="chapter-links"><a href="../../.claude/commands/gen-brd-playbook.md"><code>/gen-brd-playbook</code></a>, <a href="../../.claude/commands/run-mock-discovery.md"><code>/run-mock-discovery</code></a>, <a href="../../.claude/commands/run-brd-discovery.md"><code>/run-brd-discovery</code></a>, <a href="../../.claude/commands/gen-brd.md"><code>/gen-brd</code></a>, <a href="../../.claude/commands/review-brd.md"><code>/review-brd</code></a>.</div>
 
       <nav class="jumpnav">
@@ -67,7 +67,7 @@
       <section class="block" id="confidence">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>Scores you can't verify</div>
-          <p><strong>The denominator is topics <em>and</em> journeys together</strong> — Section 4 and Section 6 combined, not Section 4 alone, whatever the command text's own phrasing suggests.</p>
+          <p><strong>The denominator is topics <em>and</em> journeys together</strong> — Section 4 and Section 6 combined, not Section 4 alone, regardless of what the command's own wording might suggest.</p>
           <p><strong>Coverage is not resolution.</strong> A "Covered" mark means a topic was asked and answered — not that the answer was a real decision. A client who says "it depends" to everything can rack up 100% coverage on a nearly content-free BRD. When an answer is genuine uncertainty, mark it Pending and open a Section 7 entry with a real owner — even at ≥85%, re-check for scope-blocking Open Questions before generating.</p>
         </div>
       </section>
@@ -76,7 +76,7 @@
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Known Variation vs. an ordinary follow-up</h2>
         <div class="rule-callout">Does the answer fit inside a topic subsection that already exists, or does it need a topic that isn't there?<span class="src">The test</span></div>
-        <div class="prose"><p>An unusual <em>value</em> on an existing axis → resolve in-session, record, move on. A structurally new <em>axis</em> the domain knowledge doesn't model at all → flag for a domain knowledge update, not just a BRD note — the next project in this domain will hit the same gap.</p></div>
+        <div class="prose"><p>If it's an unusual <em>value</em> on an axis that already exists, resolve it in the session, write it down, and move on. If it's a structurally new <em>axis</em> the domain knowledge doesn't model at all, flag it for a domain knowledge update rather than just a BRD note — otherwise the next project in this domain will hit the exact same gap.</p></div>
       </section>
 
       <section class="block" id="circuit">
@@ -114,7 +114,7 @@
         <div class="block-label"><span class="dot"></span>Full working depth</div>
         <h2 class="block-title">Scope vs. Priority vs. Layer</h2>
         <div class="distgrid">
-          <div class="distcard"><h4>Should Have vs. Out of Scope — deferred</h4><p>Should Have is a Priority value — only applies to something already In Scope, ships this phase if time allows. Out of Scope — deferred means not being built this phase at all.</p></div>
+          <div class="distcard"><h4>Should Have vs. Out of Scope — deferred</h4><p>Should Have is a Priority value — it only applies to something already In Scope, and it ships this phase if time allows. Out of Scope — deferred is different: the item simply isn't being built this phase at all.</p></div>
           <div class="distcard"><h4>§5.21 vs. §15 Parking Lot</h4><p>Can you write one factual sentence backed by the domain doc or this session? If yes, §5.21 (gets a REQ-ID). If you're guessing, §15 (no fields until promoted).</p></div>
         </div>
         <div class="rule-callout">Can you write one factual sentence describing exactly how it will behave, backed by something already in the domain knowledge document or this discovery session? If yes, Section 5.21. If you're guessing, Section 15.<span class="src">FW-024</span></div>
@@ -132,7 +132,7 @@
       <section class="block" id="reviewing">
         <div class="block-label"><span class="dot"></span>What "good" looks like</div>
         <h2 class="block-title">Reviewing and approving</h2>
-        <div class="prose"><p>You should be able to restate what each requirement will actually produce, in your own words, without looking back at the REQ text. Section 16's Flags table empty or resolved, no unresolved scope blockers, every <code>[Assumed]</code> tag actually looked at.</p></div>
+        <div class="prose"><p>You should be able to restate what each requirement will actually produce, in your own words, without looking back at the REQ text. By the end of the review, Section 16's Flags table should be empty or fully resolved, there should be no unresolved scope blockers, and every <code>[Assumed]</code> tag should have actually been looked at, not just scrolled past.</p></div>
         <div class="caution"><p><strong>The gap: what to do when you don't disagree, you just don't know.</strong> Don't force yourself into Confirm/Change/Remove. Tell the AI you're uncertain and want it routed to Section 12 (Open Questions) with the <strong>client</strong> as owner — a legitimate outcome of the review, not a failure to complete it.</p></div>
       </section>
 
@@ -167,7 +167,7 @@
         <div class="casecard"><span class="filechip">brd-playbook.example.md + brd-discovery-state.example.md</span><p>Worth reading alongside the BRD — the full chain from a scope risk flag that didn't trigger (SRF-004) through to the requirement that made it into the final document.</p></div>
       </section>
 
-      <footer class="pagefoot">Renders <code>practitioner-guide/03-brd-and-scope-lock.md</code>. Source markdown unchanged.</footer>
+      <footer class="pagefoot">Adapted from <code>practitioner-guide/03-brd-and-scope-lock.md</code> for plain-language reading — same facts, same order. The markdown stays the precise version <code>/judgment-check</code> reads.</footer>
     </div>
   </main>
 </div>
