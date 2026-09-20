@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifecycle Map — Practitioner's Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="wordmark"><a href="index.html">Practitioner's Guide</a></div>
+    <span class="wordmark-sub">Ascendra Framework</span>
+    <ul class="navlist">
+      <li><a href="00-orientation.html"><span class="num">—</span> Orientation</a></li>
+      <li><a href="lifecycle-map.html" class="active"><span class="num">—</span> Lifecycle Map</a></li>
+      <li><a href="01-intake.html"><span class="num">01</span> Intake</a></li>
+      <li><a href="02-domain-discovery.html"><span class="num">02</span> Domain Discovery</a></li>
+      <li><a href="03-brd-and-scope-lock.html"><span class="num">03</span> BRD &amp; Scope Lock</a></li>
+      <li><a href="04-product-structuring.html"><span class="num">04</span> Product Structuring</a></li>
+      <li><a href="05-screen-design.html"><span class="num">05</span> Screen Design</a></li>
+      <li><a href="06-architecture.html"><span class="num">06</span> Architecture</a></li>
+      <li><a href="07-sprint-planning.html"><span class="num">07</span> Sprint Planning</a></li>
+      <li><a href="08-development.html"><span class="num">08</span> Development</a></li>
+      <li><a href="09-testing-qa-and-uat.html"><span class="num">09</span> Testing, QA &amp; UAT</a></li>
+      <li><a href="10-release-support-hotfix.html"><span class="num">10</span> Release, Support &amp; Hotfix</a></li>
+      <li><a href="11-cross-cutting.html"><span class="num">11</span> Cross-Cutting</a></li>
+    </ul>
+    <div class="navgroup-label">Case studies</div>
+    <ul class="navlist"><li><a href="case-studies/harder-cases.html">Harder Cases</a></li></ul>
+  </aside>
+
+  <main>
+    <div class="readcol">
+      <div class="chapter-eyebrow">Map</div>
+      <h1 class="title">The Lifecycle Map</h1>
+      <p class="dek">The 12 stages this whole guide walks through, laid out as one map — and the one thing no single stage chapter can show: where running the identical sequence through <code>/anchor-project</code> instead of typing each command actually changes what a Product Owner has to do.</p>
+      <div class="chapter-links">Maps <a href="../../PROJECT-LIFECYCLE.md"><code>PROJECT-LIFECYCLE.md</code></a> — the authoritative 28-step reference — and <a href="../../.claude/commands/anchor-project.md"><code>/anchor-project</code></a>, the alternative way to run it. Read <a href="00-orientation.html">Orientation</a> first if you haven't.</div>
+
+      <nav class="jumpnav">
+        <a href="#two-ways">Two ways to run this</a>
+        <a href="#problem">Problem Domain</a>
+        <a href="#bridge">Bridge</a>
+        <a href="#solution">Solution Domain</a>
+        <a href="#anchor-role">Where anchor changes the day</a>
+        <a href="#hotfix">Hotfix Cycle</a>
+        <a href="#more">Where to find more</a>
+      </nav>
+
+      <section class="block" id="two-ways">
+        <div class="block-label"><span class="dot"></span>Decision heuristic</div>
+        <h2 class="block-title">Two ways to run this framework</h2>
+        <div class="prose"><p>Every stage chapter in this guide is written against typing each command directly, and that stays fully available forever. <code>/anchor-project {PROJECT_CODE}</code> is the other way: one command that resolves or bootstraps a project, then invokes whichever command owns the current stage and runs its instructions exactly as written. Nothing about a command's behavior, file formats, or gates changes depending on which path called it.</p></div>
+        <div class="tblwrap"><table class="dtable">
+          <tr><th></th><th>Typing commands directly</th><th><code>/anchor-project</code></th></tr>
+          <tr><td>What you hold in your head</td><td>The full 28-step sequence — what ran last, what's next, which gate is open</td><td>Nothing — anchor reconciles its own state against what's on disk</td></tr>
+          <tr><td>Session-to-session continuity</td><td>Manual — re-derive it from the Gate Summary and memory</td><td>Automatic — <code>.anchor-state.md</code>, refreshed every resume</td></tr>
+          <tr><td>Question density per gate</td><td>Full — every command's own dense prompts, as written</td><td>Compressed, without lowering the rigor behind them</td></tr>
+          <tr><td>Drift checking across artifacts</td><td>None built in</td><td>Proactive — version lineage, constraints, Ubiquitous Language</td></tr>
+          <tr><td>Priming material handoff</td><td>Re-explained to each command by hand</td><td>Folded in automatically the moment the stage needs it</td></tr>
+          <tr><td>Running record of the project</td><td>None, unless kept separately</td><td><code>journal.md</code>, feeding a <code>testimonial.md</code> at milestones</td></tr>
+          <tr><td>What actually gets produced</td><td colspan="2" style="text-align:center;">Identical — anchor is a sequencing layer, never a discount on rigor</td></tr>
+        </table></div>
+        <div class="rule-callout">New to the framework, or would rather hold less in your head — start with anchor. Already fluent and want to control every question yourself — type the commands directly. Every command stays usable standalone either way.<span class="src">Who should use which</span></div>
+        <div class="caution"><p><strong>Where anchor stops driving:</strong> once a project's Walking Skeleton (<code>FW-048</code>) is complete, anchor narrows to release prep and formal scope changes — day-to-day story work reverts to direct command use even on an anchored project. See <code>decisions/FW-049</code>'s Solution Domain Boundary section.</p></div>
+      </section>
+
+      <section class="block" id="problem">
+        <div class="regionband"><span class="domain-badge problem">Problem Domain</span> Stages 1–5 — zero architecture dependency (<code>FW-022</code>)</div>
+        <div class="stagegrid">
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>1 · Intake</h4><span class="stage-num">Once</span></div>
+            <p class="purpose">Create the project record and a complete, approved brief.</p>
+            <ul class="steplist">
+              <li><span class="stepid">1</span> <code>/init-project</code></li>
+              <li><span class="stepid">1a</span> <code>/run-intake</code></li>
+              <li><span class="stepid">1b</span> Brief Approval</li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Brief Approved</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>2 · Domain Discovery</h4><span class="stage-num">Once per domain</span></div>
+            <p class="purpose">Build reusable domain knowledge — entities, lifecycles, business rules.</p>
+            <ul class="steplist">
+              <li><span class="stepid">2a</span> <code>/gen-domain-playbook</code> <em>(optional)</em></li>
+              <li><span class="stepid">2b</span> <code>/run-domain-discovery</code> <em>(optional)</em></li>
+              <li><span class="stepid">2</span> <code>/gen-domain-knowledge</code></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> None — reference material</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>3 · BRD &amp; Scope Lock</h4><span class="stage-num">Once</span></div>
+            <p class="purpose">Run requirement discovery, then lock scope in an approved BRD.</p>
+            <ul class="steplist">
+              <li><span class="stepid">3</span> <code>/gen-brd-playbook</code></li>
+              <li><span class="stepid">3a</span> <code>/run-mock-discovery</code> <em>(optional)</em></li>
+              <li><span class="stepid">4</span> <code>/run-brd-discovery</code></li>
+              <li><span class="stepid">5</span> <code>/gen-brd</code></li>
+              <li><span class="stepid">5a/6</span> <code>/review-brd</code></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> BRD Approved</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>4 · Product Structuring</h4><span class="stage-num">Once</span></div>
+            <p class="purpose">Break the approved BRD into delivery-sized epics — full v1 scope, upfront.</p>
+            <ul class="steplist">
+              <li><span class="stepid">7</span> <code>/gen-epics</code></li>
+              <li><span class="stepid">8/9</span> <code>/review-epics</code></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Epics Approved</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>5 · Screen Design</h4><span class="stage-num">Once</span></div>
+            <p class="purpose">Derive Portals, Navigation Map, and Screen Inventory from the BRD alone.</p>
+            <ul class="steplist">
+              <li><span class="stepid">9a</span> <code>/gen-screen-design</code></li>
+              <li><span class="stepid">9b/9c</span> <code>/review-screen-design</code></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Screen Design Approved</span><span>Skipped if no UI in scope</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="bridge">
+        <div class="regionband"><span class="domain-badge bridge">Bridge</span> Stage 6 — first hard architecture dependency (<code>FW-022</code>)</div>
+        <div class="stagegrid">
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>6 · Architecture</h4><span class="stage-num">Once</span></div>
+            <p class="purpose">Define the complete technical blueprint before any story is written or code implemented.</p>
+            <ul class="steplist">
+              <li><span class="stepid">10</span> <code>/gen-architecture</code></li>
+              <li><span class="stepid">11/12</span> <code>/review-architecture</code></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Architecture Locked</span><span>Required for <code>/implement-story</code>, <code>/gen-sprint-plan</code></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="solution">
+        <div class="regionband"><span class="domain-badge solution">Solution Domain</span> Stages 7–12 — require Locked architecture, directly or transitively (<code>FW-022</code>)</div>
+        <div class="stagegrid">
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>7 · Sprint Planning</h4><span class="stage-num">Per wave / per sprint</span></div>
+            <p class="purpose">Generate, review, and sprint-assign stories one wave at a time.</p>
+            <ul class="steplist">
+              <li><span class="stepid">13</span> <code>/gen-stories</code></li>
+              <li><span class="stepid">14/15</span> <code>/review-stories</code></li>
+              <li><span class="stepid">16</span> <code>/gen-sprint-plan</code></li>
+              <li><span class="stepid">17</span> Sprint Activation</li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Stories Reviewed; Sprint Active</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>8 · Development</h4><span class="stage-num">Per story</span></div>
+            <p class="purpose">Plan, implement, verify, and merge each sprint story against Locked architecture.</p>
+            <ul class="steplist">
+              <li><span class="stepid">17a</span> <code>/gen-story-plan</code></li>
+              <li><span class="stepid">18</span> <code>/implement-story</code></li>
+              <li><span class="stepid">19</span> <code>/verify-story</code></li>
+              <li><span class="stepid">20</span> <code>/gen-pr-description</code> + PO PR review</li>
+              <li><span class="stepid">21</span> Story Status Update</li>
+              <li><span class="stepid">22</span> <code>/assess-change</code> <em>(as-needed)</em></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Story Plan Confirmed; PR reviewed</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>9 · Testing &amp; QA</h4><span class="stage-num">Per sprint</span></div>
+            <p class="purpose">Confirm the sprint is technically sound as a whole before UAT begins.</p>
+            <ul class="steplist"><li><span class="stepid">23</span> Sprint-wide QA confirmation <em>(manual)</em></li></ul>
+            <div class="stage-meta"><span><b>Gate:</b> QA confirmation recorded</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>10 · UAT</h4><span class="stage-num">Per sprint</span></div>
+            <p class="purpose">Get Product Owner / client sign-off that every Must Have scenario passes.</p>
+            <ul class="steplist">
+              <li><span class="stepid">24</span> <code>/gen-uat-checklist</code></li>
+              <li><span class="stepid">25</span> PO UAT <em>(manual)</em></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> UAT sign-off</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>11 · Sprint Closure &amp; Release</h4><span class="stage-num">Per sprint / per release</span></div>
+            <p class="purpose">Close the sprint and generate release artefacts.</p>
+            <ul class="steplist">
+              <li><span class="stepid">26</span> <code>/close-sprint</code></li>
+              <li><span class="stepid">27</span> Sprint Closure</li>
+              <li><span class="stepid">28</span> <code>/gen-release-notes</code></li>
+              <li><span class="stepid">—</span> Production Deployment <em>(manual)</em></li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Sprint Complete; Deployment approved</span></div>
+          </div>
+          <div class="stagecard">
+            <div class="stagecard-head"><h4>12 · Support</h4><span class="stage-num">Once, ongoing</span></div>
+            <p class="purpose">Monitor production, triage defects, formally close or retain the project.</p>
+            <ul class="steplist">
+              <li><span class="stepid">—</span> Monitor + triage <em>(manual)</em></li>
+              <li><span class="stepid">—</span> Hotfix Cycle <em>(as-needed — see below)</em></li>
+              <li><span class="stepid">—</span> Close or hand over</li>
+            </ul>
+            <div class="stage-meta"><span><b>Gate:</b> Project closure</span></div>
+          </div>
+        </div>
+        <div class="prose"><p><strong>Cross-cutting, at any stage:</strong> <code>/assess-change</code> (scope/impact changes), <code>update-status</code> (records every gate decision), <code>/project-status</code> (live dashboard), <code>/judgment-check</code> (density check before a <code>/review-X</code> walkthrough), <code>/run-priming-session</code> (Problem Domain only). Full treatment: <a href="11-cross-cutting.html">Cross-Cutting</a>.</p></div>
+      </section>
+
+      <section class="block" id="anchor-role">
+        <div class="block-label"><span class="dot"></span>What actually changes</div>
+        <h2 class="block-title">Where <code>/anchor-project</code> changes the day, stage by stage</h2>
+        <div class="prose"><p>The commands and gates above are identical either way. What anchor removes is different at each region:</p></div>
+        <div class="anchor-note"><b>Stages 1–5 (Problem Domain):</b> anchor's biggest lift. Five separate PO-facing walkthroughs run back to back — brief, domain discovery, BRD discovery, epic review, screen review. Anchor compresses the question density across all five without skipping any of them, and folds in anything already captured via <code>/run-priming-session</code> the moment each stage needs it.</div>
+        <div class="anchor-note"><b>Stage 6 (Bridge):</b> anchor still invokes <code>/gen-architecture</code> and <code>/review-architecture</code> unmodified — it does not shrink the 35-check review. What it removes is the PO having to know, unprompted, that this is the one stage where a fresh, otherwise-empty session matters most; anchor sequences it that way by default.</div>
+        <div class="anchor-note"><b>Stages 7–11 (Solution Domain):</b> this is where anchor's role visibly narrows once the Walking Skeleton is complete. The per-story loop — plan → implement → verify → PR — reverts to direct command use even on an anchored project, since it runs per story, often across multiple developers in parallel, and doesn't fit anchor's single-threaded sequencing. Anchor returns for release prep (Stage 11) and any formal scope change routed through <code>/assess-change</code>.</div>
+        <div class="anchor-note"><b>Stage 12 (Support):</b> anchor is not driving here by design — this stage is inherently PO/team-run, not sequence-driven.</div>
+      </section>
+
+      <section class="block" id="hotfix">
+        <div class="block-label"><span class="dot"></span>Stage 12, as-needed</div>
+        <h2 class="block-title">The Hotfix Cycle</h2>
+        <div class="casecard">
+          <span class="filechip">PROJECT-LIFECYCLE.md</span>
+          <p>Triggered by a Critical or High severity defect found in production. Bypasses sprint planning and UAT entirely — scope is narrow and the fix is validated before deployment: hotfix branch → <code>/implement-story</code> → <code>/verify-story</code> → PR against <code>main</code> → targeted test run (not full E2E) → deploy with rollback plan → smoke tests. PO approval is still required at PR and at deployment — nothing about approval is skipped, only sprint ceremony and full regression.</p>
+        </div>
+      </section>
+
+      <section class="block" id="more">
+        <div class="block-label"><span class="dot"></span>Where to find more</div>
+        <ul class="reflist">
+          <li><a href="../../PROJECT-LIFECYCLE.md"><code>PROJECT-LIFECYCLE.md</code></a> — the full 28-step reference this page maps: exact arguments, gate checks, output paths, the complete Gate Summary and Status Values Reference.</li>
+          <li><a href="../../SDLC.md"><code>SDLC.md</code></a> — the same 12 stages described conceptually, by responsible agent, rather than by command.</li>
+          <li><a href="../../decisions/FW-022-problem-solution-domain-boundary.md"><code>decisions/FW-022</code></a> — why the three domain regions are drawn where they are.</li>
+          <li><a href="../../decisions/FW-049-anchor-project-and-priming-session.md"><code>decisions/FW-049</code></a> and <a href="../../decisions/FW-050-project-journal-and-framework-learning.md"><code>decisions/FW-050</code></a> — the design behind <code>/anchor-project</code>.</li>
+        </ul>
+      </section>
+
+      <footer class="pagefoot">Renders <code>practitioner-guide/lifecycle-map.md</code>, mapping <code>PROJECT-LIFECYCLE.md</code>'s Lifecycle at a Glance table. Source markdown unchanged.</footer>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -58,6 +58,7 @@ Two different points in the pipeline — Domain Discovery and BRD Discovery — 
 ## Where to find more
 
 - [`SDLC.md`](../SDLC.md) / [`PROJECT-LIFECYCLE.md`](../PROJECT-LIFECYCLE.md) — the conceptual and operational references this guide complements, not replaces.
+- [`lifecycle-map.md`](lifecycle-map.md) — the 12 stages laid out as one map, plus where `/anchor-project` changes what a PO actually does at each one.
 - [`decisions/`](../decisions/) — the ADRs. This guide cites the ones that explain a *why* worth knowing; it doesn't try to replace reading one when you need the full history behind a rule.
 - [`case-studies/harder-cases.md`](case-studies/harder-cases.md) — the scenarios Harborview doesn't cover, built out phase by phase alongside this guide.
 - [`decisions/FW-049-anchor-project-and-priming-session.md`](../decisions/FW-049-anchor-project-and-priming-session.md) and [`decisions/FW-050-project-journal-and-framework-learning.md`](../decisions/FW-050-project-journal-and-framework-learning.md) — the design behind `/anchor-project`, the second way to run this framework mentioned above.
