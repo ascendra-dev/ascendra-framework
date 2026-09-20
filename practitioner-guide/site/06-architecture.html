@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-architecture.md"><code>/gen-architecture</code></a> and <a href="../../.claude/commands/review-architecture.md"><code>/review-architecture</code></a> — a 35-check audit across five concerns.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What architecture is</a>
         <a href="#prepare">Preparing beforehand</a>
         <a href="#commons">ascendra-commons</a>
         <a href="#actor">Actor Identity Shape</a>
@@ -50,6 +51,16 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What architecture is, and why it's the one hard bridge in the framework</h2>
+        <div class="prose">
+          <p><strong>What is architecture, in this framework?</strong> It's the single document that decides every technical fact the system will be built on: the tech stack, the full data model, every API endpoint and its contract, the security and permissions model, infrastructure. Nothing before this stage has depended on any of it — the BRD, epics, and screen design were all written without knowing what database or framework would be used.</p>
+          <p><strong>Why is this the one stage everything else waits on?</strong> Every stage before this one — Intake, Domain Discovery, BRD, Product Structuring, Screen Design — has zero architecture dependency, by design. This is the first hard dependency point: nothing in Stories, Development, Testing, or Release can start until this document is Locked. That's a structural boundary the framework draws deliberately, not just a process preference.</p>
+          <p><strong>Where does the content come from?</strong> The tech stack and every standards file are decided conversationally, live, while the command runs — you don't need to write anything beforehand. It reads the approved BRD, epics, domain knowledge, and Screen Design, and derives everything else by asking you directly.</p>
+        </div>
+      </section>
 
       <section class="block" id="prepare">
         <div class="caution">
