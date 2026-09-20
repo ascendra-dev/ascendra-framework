@@ -39,6 +39,7 @@
       <div class="chapter-links"><a href="../../.claude/commands/gen-epics.md"><code>/gen-epics</code></a> and <a href="../../.claude/commands/review-epics.md"><code>/review-epics</code></a>. Picks up where <a href="03-brd-and-scope-lock.html">BRD &amp; Scope Lock</a> left off.</div>
 
       <nav class="jumpnav">
+        <a href="#foundations">What an epic is</a>
         <a href="#sizing">Epic sizing</a>
         <a href="#twopass">Two-pass review</a>
         <a href="#dependency">Dependency ordering</a>
@@ -50,6 +51,16 @@
         <a href="#mistakes">Common mistakes</a>
         <a href="#harborview">Harborview in practice</a>
       </nav>
+
+      <section class="block" id="foundations">
+        <div class="block-label"><span class="dot"></span>Start here</div>
+        <h2 class="block-title">What an epic is, and how the two commands split the work</h2>
+        <div class="prose">
+          <p><strong>What is an epic?</strong> It's the layer between the BRD and stories — a cohesive, independently-shippable capability, typically 4 to 10 stories' worth of work. <code>/gen-stories</code> reads only two things from it: the In Scope bullets and the Notes section. Nothing about how a story gets broken down comes from anywhere else.</p>
+          <p><strong>Two commands, two different jobs.</strong> <code>/gen-epics</code> proposes the breakdown and writes the files. <code>/review-epics</code> is the rigorous per-requirement audit — 13 structural checks, run one epic at a time against the real file, the BRD, and the domain knowledge document, all loaded in full. Knowing which one is supposed to catch which kind of mistake is most of what this chapter teaches — see <a href="#twopass">Don't do <code>/review-epics</code>'s job at the planning table</a> below for exactly where that line falls.</p>
+          <p><strong>Where does an epic's content come from?</strong> Entirely from the approved BRD — every REQ, every dependency, every Section 8 note traces back to something already confirmed there. Epics carry no architecture dependency at all. They're written before any technology decision is made, which is exactly why the whole approved BRD can be structured into epics at once, rather than waiting stage by stage.</p>
+        </div>
+      </section>
 
       <section class="block" id="sizing">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
@@ -134,6 +145,7 @@
         <ul class="recaplist">
           <li><b>Epic Size / No Gold-Plating</b><span>Epic Size flags a REQ-count outlier against siblings. No Gold-Plating flags scope not traced to any REQ or approved domain rule.</span></li>
           <li><b>Story-Level Interleaving</b><span>A note marking a dependency pair whose true build order is finer than epic-before-epic.</span></li>
+          <li><b>Fix tiers (Tier 1–4)</b><span><code>/review-epics</code>'s own system: Tier 1 applies silently, Tier 2 confirms before applying, Tier 3 is a PO decision with no automatic action, Tier 4 halts the review entirely.</span></li>
         </ul>
       </section>
 
