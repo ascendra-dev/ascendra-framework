@@ -46,6 +46,7 @@
         <a href="#good-answers">A good answer vs. a rubber stamp</a>
         <a href="#section5v10">Section 5 vs. 10</a>
         <a href="#filter">Generalization filter</a>
+        <a href="#scope-boundaries">Scope boundaries</a>
         <a href="#split">Splitting a domain</a>
         <a href="#score">Confidence score</a>
         <a href="#mock">Mock discovery's blind spot</a>
@@ -146,17 +147,19 @@
         </div>
 
         <h3 class="sub-title">Worked across the spectrum</h3>
-        <div class="distcard">
-          <h4>Internal expense reimbursement tool — skip the sub-flow</h4>
-          <p>This one should skip the sub-flow. Can you name three rules from memory, with real confidence? Yes: a receipt is required above a threshold, there's a manager-approval chain, and reimbursement is capped at the receipt amount. These are stable, well-known patterns. Would a wrong guess cost more than a sprint to fix? No — this is a small, internal tool. A wrong workflow assumption here is just a config change, not a rebuild. Is a regulator watching? Generally not, for a purely internal, domestic tool. All three answers are clear, so this domain goes straight to <code>/gen-domain-knowledge</code>, using AI knowledge alone.</p>
-        </div>
-        <div class="distcard">
-          <h4>Retail loyalty &amp; points program — genuinely tricky, walk it through</h4>
-          <p>This one is genuinely tricky. You probably know the general concepts: points build up as customers spend, tiers unlock perks, and points expire eventually. But can you say, with real confidence, exactly when points expire? Is it a rolling window from the last purchase, or a fixed date each year? Does tier status get recalculated every month, or once a year? What happens to points on a refunded order? Most POs find that at least one of these is a guess, not a known fact. A wrong guess here can easily cost more than a sprint — if the expiry rule gets written down as a fixed, universal rule instead of a variation to confirm, fixing it later means changing the points-ledger schema and every calculation built on top of it. Regulator exposure is a real "maybe" too — several places treat unused points as an accounting or unclaimed-property question. So this domain fails at least one of the three questions, often two, even though a PO who has shipped e-commerce before will feel like they already know loyalty programs. That feeling is exactly the trap this test is designed to catch: knowing the general shape of something is not the same as being able to state its actual rule.</p>
-        </div>
-        <div class="distcard">
-          <h4>Healthcare compliance or cross-border payments — clearly niche, run it</h4>
-          <p>Can you name three rules from memory, confidently? No. Most POs cannot state HIPAA's minimum-necessary-use boundary, or the exact threshold that triggers enhanced checks on a cross-border payment, without looking it up. Would a wrong guess cost more than a sprint? Yes, clearly — these facts get built into entities, lifecycle rules, and audit requirements that spread through the whole architecture. Is a regulator watching? Yes, explicitly. Run the full sub-flow here. And once you've run it, don't stop at 70% confidence — see <a href="#score">Confidence score</a> below for why.</p>
+        <div class="stackgrid">
+          <div class="distcard">
+            <h4>Internal expense reimbursement tool — skip the sub-flow</h4>
+            <p>This one should skip the sub-flow. Can you name three rules from memory, with real confidence? Yes: a receipt is required above a threshold, there's a manager-approval chain, and reimbursement is capped at the receipt amount. These are stable, well-known patterns. Would a wrong guess cost more than a sprint to fix? No — this is a small, internal tool. A wrong workflow assumption here is just a config change, not a rebuild. Is a regulator watching? Generally not, for a purely internal, domestic tool. All three answers are clear, so this domain goes straight to <code>/gen-domain-knowledge</code>, using AI knowledge alone.</p>
+          </div>
+          <div class="distcard">
+            <h4>Retail loyalty &amp; points program — genuinely tricky, walk it through</h4>
+            <p>This one is genuinely tricky. You probably know the general concepts: points build up as customers spend, tiers unlock perks, and points expire eventually. But can you say, with real confidence, exactly when points expire? Is it a rolling window from the last purchase, or a fixed date each year? Does tier status get recalculated every month, or once a year? What happens to points on a refunded order? Most POs find that at least one of these is a guess, not a known fact. A wrong guess here can easily cost more than a sprint — if the expiry rule gets written down as a fixed, universal rule instead of a variation to confirm, fixing it later means changing the points-ledger schema and every calculation built on top of it. Regulator exposure is a real "maybe" too — several places treat unused points as an accounting or unclaimed-property question. So this domain fails at least one of the three questions, often two, even though a PO who has shipped e-commerce before will feel like they already know loyalty programs. That feeling is exactly the trap this test is designed to catch: knowing the general shape of something is not the same as being able to state its actual rule.</p>
+          </div>
+          <div class="distcard">
+            <h4>Healthcare compliance or cross-border payments — clearly niche, run it</h4>
+            <p>Can you name three rules from memory, confidently? No. Most POs cannot state HIPAA's minimum-necessary-use boundary, or the exact threshold that triggers enhanced checks on a cross-border payment, without looking it up. Would a wrong guess cost more than a sprint? Yes, clearly — these facts get built into entities, lifecycle rules, and audit requirements that spread through the whole architecture. Is a regulator watching? Yes, explicitly. Run the full sub-flow here. And once you've run it, don't stop at 70% confidence — see <a href="#score">Confidence score</a> below for why.</p>
+          </div>
         </div>
       </section>
 
@@ -208,7 +211,12 @@
       <section class="block" id="section5v10">
         <div class="block-label"><span class="dot"></span>The highest-stakes call in this phase</div>
         <h2 class="block-title">Section 5 (Universal Business Rules) vs. Section 10 (Known Variations)</h2>
-        <div class="prose"><p>Here is why this one choice matters so much. <code>/gen-brd-playbook</code> builds its entire set of client questions from Section 10 alone. Every Known Variation gets turned into at least one real question. Sections 5 and 6 generate zero questions. That's by design — a Universal Business Rule is, by definition, something you never ask the client about.</p></div>
+        <div class="prose">
+          <p>Here is why this one choice matters so much. <code>/gen-brd-playbook</code> builds its entire set of client questions from Section 10 alone. Every Known Variation gets turned into at least one real question. Sections 5 and 6 generate zero questions. That's by design — a Universal Business Rule is, by definition, something you never ask the client about.</p>
+          <p><strong>When does this decision actually come up?</strong> Not once, at the end of the session. It comes up over and over, every time a candidate rule is on the table. The session script for the Universal Business Rules section says exactly this: "Present known rules. Confirm universality." That one word, "confirm," is the entire mechanism. Claude proposes a rule as universal. In that exact moment, before the session moves on, your job is to decide whether it really is.</p>
+          <p>Here is a real example of a rule that could easily have gone the wrong way. Harborview's finished domain document lists "Director approval workflow" as a Known Variation, with four real options recorded: no approval threshold at all, a single threshold with any approver allowed, a single threshold with one specific approver, or a multi-level chain of approvals above escalating thresholds. Now picture the alternative. If the session had instead logged "invoices above a threshold require Director approval" as a Universal Business Rule — a perfectly plausible-sounding claim, since plenty of B2B invoicing systems do work that way — the real client discovery session downstream would never have asked about approval at all. Whoever confirmed this rule caught it at the one moment that actually mattered: while being asked to confirm it, not after the document was already written.</p>
+        </div>
+        <div class="rule-callout">Every time a rule comes up for confirmation, ask yourself one question before agreeing to it: could another client in this same domain reasonably want this differently? If yes — or even "maybe" — say so immediately. Don't wait and plan to reclassify it later.<span class="src">The live habit, not just a review-time check</span></div>
 
         <figure class="diagram">
           <svg viewBox="0 0 980 250" role="img" aria-label="Sections 3 through 6 of the domain document become facts the BRD is told to treat as already settled and never ask about again. Section 10, Known Variations, is structurally different: it is the only part of the document that feeds gen-brd-playbook's question generation, becoming the actual questions asked in the real client discovery session." font-family="IBM Plex Sans, sans-serif" font-size="12">
@@ -290,23 +298,47 @@
         </div>
       </section>
 
+      <section class="block" id="scope-boundaries">
+        <div class="block-label"><span class="dot"></span>The last piece: in scope or out, for a first build</div>
+        <h2 class="block-title">Typical Scope Boundaries — what's normal to build first</h2>
+        <div class="prose">
+          <p>One more section of the domain document is easy to skim past: Typical Scope Boundaries. It answers a narrower question than it sounds like. It does not decide what this client is allowed to ask for. It only records what most implementations in this domain build first, and what most defer to a later phase.</p>
+          <p>Use it as a starting conversation, not a limit. If a client wants something this section calls "typically deferred," that's a completely normal thing for them to want in Phase 1. The section just tells you it's less common — so you know to ask about it directly, rather than quietly assume it isn't needed.</p>
+          <p>Here is Harborview's version of this section, in full. Typically built first: Payer registration, invoice creation with line items and VAT, an approval workflow if the client wants one, sending invoices by email with a payment link, and a dashboard showing what's outstanding. Typically deferred: credit notes (real lifecycle complexity — void-and-reissue covers most first builds), multi-currency support, and a full self-service portal for Payers.</p>
+        </div>
+        <div class="caution">
+          <p><strong>A different idea this is sometimes confused with: the Walking Skeleton.</strong> If you've read ahead into later chapters, you may have run into this term — it's the one thin, real, end-to-end flow a project proves works before building anything else out to full breadth. It does not belong in this document. It's a BRD-level idea, tagged onto individual requirements once real client requirements exist, and it isn't decided until Stage 3 (BRD) at the earliest. Nothing in the domain document tags a Walking Skeleton, and nothing here needs to. The full explanation lives in <a href="04-product-structuring.html">Product Structuring</a> and <a href="07-sprint-planning.html">Sprint Planning</a>.</p>
+        </div>
+      </section>
+
       <section class="block" id="split">
         <div class="block-label"><span class="dot"></span>Decision heuristic</div>
         <h2 class="block-title">Splitting a domain — when to do it before you start</h2>
         <div class="prose">
-          <p>Split a domain into more than one document when it covers more than one distinct user-facing portal, or more than one independent area of capability. "Admin portal vs. parent portal" is the easy version of this call. Most real cases are harder to see. Is Loyalty &amp; Rewards its own domain, separate from Order Management? Is Dunning its own domain, separate from Invoicing?</p>
-          <p>Here are two practical tests. Use the first before you start. Use the second to catch it if you missed it.</p>
+          <p>Split a domain into more than one document when it covers more than one distinct user-facing portal, or more than one independent area of capability, or more than one piece that could realistically ship on its own. "Admin portal vs. parent portal" is the easy version of this call. Most real cases are harder to see. Is Loyalty &amp; Rewards its own domain, separate from Order Management? Is Dunning its own domain, separate from Invoicing?</p>
+          <p><strong>When should you decide this?</strong> Ideally, before you generate the domain playbook at all — while you're reading the approved brief. The brief's own description of user groups and portals is usually the first clue. Here are two practical tests: one to apply before you start, one to catch it if you missed it.</p>
         </div>
         <div class="distgrid">
           <div class="distcard"><h4>Before you start — the 2–3 sentence test</h4><p>Try to describe the domain's scope in 2–3 sentences. Don't join two user roles, or two unrelated entities, with the word "and." If you can't avoid it — "...covers order management <em>and</em> loyalty point redemption..." — that "and" is usually the real seam. Split there.</p></div>
-          <div class="distcard"><h4>After you've started — the shallow-session tell</h4><p>If a session is running long, and the answers feel thin or generic rather than sharp and specific, that's a sign you split too late. A well-scoped domain produces confident, detailed answers, because you're reasoning about one coherent thing. Thin answers over a long session usually mean you're actually asking about two domains at once. Stop. Split it. Run two focused sessions instead.</p></div>
+          <div class="distcard"><h4>After you've started — the shallow-session tell</h4><p>If a session is running long, and the answers feel thin or generic rather than sharp and specific, that's a sign you split too late. A well-scoped domain produces confident, detailed answers, because you're reasoning about one coherent thing. Thin answers over a long session usually mean you're actually asking about two domains at once.</p></div>
+        </div>
+        <div class="prose"><p>The framework's own decision record on this is direct about what it does and doesn't guarantee: <em>"This is a best practice recommendation, not a hard constraint. The framework guides but does not enforce... The framework does not block generation of a large single document if that is the PO's choice."</em> Nothing catches an oversized domain automatically. The two tests above are the only thing standing between you and a document that should have been two.</p></div>
+        <div class="caution">
+          <p><strong>What if you only realize this in the middle of a session?</strong> There is no built-in "redo" for it — be honest with yourself about that going in. If what you're seeing matches one of the three official triggers named in that same decision record — a distinct user-facing portal with its own personas and journeys, an independent capability area with its own entities and lifecycle, or a piece that could realistically ship and be sold on its own — here is the practical move:</p>
+          <ol>
+            <li>Stop where you are. Don't push through to finish the session as if it were still one domain.</li>
+            <li>Keep everything you've covered so far. It's still real, usable work — treat it as the state file for the first sub-domain.</li>
+            <li>Start a completely fresh <code>/gen-domain-playbook</code> session for the second sub-domain.</li>
+            <li>In that new session, cover only the ground you genuinely haven't gotten real answers on yet. Don't re-ask what the first session already settled.</li>
+          </ol>
         </div>
       </section>
 
       <section class="block" id="score">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>Scores you can't verify</div>
-          <p><strong>Nobody publishes the formula behind the Domain Confidence Score.</strong> In the worked example, 6 of 10 sections are marked Covered, and the score reads 55%. A simple ratio would give 60%, so it isn't a flat average. Reading the file itself gives a clue: it calls Known Variations "a critical gap," specifically because that section feeds the BRD playbook. The most likely explanation is that this one section is weighted more heavily than the others. But that's a guess on our part, not a documented fact — there's no published formula to check it against.</p>
+          <p><strong>What the score actually is:</strong> after each section of the session, the tool re-estimates what percentage of the domain document it could now write with real confidence. You watch this number after every section, not just once at the end. It's checked against a 70% bar before you're told you're ready to generate the document.</p>
+          <p><strong>Nobody publishes the formula behind it, and the real numbers don't add up the way you'd expect.</strong> Here is the actual Harborview session, mid-way through: by that point, 6 of its 10 tracked sections were done — Domain Scope, Core Entities, Lifecycle, Universal Business Rules, Standard Validations, and Personas were all marked Covered, while Integration Points, Regulatory Baseline, Known Variations, and Scope Boundaries were still Pending. A simple count says that should read 60%. The state file actually reports 55%. Reading its own language gives a clue why: it flags Known Variations specifically as "a critical gap," precisely because that section is what feeds the BRD playbook. The most likely explanation is that this one pending section is dragging the score down harder than the others would. But that's our own inference, not a documented fact — there is no published formula to check it against.</p>
           <p>So treat any score as a rough signal, nothing more. Before you trust the document, read Known Variations and the Regulatory Baseline yourself, in full — no matter what the percentage says.</p>
           <p><strong>For a regulated or high-stakes domain, 70% is not good enough</strong> — and nothing in the tool will warn you about that. Set your own floor at 90% for these domains. Read the Regulatory Baseline and the Factual Accuracy Log line by line before you treat the document as ready for production.</p>
         </div>
@@ -315,7 +347,8 @@
       <section class="block" id="mock">
         <div class="caution">
           <div class="block-label"><span class="dot"></span>The blind spot</div>
-          <p><strong><code>/run-mock-discovery</code> has one real weakness:</strong> the model grading the session is the same model that wrote everything being graded. A perfect 5/5 score proves the domain document and the BRD playbook agree with each other. It does not prove either one is actually complete against the real world. If Claude never thought of a real variation, it won't think to test for it either — same blind spot, checking itself.</p>
+          <p><strong>What this actually does:</strong> <code>/run-mock-discovery</code> is a full rehearsal, with no real client involved at all. Claude plays both parts at once — the facilitator, asking questions straight from the BRD playbook, and a simulated client, answering them using only what's written in the domain knowledge document. Afterward, it grades the whole rehearsal against five specific checks: did it ask a redundant question the domain document already answered; did it miss a variation it should have asked about; did the resulting BRD draft restate a domain default instead of just assuming it; did that draft miss an obvious requirement; and were any of the facts it used simply wrong. The result gets written back into the domain document's own Mock Discovery Validation section. All of this happens before a single real client ever sees a question — the whole point is to catch a bad or missing question while fixing it still costs nothing.</p>
+          <p><strong>The one real weakness:</strong> the model grading the session is the same model that wrote everything being graded. A perfect 5/5 score proves the domain document and the BRD playbook agree with each other. It does not prove either one is actually complete against the real world. If Claude never thought of a real variation, it won't think to test for it either — same blind spot, checking itself.</p>
         </div>
       </section>
 

@@ -123,6 +123,7 @@ table.dtable tr:last-child td{border-bottom:none;}
 /* distinction / case-pointer cards */
 .distgrid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:18px 0;}
 @media (max-width:640px){.distgrid{grid-template-columns:1fr;}}
+.stackgrid{display:flex; flex-direction:column; gap:14px; margin:18px 0;}
 .distcard{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px;}
 .distcard h4{font-family:"IBM Plex Sans",sans-serif; font-size:0.92rem; font-weight:700; margin:0 0 6px;}
 .distcard p{font-size:0.85rem; color:var(--ink-muted); margin:0;}
