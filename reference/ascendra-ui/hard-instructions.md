@@ -232,3 +232,151 @@ for a status banner above a form).
 with the matching `variant`, never a hand-styled `<p>`/`<div>` with ad hoc Tailwind classes.
 
 **Reference:** `components/verification/document-upload-form.tsx`; `ascendra-ui/components/common-ui/simple-alert.tsx` (component definition).
+
+---
+
+### AUI-013 — Multi-panel dashboard/report rows use a 12-column grid, not an ad hoc `grid-cols-2`
+
+**Date:** 2026-09-23
+
+**Observed gap:** `ascendra-commons-ui`'s Audit Log Overview dashboard laid out its chart/table rows on
+whatever column split seemed reasonable per-row, with no consistent grid unit — confirmed by PO
+review against `ascendra-ui/app/showcase/dashboards/`, where every one of the 10 real sample
+dashboards uses the same underlying grid.
+
+**Correct pattern:** `<div className="grid grid-cols-12 gap-4">` as the row wrapper, with each panel
+as `<div className="col-span-12 md:col-span-N">` — `N=8`/`4` for a 2:1 split (e.g. a primary chart
+beside a secondary donut/gauge), `N=7`/`5` for a table beside a chart. `col-span-12` alone (full
+width, no split) is the correct choice for a row with one panel — not a reason to fall back to a
+plain `grid-cols-2`.
+
+**Rule:** Any dashboard or report row with more than one panel uses `grid-cols-12` + `col-span-12
+md:col-span-N`, never a plain `grid-cols-2`/`grid-cols-3` wrapper, so column proportions stay
+expressible in twelfths and consistent with every other real dashboard.
+
+**Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx` (lines ~332, ~496, ~655
+show the 8/4, 8/4, and 7/5 splits respectively).
+
+---
+
+### AUI-014 — A KPI tile showing a period-bound metric pairs its value with a `SimpleBadge` trend/delta, never a bare value
+
+**Date:** 2026-09-23
+
+**Observed gap:** The Audit Log Overview's KPI tiles (`packages/audit-logging.ui`) rendered a label
+and a value only — no comparison to the metric's prior equivalent period — despite the screen's own
+mock (`audit-logging.api/mocks.html`) specifying a delta on at least one tile.
+
+**Correct pattern:** `Card > CardPanel > <div className="flex flex-1 flex-col p-5">`, with the label
+pinned to the top and a `<div className="mt-auto flex ... items-center justify-between">` row at the
+bottom holding the formatted value plus `<SimpleBadge variant={up ? "green" : "red"}>` wrapping a
+`LuTrendingUp`/`LuTrendingDown` icon and the delta text. The `mt-auto` row is what keeps the value+
+badge pinned to a consistent baseline across tiles of slightly different content height.
+
+**Rule:** Any KPI tile bound to a specific time window (today, 7d, 30d, …) shows a `SimpleBadge`
+trend/delta against that same window's prior equivalent period — never a bare value with no
+comparison. State explicitly, in a small caption or the tile's label, which prior period the delta
+is against when a screen's tiles don't all share the same window (e.g. one tile vs. yesterday,
+another vs. prior 30 days) — don't leave the comparison basis ambiguous.
+
+**Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx` lines 306-329;
+`financial-pnl/page.tsx`'s own KPI row.
+
+---
+
+### AUI-015 — A panel's header is one of three deliberate choices, keyed to whether it needs explanation — never applied uniformly
+
+**Date:** 2026-09-23
+
+**Observed gap:** Every panel on the Audit Log Overview dashboard used the same full `CardHeader`
+treatment regardless of content, rather than choosing per-panel the way the real dashboards do.
+
+**Correct pattern:** Three real, coexisting patterns, chosen by what the panel actually needs:
+1. **Full `CardHeader`** (`CardHeaderTitle` + `CardHeaderSubtitle`) — for a chart/table whose axes,
+   window, or ranking need a sentence of explanation.
+2. **Inline title only, no `CardHeader`** — `<p className="text-sm font-medium">Title</p>` directly
+   inside the `CardPanel`'s padded wrapper — for a compact, self-explanatory single-metric panel.
+3. **Bare `CardHeader` with no enclosing `Card`**, sitting directly above a `TableWrapper` — for a
+   full-bleed table section that doesn't need a card's padding/background around it.
+
+**Rule:** Pick the header pattern per panel based on whether it needs an explanatory subtitle, not
+by copying whichever pattern the previous panel on the same page used.
+
+**Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx` — all three appear in one
+file: "MRR & Growth Rate" (pattern 1), "Plan Mix" (pattern 2), "Top Accounts" (pattern 3). A second
+confirmed pattern-3 example: `dashboards/marketing/page.tsx`'s "Active Campaigns" table — full-width
+`col-span-12` row, bare `CardHeader` directly above `TableWrapper`, `<Table scrollable horizontal
+vertical height={300}>`, and a trailing empty `<CardFooter className="border-t-0 pt-0" />` inside
+`TableWrapper` closing it out.
+
+---
+
+### AUI-016 — A screen's table structure must mirror the mock's/API's actual shape — don't split or merge tables without a stated reason
+
+**Date:** 2026-09-23
+
+**Observed gap:** The Audit Log Overview dashboard rendered two separate tables, "Top actions" and
+"Top actors" — the approved mock (`audit-logging.api/mocks.html`) has one table, "Top actions",
+with an `Actors` column folded in.
+
+**Correct pattern:** Read the mock/API response shape the screen is built from and match its table
+boundaries exactly — one combinable table stays one table (see also AUI-006's identical principle
+applied to filter design, not table layout). Splitting or merging is a legitimate choice only when
+the mock/API genuinely models the data as separate resources, not as a default.
+
+**Rule:** Before rendering more or fewer tables than a screen's source-of-truth mock/API shows,
+check whether that's actually what the source models — don't invent a friendlier-seeming split
+(or an unwarranted merge) without a stated reason recorded next to the code.
+
+**Reference:** the specific `<module>.api/mocks.html` backing whichever screen is being built.
+
+---
+
+### AUI-017 — Fixture/mock data backing a dashboard must be realistic-scale, not toy-sized — an undersized fixture is a real, visible defect
+
+**Date:** 2026-09-23
+
+**Observed gap:** `audit-logging.ui`'s mock fixture (`mocks/audit-events.mock.ts`) had 12 rows total,
+aggregated directly into the Overview dashboard's stats. Per-day counts of 1-3 made Recharts' own
+tick algorithm pick decimal Y-axis steps (0, 0.5, 1, 1.5…), and KPI tiles read "Records today: 1" —
+both symptoms of fixture size, not a chart or KPI-logic bug (same root-cause class as this file's own
+AUI-007 finding about an undersized batch size hiding correct pagination behavior).
+
+**Correct pattern:** A dashboard's stats should come from data generated at a realistic order of
+magnitude for the domain (hundreds-to-thousands per day for a busy audit/event log, not single
+digits), deterministically (a seeded PRNG, not raw `Math.random()`) so the fixture is stable across
+runs. Pair this with `allowDecimals={false}` on any Recharts `YAxis` showing count data, as a
+defensive backstop regardless of data scale. Format large values with `toLocaleString()` (thousands
+separator) below a project-chosen threshold, and compact `K`/`M` notation above it — via a small
+page-local helper, since no shared compact-number formatter exists in `ascendra-ui` today (every
+real dashboard hand-rolls its own, e.g. `fmtMrr` in `saas-revenue/page.tsx`).
+
+**Rule:** Treat a fixture that can't produce realistic-looking chart ticks or KPI values as a defect
+to fix at the fixture, not something to patch around in the chart/component code. Generate
+dashboard-scale fixture data separately from small illustrative row-level fixtures (e.g. the handful
+of rows a list/detail screen needs for click-through demos) when the two need different scales —
+they don't have to share one dataset.
+
+**Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx`'s `fmtMrr` helper and its
+`YAxis tickFormatter` usage.
+
+---
+
+### AUI-018 — User-facing labels and subtitles spell out time windows in prose — never a raw API param abbreviation
+
+**Date:** 2026-09-23
+
+**Observed gap:** The Audit Log Overview dashboard's KPI labels and chart subtitle used raw internal
+window params directly as UI copy — "Records (7d)", "Volume by day (30d)" — interpolating the same
+string the API query param uses.
+
+**Correct pattern:** Every real dashboard's `CardHeaderSubtitle` spells the window out in full prose
+— "12-month trend", "Total revenue by month · in millions USD", "Past 8 accounts ranked by monthly
+recurring revenue" — never a bare "12mo" or "30d" lifted from a query param.
+
+**Rule:** Translate a window/param value into plain English before it reaches a label, title, or
+subtitle a user reads. Reserve short-form abbreviations (if any) for space-constrained contexts only
+— a chart axis tick label, never a heading, subtitle, or KPI tile label.
+
+**Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx` and
+`ecommerce-ops/page.tsx` — every `CardHeaderSubtitle` in both files is full prose.
