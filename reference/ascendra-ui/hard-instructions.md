@@ -380,3 +380,113 @@ subtitle a user reads. Reserve short-form abbreviations (if any) for space-const
 
 **Reference:** `ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx` and
 `ecommerce-ops/page.tsx` — every `CardHeaderSubtitle` in both files is full prose.
+
+---
+
+### AUI-019 — `DataTableLoadingBody`/`DataTableErrorBody`/`DataTableEmptyBody` work standalone now — don't adopt the full DataTable system just to get their visuals
+
+**Date:** 2026-09-23
+
+**Observed gap:** These three components originally required context (`useDataTableData()`,
+`useOptionalQueryContext()`) that only `DataTableProvider`/`DataTableQueryProvider` supply — so a
+screen with a simple, manually-managed `useQuery` table (no sorting/filtering/pagination need, per
+AUI-006's own "a compact table is a legitimate choice" guidance) had exactly two options: hand-roll
+equivalent `Empty`/`EmptyHeader`/`EmptyMedia` markup from scratch (real risk of drifting from the
+real components — found happening in `ascendra-commons-ui`'s Audit Log Overview dashboard, which
+had hand-rolled a loading block before this fix landed), or adopt the entire DataTable system purely
+to unlock three display components it didn't otherwise need.
+
+**Correct pattern:** All three now accept explicit prop overrides that take priority over context
+when given — `isLoading` (Loading/Empty), `isEmpty` (Empty), `isError`/`error`/`onRetry` (Error) —
+falling back to an optional provider context otherwise, the same pattern `DataTableProvider` itself
+already used for its own `data`/`isLoading` via `useOptionalQueryContext`. A new
+`useOptionalDataTableData()` hook sits alongside the existing strict `useDataTableData()`. Each
+component also now accepts `className`, applied to its outer `EmptyBody` — necessary whenever the
+real table has a fixed height cap (`Table height={N}`), since `EmptyBody` sits outside that table's
+own scroll wrapper and needs its height set independently to avoid a jump when swapping between a
+loading/error/empty state and real rows (net out to the loaded state's total height minus the real
+`TableHeader`'s own height, which stays outside the capped area in both states).
+
+**Rule:** A screen with a simple, manually-managed `useQuery`-driven table should use these three
+components directly with prop overrides — never hand-roll equivalent `Empty` markup, and never adopt
+`DataTableProvider` solely to unlock them. When the table has a fixed height cap, pass a matching
+`className` height on all three.
+
+**Reference:** `ascendra-ui/components/data-table/{data-table-loading-body,data-table-error-body,
+data-table-empty-body}.tsx` (component source); `ascendra-ui/providers/data-table/data-table.provider.tsx`
+(`useOptionalDataTableData`). No real `ascendra-ui` showcase page uses these standalone yet — the
+first real consumer is `ascendra-commons-ui`'s Audit Log Overview (`testbed/app/observability/audit/page.tsx`).
+
+---
+
+### AUI-020 — Extract a shared component only once real usage validates the shape; prefer composable sub-components over one component with many variant props
+
+**Date:** 2026-09-23
+
+**Observed gap:** The same single-metric "KPI tile" shape (a label, a value, optionally a trend
+indicator, optionally a caption) was hand-rolled independently in all 10 real sample dashboards (40
+near-byte-identical tile instances) and in 8 of the 10 sample reports (10 more instances across 6
+further variant shapes) — with visible drift already showing between copies: two report files
+(`marketing-campaign-analysis`, `sales-pipeline-report`) had byte-identical duplicated JSX in
+separate files, and `esg-sustainability-report`'s KPI data carried an unused `positive` field that
+should have driven the trend's color but never did, because the color was hardcoded instead of wired
+to it.
+
+**Correct pattern:** `KpiTile`/`KpiLabel`/`KpiValue`/`KpiTrend`/`KpiCaption` — composable primitives,
+not one monolithic component. `KpiTile` deliberately renders no `Card` wrapper of its own, so it
+composes under `Card`/`CardPanel` for the common bordered tile, or bare for a wrapper-less hero row
+(the real shape `executive-business-review` uses) — no "opt out of a wrapper" prop needed, because
+it never assumed one. `KpiValue` takes `size` (`xl`/`2xl`/`3xl`/`4xl`) and a `warning` variant for a
+threshold-breach state (`supply-chain-ops-report`'s amber tiles) instead of each page inventing its
+own conditional className. `KpiTrend` takes a `variant` (`badge` = `SimpleBadge` pill, `text` =
+inline colored label) and a `direction`, rendering its own up/down icon — never hand-roll that icon
+ternary again.
+
+**Rule:** Before hand-rolling a new instance of a UI shape that already recurs elsewhere in
+`ascendra-ui`, check whether real usage justifies extracting (or reusing) a shared component. A
+shape appearing 2-3 times in one file isn't enough evidence — see `ascendra-commons-ui`'s own
+`packages/README.md`, which explicitly defers building `shared/observability/` until validated
+against a second real consumer. A shape appearing in 10+ real pages, independently drifting between
+copies, is overdue. When extracting, default to composable sub-components — matching every other
+family in this library (`Card`/`CardHeader`/`CardPanel`, `Field`/`FieldLabel`/`FieldHint`,
+`Empty`/`EmptyHeader`/`EmptyTitle`) — over one component absorbing every independently-varying axis
+(size, wrapper, trend style, warning state) as props, which tends toward exactly the prop-soup this
+library's composable convention exists to avoid.
+
+**Reference:** `ascendra-ui/components/common-ui/kpi-tile.tsx` (component source); all 10
+`app/showcase/dashboards/*/page.tsx` and the 8 `app/showcase/reports/*/page.tsx` files with real KPI
+content, all retrofitted onto it — each KPI row is a real, varied adoption, not a toy example.
+
+---
+
+### AUI-021 — A loading/error/empty state replaces only the dynamic content inside a section's shell, never the whole shell
+
+**Date:** 2026-09-23
+
+**Observed gap:** An early version of `ascendra-commons-ui`'s Audit Log Overview dashboard gated
+entire sections behind `{isLoading && <Text>}` / `{data && (<...the whole Card/KPI-row/table...>)}`
+— so during loading the page showed a bare loading line, then the entire KPI row + chart + table
+popped into existence at once when the query resolved. The same defect showed up more subtly on a
+fixed-height table: its loading placeholder wasn't dimensioned to match the loaded state's height,
+causing a visible jump on swap (see AUI-019's height-matching note for the fix).
+
+**Correct pattern:** Render a section's static shell — `Card`/`CardHeader`/`CardPanel`, any label
+text that isn't actually fetched, a real `Table`'s `TableHeader` — unconditionally, every render,
+regardless of loading state. Only the innermost genuinely-fetched content (a KPI's value+trend, a
+chart's data series, a table's rows) swaps between a matched-dimension placeholder and the real
+content. For a chart specifically, the placeholder should be the real chart component fed realistic
+placeholder data (flat, muted-colored bars; real axis labels where they're computable independent of
+the fetch, e.g. a known date range) rather than a blank box or an unrelated generic shape — share
+tick-formatter functions between the placeholder and the real chart so nothing about the axes
+changes when data swaps in.
+
+**Rule:** Before writing `{isLoading ? ... : data ? ... : ...}` around an entire section, check
+whether any of that section's content doesn't actually depend on the fetch — that content belongs
+outside the conditional, rendered unconditionally, with only the truly dynamic remainder swapped.
+
+**Reference:** No real `ascendra-ui` showcase page demonstrates a loading state yet — all 10
+dashboards and 10 reports render static synthetic data with no `useQuery` at all, so there's nothing
+in the showcase this corrects (yet). `ascendra-commons-ui`'s Audit Log Overview
+(`testbed/app/observability/audit/page.tsx`) is the first real implementation; the primitives it's
+built from are real: `ascendra-ui/components/ui/skeleton.tsx` (`Skeleton`) and
+`ascendra-ui/components/ui/empty.tsx` / `ui/table.tsx` (`Empty`, `EmptyBody`).
