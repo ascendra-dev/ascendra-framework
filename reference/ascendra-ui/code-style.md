@@ -1,9 +1,9 @@
 # Code Style Conventions
 
-General code-style preferences that apply across any project's implementation, independent of
-which UI component library or framework a project uses — distinct from
-`reference/ascendra-ui/hard-instructions.md`, which is scoped specifically to `ascendra-ui`
-component usage. Referenced by `/implement-story`'s implementation rules.
+Code-style preferences found while building screens against `ascendra-ui` — distinct from
+`hard-instructions.md` in this same folder, which is scoped to corrections about `ascendra-ui`
+component usage specifically. These are about how the surrounding JSX/TypeScript is written, not
+about which component or prop to use. Referenced by `/implement-story`'s implementation rules.
 
 **Unlike `hard-instructions.md`'s entries, these are preferences to default to, not hard rules**
 — each one says explicitly when it's fine to deviate.
