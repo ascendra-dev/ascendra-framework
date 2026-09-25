@@ -690,3 +690,67 @@ finding.
 **Reference:** `ascendra-ui/providers/data-table/data-table.provider.tsx`;
 `ascendra-ui/providers/data-table/use-pagination.hook.ts`;
 `ascendra-ui/components/ui/table.tsx` (`TableFoot`'s page-size `Select`).
+
+---
+
+### AUI-030 — `Empty`'s `border-dashed` class renders no visible border on its own; pair it with a real container or an explicit `border` utility
+
+**Date:** 2026-09-25
+
+**Observed gap:** Testing `ErrorState`'s default rendering (standalone, no `Card` wrapper) on
+`ascendra-commons-ui`'s Audit Overview page showed a completely boundary-less block — no border,
+no background, nothing distinguishing it from surrounding page content.
+
+**Correct pattern:** `Empty`'s own base classes include `border-dashed` (`rounded-xl border-dashed
+p-10 text-center text-balance`) but never pair it with a `border`/`border-{n}` width utility.
+Tailwind's preflight resets `border-width: 0` globally (`*, ::before, ::after { border: 0 solid;
+}`), so a border-*style* utility alone has zero visual effect without an accompanying
+border-*width* utility — this affects every usage of bare `Empty`/`LoadingState`/`EmptyState`/
+`ErrorState`'s default rendering, not just one screen. `Card`'s own default look (`bg-muted
+rounded-xl`, no border at all) is a different, actually-working visual language for the same
+"boundary" need.
+
+**Rule:** Don't rely on `Empty`'s own default classes for a visible boundary — either wrap it in
+`Card`/`CardPanel` (matching the rest of a dashboard's panels), or pass an explicit `className`
+that adds real border width (e.g. `border` alongside the existing `border-dashed`) if a dashed
+box is specifically wanted standalone. This is a real component gap worth fixing at the source
+(add `border` to `Empty`'s own base classes) rather than patching around at every call site
+indefinitely — flag for a library-level fix if it recurs.
+
+**Reference:** `ascendra-ui/components/ui/empty.tsx`; `ascendra-ui/components/card/card.tsx`
+(`bg-muted rounded-xl`, no border, as the working alternative); Tailwind's own
+`node_modules/tailwindcss/preflight.css` (`border: 0 solid` reset).
+
+---
+
+### AUI-031 — Need a `*State`'s default content nested inside your own wrapper under a separate condition? Use its `*Message` sibling, never a nested `*State`
+
+**Date:** 2026-09-25
+
+**Observed gap:** `ascendra-commons-ui`'s Audit Overview page needed `ErrorState`'s default
+content (title/description/icon/retry button) wrapped in `Card`/`CardPanel`, with the whole thing
+still gated on `overview.isError`. Since `Card`/`CardPanel` have to wrap `Empty` from the outside
+but the `if` gate lives on `ErrorState` (which generates that `Empty` internally), a first attempt
+nested a second, always-true `ErrorState` inside an outer gating `ErrorState`
+(`<ErrorState if={cond}><Card><CardPanel><ErrorState if onRetry={...} /></CardPanel></Card></ErrorState>`)
+purely to reach the default content a second time. This works, but a component nested inside
+itself to serve two unrelated roles (gate vs. content template) is exactly the kind of thing this
+library's naming is supposed to make unnecessary — and it's easy to also drop the specific
+`title`/`error` props in the process, silently falling back to generic copy.
+
+**Correct pattern:** `LoadingState`/`ErrorState`/`EmptyState` each delegate their own default
+rendering to a gate-free sibling — `LoadingMessage`/`ErrorMessage`/`EmptyMessage` — with no `if`
+and no `children` prop, always rendering. Use the `*Message` directly for exactly this
+composition: `<ErrorState if={cond}><Card><CardPanel><ErrorMessage error={...} onRetry={...}
+/></CardPanel></Card></ErrorState>`. One `*State` in the tree (the real gate), one `*Message` (the
+content) — no same-component nesting, no risk of forgetting a prop the outer instance was never
+going to pass through anyway.
+
+**Rule:** Never nest a `*State` component inside another `*State` of the same kind just to reach
+its default content — reach for the matching `*Message` component instead. If a future addition
+to this family (a hypothetical new `*State`) doesn't yet have a `*Message` sibling and this
+composition need comes up again, that's the signal to add one, following this same pattern.
+
+**Reference:** `ascendra-ui/components/common-ui/with-state.tsx`
+(`LoadingMessage`/`ErrorMessage`/`EmptyMessage`); showcase page `feedback/with-state` ("Default
+content nested inside a separately-gated wrapper" example).
