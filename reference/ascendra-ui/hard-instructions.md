@@ -490,3 +490,39 @@ in the showcase this corrects (yet). `ascendra-commons-ui`'s Audit Log Overview
 (`testbed/app/observability/audit/page.tsx`) is the first real implementation; the primitives it's
 built from are real: `ascendra-ui/components/ui/skeleton.tsx` (`Skeleton`) and
 `ascendra-ui/components/ui/empty.tsx` / `ui/table.tsx` (`Empty`, `EmptyBody`).
+
+---
+
+### AUI-022 — Use `WithState`/`WithSkeleton` for a section's loading/error/empty/normal branching outside a real `DataTableProvider` table
+
+**Date:** 2026-09-25
+
+**Observed gap:** `ascendra-commons-ui`'s Audit Log Overview dashboard
+(`testbed/app/observability/audit/page.tsx`) branched loading/error/empty/normal two different ways
+in the same file — a raw ternary for each KPI tile, and the `DataTableLoadingBody`/
+`DataTableEmptyBody`/`DataTableErrorBody` trio (see AUI-019) for the Top Actions table — leaving no
+generalized primitive for a non-table section (KPI tiles, chart panels) needing the same four-way
+branch AUI-021 already established the shell/content-swap discipline for.
+
+**Correct pattern:** `ascendra-ui` now ships two composable families in `components/common-ui/`:
+`WithState`/`NormalState`/`LoadingState`/`ErrorState`/`EmptyState` (showcase `feedback/with-state`)
+and `WithSkeleton`/`SkeletonState` (showcase `feedback/with-skeleton`). Each state is a self-guarding
+sibling gated by its own `if` prop — usable standalone or together, inside or outside a table.
+`LoadingState`/`ErrorState`/`EmptyState` render a built-in `Empty`-based UI by default and accept
+`children` to override it entirely; `NormalState`/`SkeletonState` always require `children`, since
+there is no generic "success"/"skeleton" shape — consistent with AUI-021's point that a skeleton
+must match what it's replacing.
+
+**Rule:** For any async-state branch outside a real `DataTableProvider`-driven table (KPI tiles,
+cards, chart panels, any query-driven section), use this family instead of a hand-rolled ternary or
+reusing `DataTable*Body` outside its scope. Nothing enforces the four `WithState` branches are
+mutually exclusive — pass non-overlapping `if` conditions yourself. When deriving those from a
+`@tanstack/react-query` result, reuse `query.isLoading`/`query.isError` directly rather than
+re-deriving them under a helper using those same names — `useQuery` already returns fields called
+`isLoading`/`isError`, so a helper re-exporting those names forces every caller to alias one set to
+avoid a variable collision when both are destructured together.
+
+**Reference:** `ascendra-ui/components/common-ui/with-state.tsx`;
+`ascendra-ui/components/common-ui/with-skeleton.tsx`; showcase pages `feedback/with-state`,
+`feedback/with-skeleton`. First real consumer: `ascendra-commons-ui`'s Audit Log Overview
+(`testbed/app/observability/audit/page.tsx`), not yet retrofitted as of this entry.
