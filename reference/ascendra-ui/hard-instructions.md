@@ -526,3 +526,167 @@ avoid a variable collision when both are destructured together.
 `ascendra-ui/components/common-ui/with-skeleton.tsx`; showcase pages `feedback/with-state`,
 `feedback/with-skeleton`. First real consumer: `ascendra-commons-ui`'s Audit Log Overview
 (`testbed/app/observability/audit/page.tsx`), not yet retrofitted as of this entry.
+
+---
+
+### AUI-023 — Every top-level screen's `PageHeader` needs `variant="dashboard"`
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: a module screen's first pass used a bare
+`<PageHeader>` — no bottom border separating the title from the content below.
+
+**Correct pattern:** `PageHeader` takes a `variant?: "dashboard"` prop —
+`variant === "dashboard" && "border-b border-border mb-8"` in the component's own source.
+Without it, `PageHeader` renders with no border at all by design (meant for callers composing
+their own separator).
+
+**Rule:** Every top-level module/dashboard screen's `PageHeader` passes `variant="dashboard"`,
+unless there's a specific, stated reason not to.
+
+**Reference:** `ascendra-ui/components/layout/page-header.tsx`.
+
+---
+
+### AUI-024 — Table header labels are sentence case; `DataTableHead`/`TableHead` need `whitespace-nowrap` until it's the default
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: column labels were Title Case ("Entity
+Type", "Correlation ID") instead of sentence case, and headers wrapped onto two lines at
+narrow widths.
+
+**Correct pattern:** No wrap behavior exists on `DataTableHead`/`TableHead` today — confirmed
+against `ascendra-ui/components/data-table/data-table-head.tsx` and
+`ascendra-ui/components/ui/table.tsx`; neither sets `whitespace-nowrap` by default. This is a
+genuine component gap, not a misuse of the API — worth a `Component` suggestion in
+`ascendra-ui/BACKLOG.md` rather than patching a vendored copy directly.
+
+**Rule (interim, until the gap is closed in the library):** Every `DataTableHead`/`TableHead`
+usage passes `className="whitespace-nowrap"`. Column/field labels are always sentence case
+("Occurred at", not "Occurred At") — capitalize only the first letter and proper nouns.
+
+**Reference:** `ascendra-ui/components/data-table/data-table-head.tsx`;
+`ascendra-ui/components/ui/table.tsx`.
+
+---
+
+### AUI-025 — A record reached by clicking a table row is a `Sheet`, not a plain page
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: a record-detail screen's first pass was a
+plain page (`PageHeader` + `Card`/`CardPanel` + a hand-rolled `<dl>`) instead of a `Sheet`.
+
+**Correct pattern:** `Sheet`/`SheetContent`/`SheetHeader`/`SheetTitle`/`SheetDescription`/
+`SheetBody`/`SheetProperties`/`SheetKey`/`SheetValue`/`SheetSection`/`SheetSectionHeader` — the
+"Detail view" pattern `create-sheet.md` documents (key-value rows via `SheetProperties`,
+grouped with `SheetSection`). `create-sheet.md`'s own default assumes the sheet's open/close
+state lives on the same page as the triggering table (`useState`, no navigation) — a
+deep-linkable/permalink record is the one case that stays its own route instead, still styled
+as a `Sheet` via a `Sheet open onOpenChange={...}` wrapper that navigates back on close.
+
+**Rule:** Any "click a row to see the record" screen uses the `Sheet` system, never a full
+`PageHeader`/`Card` page. If the record needs a stable, shareable URL, keep it a route but
+still render `Sheet`/`SheetContent` inside it (open state controlled by the route itself,
+`onOpenChange` navigating back) rather than a plain page layout.
+
+**Reference:** `ascendra-ui/components/ui/sheet.tsx`;
+`ascendra-ui/.claude/commands/create-sheet.md` ("Detail view" pattern).
+
+---
+
+### AUI-026 — `DataTableHighlight` is required on every searchable cell of a query-driven table
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: a list screen's first pass rendered plain
+text in every cell — `DataTableSearchInput` was present and functional, but no cell used
+`DataTableHighlight`, so a search match was never visually marked in the results.
+
+**Correct pattern:** `DataTableHighlight` (`text`, `item`, `itemKey` props) — wraps a cell's
+text and marks the matched substring via `useDataTableSearch()`'s `getRanges`. Used for every
+plain-text cell value in the real reference page (`data-table-lab`).
+
+**Rule:** Any cell showing a searchable text value in a `DataTableWithQueryProvider`/
+`DataTableProvider` table wraps that text in `DataTableHighlight`. A composed cell (badge + id,
+a link) still wraps its plain-text portion.
+
+**Reference:** `ascendra-ui/components/data-table/data-table-highlight.tsx`;
+`ascendra-ui/app/showcase/data-table-lab/page.tsx`.
+
+---
+
+### AUI-027 — `CopyText` is required on any identifier a user would want to copy
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: actor ids, entity ids, correlation ids,
+and event/record ids all rendered as plain text with no copy affordance — `CopyText` exists in
+the library and was simply never used.
+
+**Correct pattern:** `CopyText` (`value`, `showTooltip`, `className`, `children`) — wraps an
+identifier, shows a copy icon, copies `value` to the clipboard on click, optional tooltip
+confirmation.
+
+**Rule:** Any cell/property value that is an id a person would plausibly want to copy (event
+id, entity id, correlation id, actor id) uses `CopyText`. When the same value is also a
+navigation link (e.g. a correlation id linking to its trace), give the link and the copy
+affordance separate click targets — `CopyText`'s own root element owns the click-to-copy
+handler, so nesting a second `onClick` inside its children fires both at once; use a sibling
+element (e.g. a small icon-button) for the navigation action instead.
+
+**Reference:** `ascendra-ui/components/util/copy-text.tsx`.
+
+---
+
+### AUI-028 — Model a combinable filter set as one "Advanced Filter" `QueryDef`, not fragmented single-purpose presets, whenever the API ANDs fields independently
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: a list screen's first pass split one
+ANDed query (every field optional, all combinable) into several separate, mutually-exclusive
+named `QueryDef`s ("By Entity", "By Actor & Action", …) — a user could never combine, say, an
+actor filter with a date range, even though the underlying API supports exactly that.
+
+**Correct pattern:** One `group: 'filter'` `QueryDef` carrying every combinable field as its
+own `ParamItem`, laid out with `QueryDef.columns` (`{ sm, md, lg }`, already supported by
+`data-table-query.types.ts`, easy to forget to set) for a proper multi-column grid instead of
+one field per row.
+
+**Rule:** Before splitting a filterable list screen into multiple named `QueryDef`s, check
+whether the backing API's filter fields are independently ANDable. If they are, model it as
+one "Advanced Filter" `QueryDef` with all fields together (plus `columns` for layout) rather
+than one preset per field — reserve separate named presets for scenarios that are genuinely
+different requests (e.g. a dedicated endpoint), not different filters on the same one. See
+also AUI-006's related but distinct point on exploring the full DataTable feature surface
+before defaulting to the plainest shape.
+
+**Reference:** `ascendra-ui/providers/data-table-query/data-table-query.types.ts`
+(`QueryDef.columns`).
+
+---
+
+### AUI-029 — A mock/fixture batch size smaller than every "Results per page" option makes pagination look broken when it isn't
+
+**Date:** 2026-09-14
+
+**Observed gap:** Found building `audit-logging.ui`: PO review reported a "Results per page"
+selector "does not reflect changes" on a list screen.
+
+**Correct pattern:** Confirmed against `ascendra-ui/providers/data-table/data-table.provider.tsx`
+and `use-pagination.hook.ts`: when a table uses `DataTableWithQueryProvider`,
+`DataTableProvider`'s `data` is the current server batch only (from the query context), and
+`usePagination` re-slices client-side within that one batch. A fixture batch size smaller than
+every "Results per page" option (5/10/15/20/100) means changing the page size has nothing to
+visibly change — the control itself can be wired correctly regardless.
+
+**Rule:** Before concluding a `DataTableWithQueryProvider` pagination control is broken, check
+whether the mock/fixture batch size is at least as large as the smallest "Results per page"
+option being tested — a batch smaller than every page-size choice will always look inert,
+independent of whether the control works. Same root-cause class as AUI-017's undersized-fixture
+finding.
+
+**Reference:** `ascendra-ui/providers/data-table/data-table.provider.tsx`;
+`ascendra-ui/providers/data-table/use-pagination.hook.ts`;
+`ascendra-ui/components/ui/table.tsx` (`TableFoot`'s page-size `Select`).
