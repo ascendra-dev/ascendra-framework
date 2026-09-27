@@ -1142,3 +1142,63 @@ but equally applicable here); `ascendra-ui/preferences/preferences.storage.ts`
 (`serializeParamValues`/`deserializeParamValues`'s existing `DateRange` handling). Real usage:
 `ascendra-commons-ui/packages/audit-logging.ui/queries/audit-query-defs.ts` (both `packages/` and
 `testbed/` copies) and its `audit-query-functions.ts`/mock's `occurredRange` split.
+
+---
+
+### AUI-039 — `QueryParamPanel`'s titled-section divider/label divs blocked clicks on every field inside that section, not just daterange pickers
+
+**Date:** 2026-09-27
+
+**Observed gap:** Found manually testing `audit-logging.ui`'s Advanced Filter — the "Occurred
+between" `daterange` field's picker button did not respond to clicks at all; no popover opened, no
+console error. Confirmed via a real Playwright-driven click (not `page.evaluate(() => el.click())`,
+which can misrepresent what a real pointer event would do) that the click was landing on the page
+but never reaching the button. Root cause, confirmed directly in
+`ascendra-ui/components/data-table/query-param-panel.tsx`: a `QueryDef.params` section break with
+`showTitle: true` renders two decorative divs — a dashed top border and a pill-shaped title label —
+both `absolute`-positioned over the section (`className="absolute inset-0 ..."` /
+`className="... absolute -top-3 left-2 z-10 ..."`), with no `pointer-events-none`. CSS paint order
+for `position: absolute` elements is independent of both DOM source order and `z-index: auto` on
+siblings — an absolutely-positioned element paints above a normal in-flow sibling regardless of
+which one comes first in markup — so these two divs sat on top of *every* interactive field
+rendered inside that titled section group, silently swallowing pointer events meant for whatever
+was underneath. This wasn't specific to `daterange`/the calendar trigger; any field type placed in
+a titled section (`text`, `select`, a checkbox, etc.) would have the same problem, just less
+noticeable for e.g. a text input that can still be reached by tabbing to it.
+
+**Correct pattern:** Any purely decorative, absolutely-positioned overlay element — a divider
+line, a label pill, a background accent — that shares stacking context with interactive content
+must carry `pointer-events-none`, even when it visually looks like it only occupies empty space
+(a 1px border or a small corner label can still block a full-size button underneath it, since the
+overlay's actual hit-testable box is its full `inset-0`/positioned rect, not just the visible
+line/pill).
+
+**The fix**, applied to `query-param-panel.tsx`'s section-title render branch:
+
+```tsx
+{group.showTitle && group.title && (
+  <>
+    <div className="pointer-events-none absolute inset-0 -top-px border-t border-dashed border-gray-400/50" />
+    <div className="text-muted-foreground bg-background pointer-events-none absolute -top-3 left-2 z-10 ml-2 rounded-full border border-dashed border-gray-400/50 px-1.5 py-0.5 text-2xs opacity-100">
+      {group.title}
+    </div>
+  </>
+)}
+```
+
+**Rule:** Whenever adding a decorative `absolute`-positioned element inside a container that also
+holds interactive children, add `pointer-events-none` to it as a default, not an afterthought —
+don't rely on eyeballing whether the overlay's visible pixels overlap the interactive element,
+since its actual box (not its visible border/background) is what blocks the click. Suspect this
+exact class of bug whenever a click silently does nothing (no console error, no state change) on
+an element that is otherwise correctly wired up — check for an absolutely-positioned sibling
+painted after it in the same stacking context before assuming the click handler itself is broken.
+
+**Status:** Applied, verified via lint and `tsc --noEmit`, and confirmed live with a real
+Playwright click plus before/after screenshots (the calendar failed to open before the fix, opened
+correctly — well-positioned two-month view — after it). Committed and pushed to `ascendra-ui`
+(`f13d99f`), then synced into both vendored copies in `ascendra-commons-ui` (`f44957e`).
+
+**Reference:** `ascendra-ui/components/data-table/query-param-panel.tsx` (the section-title render
+branch); `ascendra-commons-ui/packages/audit-logging.ui/queries/audit-query-defs.ts` (the
+`occurredRange` field/`Occurred` section that surfaced it).
