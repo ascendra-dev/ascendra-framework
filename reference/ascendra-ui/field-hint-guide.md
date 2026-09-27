@@ -117,6 +117,71 @@ review and commit.
 
 ---
 
+## `FieldInfo`'s matching gap (2026-09-27): the default branch had the same bug, unfixed
+
+**Where this was found:** `audit-logging.ui`'s Advanced Filter (`QueryFieldRenderer`, not the
+regular `Field`/`FieldHint` forms this doc otherwise focuses on) — fields with `field.info` set sat
+visibly lower than sibling fields without it, in the same `columns`-grid row.
+
+`FieldInfo` (defined a few dozen lines above `FieldHint` in the same `field.tsx`) renders the label
+subtitle — `info` in `FieldDef` terms, "shown below the label, above the input." It has **two**
+render branches, gated on whether a `breakPoint` prop was passed:
+
+```tsx
+function FieldInfo({ className, children, breakPoint, ...props }: ...) {
+  if (!children && breakPoint) {
+    return <p aria-hidden ...>&nbsp;</p>;   // ← already correct
+  }
+  return <p ...>{children}</p>;              // ← the bug: no fallback at all
+}
+```
+
+The `breakPoint`-set branch already had exactly the fix `FieldHint` needed (the literal `&nbsp;`
+fallback described above) — so calls that pass a `breakPoint` were already safe. But the *default*
+branch — no `breakPoint`, which is what `QueryFieldRenderer` always calls
+(`<FieldInfo>{field.info}</FieldInfo>`, never a `breakPoint`) — had no such fallback. `<p>{undefined}</p>`
+renders a genuinely empty paragraph, which does not reliably reserve the same line height as a
+sibling `<p>` with real text — the identical underlying problem `FieldHint` was fixed for, just
+never found in `FieldInfo`'s other branch.
+
+**The fix**, applied directly to `../ascendra-ui/ascendra-ui/components/ui/field.tsx`:
+
+```tsx
+function FieldInfo({ className, children, breakPoint, ...props }: ...) {
+  if (!children) {
+    return (
+      <p
+        aria-hidden
+        data-slot="field-info"
+        className={cn("mt-0.5 text-xs", breakPoint && fieldInfoBreakpointClasses[breakPoint], className)}
+        {...props}
+      >
+        &nbsp;
+      </p>
+    );
+  }
+  return <p data-slot="field-info" className={cn("mt-0.5 text-xs", className)} {...props}>{children}</p>;
+}
+```
+
+The condition is now `!children` alone — any call with no content gets the placeholder, whether or
+not a `breakPoint` was given. The breakpoint-hiding class only applies when `breakPoint` is actually
+set, so both prior behaviors (responsive hiding vs. the plain case) are unchanged; only the "reserve
+height when empty" behavior — previously breakpoint-only — now applies universally.
+
+**Rule:** Treat `FieldInfo` exactly like `FieldHint` — always call it (a bare
+`<FieldInfo>{maybeUndefined}</FieldInfo>` is fine and expected) rather than reasoning "this field has
+no info, I'll just render the label alone." Before this fix that reasoning would have been correct
+defensively (omitting a hint some fields had and others didn't was never actually safe either way);
+after it, it no longer matters — every call reserves the same height regardless of content. See
+AUI-037 in `hard-instructions.md` for the full write-up.
+
+**Status:** Applied, verified via lint and typecheck (both the source repo's own config and
+`ascendra-commons-ui/testbed`'s stricter one), and a live render of `data-table-lab` plus the
+Advanced Filter panel that surfaced it. Committed and pushed to `ascendra-ui`.
+
+---
+
 ## Gotcha 1 — `mandatory` and `optional` are a single choice, not two flags
 
 `{mandatory ? "Mandatory" : "Optional"}` means passing both `mandatory` and `optional` as `true`

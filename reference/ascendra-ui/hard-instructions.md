@@ -531,6 +531,9 @@ avoid a variable collision when both are destructured together.
 
 ### AUI-023 — Every top-level screen's `PageHeader` needs `variant="dashboard"`
 
+**Superseded by AUI-033** (2026-09-26) — narrowed to dashboard-type screens only; see AUI-033 for
+the full per-page-type recipe. Left below unedited per this file's append-only convention.
+
 **Date:** 2026-09-14
 
 **Observed gap:** Found building `audit-logging.ui`: a module screen's first pass used a bare
@@ -548,23 +551,30 @@ unless there's a specific, stated reason not to.
 
 ---
 
-### AUI-024 — Table header labels are sentence case; `DataTableHead`/`TableHead` need `whitespace-nowrap` until it's the default
+### AUI-024 — Table header labels are sentence case; `DataTableHead`/`TableHead` default to `whitespace-nowrap`
 
-**Date:** 2026-09-14
+**Date:** 2026-09-14. **Resolved 2026-09-26** — the interim per-usage workaround below is no
+longer needed; the component itself now defaults to `whitespace-nowrap` (commit
+`50a5d2ccbc1f08d586b08838e769970e8c95e0cb`, squash-merged to `ascendra-ui` `main`). Every real
+`DataTableHead`/`TableHead` usage in `ascendra-commons-ui` has had its explicit
+`className="whitespace-nowrap"` removed accordingly — a caller wanting wrapped header labels can
+still override via `className` (`cn()` uses `tailwind-merge`, so a caller's own `whitespace-*`
+class wins over the default).
 
 **Observed gap:** Found building `audit-logging.ui`: column labels were Title Case ("Entity
 Type", "Correlation ID") instead of sentence case, and headers wrapped onto two lines at
 narrow widths.
 
-**Correct pattern:** No wrap behavior exists on `DataTableHead`/`TableHead` today — confirmed
-against `ascendra-ui/components/data-table/data-table-head.tsx` and
-`ascendra-ui/components/ui/table.tsx`; neither sets `whitespace-nowrap` by default. This is a
-genuine component gap, not a misuse of the API — worth a `Component` suggestion in
-`ascendra-ui/BACKLOG.md` rather than patching a vendored copy directly.
+**Correct pattern (historical — see resolution above):** No wrap behavior existed on
+`DataTableHead`/`TableHead` before the fix — confirmed against
+`ascendra-ui/components/data-table/data-table-head.tsx` and
+`ascendra-ui/components/ui/table.tsx`; neither set `whitespace-nowrap` by default. This was a
+genuine component gap, not a misuse of the API.
 
-**Rule (interim, until the gap is closed in the library):** Every `DataTableHead`/`TableHead`
-usage passes `className="whitespace-nowrap"`. Column/field labels are always sentence case
-("Occurred at", not "Occurred At") — capitalize only the first letter and proper nouns.
+**Rule:** Column/field labels are always sentence case ("Occurred at", not "Occurred At") —
+capitalize only the first letter and proper nouns. Do **not** re-add
+`className="whitespace-nowrap"` to a `DataTableHead`/`TableHead` usage — it's redundant now that
+the component defaults to it; only add a `className` when a header specifically needs to wrap.
 
 **Reference:** `ascendra-ui/components/data-table/data-table-head.tsx`;
 `ascendra-ui/components/ui/table.tsx`.
@@ -754,3 +764,369 @@ composition need comes up again, that's the signal to add one, following this sa
 **Reference:** `ascendra-ui/components/common-ui/with-state.tsx`
 (`LoadingMessage`/`ErrorMessage`/`EmptyMessage`); showcase page `feedback/with-state` ("Default
 content nested inside a separately-gated wrapper" example).
+
+---
+
+### AUI-032 — A chart loading skeleton is the real chart fed parameterized placeholder data — there is no single component that infers its shape automatically
+
+**Date:** 2026-09-26
+
+**Observed gap:** AUI-021 already established that a chart's placeholder should be "the real chart
+component fed realistic placeholder data" rather than a blank box, and `ascendra-commons-ui`'s Audit
+Log Overview volume chart (`testbed/app/observability/audit/page.tsx:104-110`, `:256-293`) is a working
+example — but it's the *only* one, and its placeholder generator (`buildPlaceholderPerDay`) is
+hardcoded to a `{ day: string, count: number }` shape: 30 calendar days back from today, one series. A
+survey of every `<BarChart>`/`<ComposedChart>` in `ascendra-ui`'s showcase (10 dashboards + 6 reports,
+19 bar-bearing charts total) found at least six structurally distinct shapes in real use: flat-fill
+single-series (4), per-datum conditional `<Cell>` fill where color depends on the value itself (5:
+`devops`, `real-estate`, `marketing`, `trading-portfolio`, `financial-pnl`), grouped multi-series (7),
+stacked multi-series (2), and stacked-bars-plus-`<Line>`-overlay on a dual Y-axis (2, `financial-pnl`).
+13 of 19 use a categorical axis (department/region/channel/histogram-bin/property-name), not a
+calendar date; none use a rolling "N days back from today" domain like the one example that exists.
+Every chart hardcodes its bar `fill` as a literal `var(--chart-N)` or a conditional expression — zero
+use the dynamic `var(--color-{key})` `chartConfig` convention — so there is no shared config value a
+generic component could read to know what "muted" means for a given chart. None of these 16 files has
+a real query hook yet (all render static mock arrays), so this is forward-looking guidance, not a
+retrofit. Conclusion: a single `ChartSkeleton` that inspects a real chart's data/config and invents its
+own placeholder is not achievable — it would have to guess axis domain type, series count, stacking
+mode, and layout orientation, none of which are inferable from a data array.
+
+**Correct pattern:** Target the same fidelity tier as the existing example — the real
+`ChartContainer`/chart component (`BarChart`, `LineChart`, `AreaChart` alike; the recipe doesn't care
+which), real `CartesianGrid`/axis/tick-formatter config shared verbatim with the loaded state, no
+`ChartTooltip`, series color swapped to `var(--muted)`, wrapped in `animate-pulse` — so the plot area is
+pixel-identical between loading and loaded and nothing shifts when real data lands. A flat, non-zero
+placeholder value renders a visible shape for any of these chart types (a bar, line, or area at `y=0`
+is invisible/degenerate the same way a zero-height bar is). What does **not** carry over automatically
+is the placeholder *data itself* — every chart still needs its own domain (a date-range generator, or
+an explicit category-label list) and its own series keys supplied as parameters; there is no canned
+dataset that fits more than one chart. For the per-datum conditional-`<Cell>`-fill charts, skeleton
+mode should force one flat muted fill for every cell and drop the conditional entirely — there's no
+real value yet for the condition to evaluate, so faking it isn't meaningful. Once any of these charts
+gains a real query, delay showing the skeleton by ~150-300ms so a fast/cached response never flashes
+one frame of it (matches the general debounce convention for any `LoadingState`, not chart-specific).
+
+**Rule:** When giving a new dashboard/report chart (bar, line, or area) a loading state, reuse this
+recipe — real chart component + shared axis config + muted flat placeholder data, `WithSkeleton`/
+`SkeletonState` gating it (AUI-022) — never a generic `<Skeleton>` rectangle or shimmer silhouette for
+a chart that already has a real axis config to share. Do not reach for or build a single
+auto-inferring `ChartSkeleton` component expecting it to work across chart shapes unmodified; instead,
+each chart's own file supplies its own domain generator, series keys, and layout orientation, the same
+way each chart today already supplies its own `chartConfig`/tick formatters by hand. If a shared
+low-level helper is built (a `makePlaceholderData`-style generator, mirroring the existing
+`makeTooltipFormatter`/`ChartSeriesLegend` precedent of small composable per-concern helpers rather
+than one monolithic chart component), it takes the domain and series keys as explicit arguments — it
+does not infer them.
+
+**Reference:** `ascendra-commons-ui/testbed/app/observability/audit/page.tsx:104-110,256-293`
+(working example, AUI-021); `ascendra-ui/components/charts/make-tooltip-formatter.tsx`,
+`ascendra-ui/components/charts/chart-series-legend.tsx` (existing composable-helper precedent). No
+`ChartSkeleton`/placeholder-generator component exists in `ascendra-ui` yet as of this entry — this is
+a design decision to steer the eventual extraction, not a record of a shipped component.
+
+---
+
+### AUI-033 — A page's top-level structure is one of four fixed recipes, keyed to page type; `PageMain` is never skipped except by the two that replace it entirely
+
+**Date:** 2026-09-26
+
+**Observed gap:** Every non-dashboard screen in `ascendra-commons-ui`'s `audit-logging.ui`
+(`events/page.tsx`, `retention/page.tsx`, `trace/[correlationId]/page.tsx`,
+`entities/[type]/[id]/page.tsx`, `actors/[actor]/page.tsx`, and the `observability` landing page)
+skipped `PageMain` entirely — going straight from the header `Fragment` to a bare `MainContent` —
+and none used `PageWrapper`/`PageContent` at all, despite `ascendra-ui` shipping a full page-layout
+family (`PageMain`, `PageWrapper`, `PageContent`, `MainContent`, `AsideContent`, `DashboardContent`,
+`ReportDocumentWrapper`, and the `Tabs`/`TabList`/`TabTrigger`/`TabContent` family) purpose-built for
+exactly this. Investigating the real component source and showcase also surfaced that AUI-023's rule
+("every top-level screen needs `PageHeader variant="dashboard"`") was an overgeneralization drawn
+from having only built one dashboard-type screen at the time — the real pattern is narrower (see
+below) — and a second, unrelated finding: `TableBar`'s `data-slot` had a typo (`"able-bar"` instead
+of `"page-bar"`) that silently made `PageContent`/`TabContent`'s margin-collapse behavior permanently
+dead code. **That typo has since been fixed directly in `ascendra-ui`** (commit
+`220732fa16f44a3051fae99c31598f05cb2d50e8`, squash-merged to `main`) — this is not a workaround
+entry, the component itself is corrected.
+
+**Correct pattern — four page-type recipes, each keyed by real `ascendra-ui` source/showcase:**
+
+1. **Dashboard page** — `PageHeader variant="dashboard"` (the border/margin comes from the header
+   itself: `variant === "dashboard" && "border-b border-border mb-8"` in `page-header.tsx`) +
+   `DashboardContent` (`flex flex-col gap-4`, no custom props). `DashboardContent` **replaces**
+   `PageMain`/`PageWrapper`/`PageContent` entirely — none of the three appear. Confirmed: every real
+   `app/showcase/dashboards/*/page.tsx` imports `DashboardContent` + `PageHeader` and nothing from
+   the `PageMain` family.
+2. **Report page** — no `PageHeader` at all. `(BackLink) + ReportDocumentWrapper` only, which
+   replaces everything including the header. Confirmed: every real `app/showcase/reports/*/page.tsx`.
+3. **Tabbed page** — plain `PageHeader` (**no** `variant="dashboard"`) → `PageMain` → `Tabs
+   defaultValue="..."> TabList > TabTrigger[]` + `TabContent[]`. Skip `PageWrapper`/`PageContent` —
+   `TabList` draws its own bottom hairline as the divider, and `TabContent` already carries
+   `PageContent`'s exact spacing className (`mt-8 flex flex-col gap-6`, inner `flex flex-col
+   items-start gap-8 lg:flex-row`) internally, so nesting `PageContent` inside `TabContent` would
+   double it. Each `TabContent` wraps `MainContent` directly (plus `AsideContent` as a sibling, for a
+   two-column tab). Confirmed: `app/showcase/data-table-lab/page.tsx:83-256` (`PageMain > Tabs >
+   TabList + TabContent > MainContent`, real page skips `PageWrapper` entirely here, same as this
+   entry recommends) and `app/showcase/layout-guide/page.tsx:395-481`.
+4. **Standard page** (list/detail/settings — everything not covered by 1-3) — plain `PageHeader` (no
+   variant) → `PageMain` (mandatory, never skipped) → `PageWrapper` (renders one unconditional
+   `border-border border-b` divider div, nothing else — this is the header-to-content separator) →
+   `PageContent` (`mt-8 flex flex-col gap-6`, plus an inner `flex flex-col items-start gap-8
+   lg:flex-row` div that is what makes `MainContent` + `AsideContent` sit side-by-side at `lg:` —
+   `MainContent` itself is `lg:flex-1`, `AsideContent` is `lg:w-fit`) → `MainContent` (+ `AsideContent`
+   as a sibling, only when the page has a genuine secondary panel). Confirmed:
+   `app/showcase/layout-guide/page.tsx:313-333` and its own doc text at line 292: *"The standard
+   full-page composition tree: (BackLink) → PageHeader → PageMain → PageWrapper → PageContent body →
+   MainContent → sections. PageWrapper renders the horizontal rule that separates the header from the
+   content area. For tabbed pages, replace PageWrapper with Tabs — the TabList provides the divider."*
+   — this is `ascendra-ui`'s own stated rule for recipe 3 vs. 4, not an inference.
+
+`PageContent`'s `mt-8` **always** applies for recipe 4 — its collapse-to-`mt-0` selector
+(`[[data-slot=page-bar]+&]:mt-0`, meant to zero the margin when a search/filter toolbar sits directly
+above) requires a preceding sibling with `data-slot="page-bar"` exactly; before this entry's fix, no
+component in `ascendra-ui` ever set that value (`TableBar`, the component actually showcased as "Page
+Bar", had the `able-bar` typo), so don't design a layout assuming this collapse will fire based on
+old behavior — it now does, but only when `TableBar` is that direct preceding sibling.
+
+**Superseding AUI-023:** `variant="dashboard"` on `PageHeader` is exclusive to recipe 1 (paired with
+`DashboardContent`) — never apply it to a tabbed or standard page. A standard/tabbed page's header
+divider comes from `PageWrapper` or `TabList` instead, never from the header itself.
+
+**Rule:**
+- Classify every new screen into exactly one of the four recipes above before writing its JSX — never
+  default to a bare `MainContent` with no `PageMain` wrapper, and never mix a recipe's divider source
+  with another's (e.g. `variant="dashboard"` alongside `PageWrapper` would double the divider).
+- `PageMain` is skipped only for recipes 1 and 2, where `DashboardContent`/`ReportDocumentWrapper`
+  subsume it. Every recipe-3/4 screen keeps it.
+- `PageWrapper` and `PageContent` are a pair for recipe 4 — don't use one without the other; `Tabs`
+  replaces both together for recipe 3, not just `PageWrapper`.
+- Add `AsideContent` only when a screen has a genuine secondary/contextual panel, as a sibling of
+  `MainContent` inside `PageContent` (recipe 4) or `TabContent` (recipe 3) — never as a substitute for
+  a second `MainSection`-style block within the same column (`ascendra-ui` has no `MainSection`
+  family; use `Card`/`CardHeader`/`CardPanel`/`CardPanelItem` — see AUI-020 — for grouped/divided
+  content within one column).
+
+**Reference:** `ascendra-ui/components/layout/{page-main,page-wrapper,page-content,main-content,
+aside-content,dashboard-content}.tsx`; `ascendra-ui/components/tabs/{tabs,tab-list,tab-trigger,
+tab-content}.tsx`; `ascendra-ui/components/layout/table-bar.tsx` (the `data-slot="page-bar"` fix,
+commit `220732fa16f44a3051fae99c31598f05cb2d50e8`); `ascendra-ui/app/showcase/data-table-lab/page.tsx`;
+`ascendra-ui/app/showcase/dashboards/saas-revenue/page.tsx`;
+`ascendra-ui/app/showcase/reports/annual-financial-statement/page.tsx`;
+`ascendra-ui/app/showcase/layout-guide/page.tsx` (lines 292-333 standard shell, 395-481 tabs,
+906-985 aside).
+
+---
+
+### AUI-034 — Use `formatDateTime` for any timestamp display; never a raw `.toLocaleString()`/`.toLocaleDateString()`
+
+**Date:** 2026-09-26
+
+**Observed gap:** `ascendra-commons-ui`'s `audit-logging.ui` had 9 real call sites calling
+`new Date(x).toLocaleString()`/`.toLocaleDateString()` directly — event timestamps, actor
+first/last-seen, retention job's last-run — each locale/OS-dependent and inconsistent with the
+`'en-US'`-hardcoded convention every other formatter in the library already follows. No shared
+utility supported time-of-day or relative/elapsed time ("3 days ago") at all before this entry —
+a real, previously-flagged gap (this same need was noted while building this module's Overview
+dashboard, months before this fix).
+
+**Correct pattern:** `formatDateTime(value, options)` in `ascendra-ui/utils/common.util.ts` —
+`style?: 'short' | 'medium' | 'long' | 'relative'` (default `'medium'`), `time?: boolean` (append
+time-of-day, ignored when `style: 'relative'`), `relativeFallbackDays?: number` (default 7 — past
+this age, `'relative'` auto-falls-back to an absolute `'medium'` date, via
+`date-fns`'s `formatDistanceToNow`, so an old timestamp never reads as "8 months ago"). The
+existing `formatDate`/`formatShortDate`/`formatDateRange` now delegate to it internally and are
+`@deprecated` — not removed, since they're already used across real dashboards/reports (same
+"can't remove, mark obsolete instead" precedent as any widely-adopted shared function) — new code
+should call `formatDateTime` directly rather than the deprecated wrappers.
+
+Choosing `time`/`style` is a real per-field decision, not a default to copy everywhere — this
+module split it as: a **raw audit-event timestamp** (the event list's "Occurred at" column, the
+record detail Sheet, the entity/trace timeline) uses `{ time: true }` (precise, absolute — an audit
+trail's whole point is exact time), while an **activity-status field** (actor "first seen"/"last
+seen", a retention job's "last ran", a per-action "last occurred") uses `{ style: 'relative' }`
+(a human-friendly "2 hours ago" is more useful there than a precise timestamp, and the
+`relativeFallbackDays` auto-fallback keeps a very old "first seen" from reading as nonsense).
+
+**Rule:** Never call `.toLocaleString()`/`.toLocaleDateString()` on a `Date` directly for anything
+a user reads — always `formatDateTime`. Before picking `style`/`time` for a new field, ask whether
+it's a precise historical record (→ absolute, usually with `time: true`) or an at-a-glance
+recency/status indicator (→ `style: 'relative'`) — don't default to one without considering which
+the field actually is.
+
+**Reference:** `ascendra-ui/utils/common.util.ts` (`formatDateTime`, commit
+`11b8d802d39ba70751514faa53371aa1971b5306`); retrofitted real usage across
+`ascendra-commons-ui`'s `audit-logging.ui` — `events/page.tsx`, `events/[id]/page.tsx`,
+`_audit-event-timeline.tsx`, `retention/page.tsx`, `actors/[actor]/page.tsx` (both `packages/` and
+`testbed/` copies).
+
+---
+
+### AUI-035 — A column with a custom-formatted cell needs its own `ColumnDef.searchValue`, or search/highlight silently disagree with what's shown
+
+**Date:** 2026-09-26
+
+**Observed gap:** Found via `audit-logging.ui`'s `occurredAt` column (`type: 'date'`, displayed via
+`formatDateTime(row.occurredAt, { time: true })` — see AUI-034) after switching it to a custom,
+time-inclusive display format. `useSearch`'s two search paths each computed a searchable string
+completely independent of what a column actually renders: plain (non-fuzzy) search used a fixed
+`new Date(val).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })` —
+no time-of-day, ever — and fuzzy search (Fuse.js) indexed the **raw field value** directly (e.g.
+the raw ISO string). `DataTableHighlight` then applies whatever character ranges either path
+produces straight onto the caller's own `text` prop. Confirmed via a direct Fuse.js reproduction:
+searching "sep" in fuzzy mode against a raw ISO date returns indices computed against that raw
+string, which — sliced out of a differently-formatted display string like `"Sep 04, 2026, 6:05
+PM"` — land on the wrong characters. Plain-mode search happened to still work for this specific
+column purely by coincidence (both the internal en-GB format and the display format use the same
+month abbreviations), but the time-of-day portion was never searchable, and nothing guaranteed the
+coincidence would hold for a differently-formatted column (e.g. a `style: 'relative'` cell like
+"2 hours ago" — searching "hours" would find nothing, since the internal formatter never produces
+that string).
+
+**Correct pattern:** `ColumnDef<T>` now accepts an optional `searchValue?: (value, row) => string`.
+When present, both search paths call it instead of the built-in per-`type` formatter — the plain
+filter directly, and Fuse's per-key `getFn` (Fuse.js v7's `keys: [{ name, getFn }]` form, not a bare
+key-name string) for fuzzy mode, so fuzzy match/highlight ranges are computed against the same
+string rather than the raw value. **The contract:** `column.searchValue(value)` must return the
+exact same string the cell passes to `DataTableHighlight`'s `text` prop — nothing enforces this at
+compile time, it's a convention. `audit-logging.ui`'s `occurredAt` column sets
+`searchValue: (value) => formatDateTime(value as string, { time: true })`, mirroring its cell's
+`formatDateTime(row.occurredAt, { time: true })` exactly. Columns with no override are unaffected —
+confirmed byte-identical fallback behavior to the pre-existing formatter.
+
+**Rule:** Any column whose cell renders a custom-formatted string (a shared date/time formatter, a
+relative-time string, a currency format that differs from the library's built-in `type: 'number'`
+handling, etc.) sets a matching `searchValue` that calls the *identical* formatter/options the cell
+uses — never leave it to the library's generic per-`type` default once the display diverges from
+that default. A `type: 'date'`/`'number'` column with no custom cell formatting doesn't need one —
+the built-in default already matches what's shown.
+
+**Reference:** `ascendra-ui/providers/data-table/data-table.types.ts` (`ColumnDef.searchValue`);
+`ascendra-ui/providers/data-table/use-search.hook.ts` (`resolveSearchValue`, the Fuse `getFn`
+wiring); commit `3bab67f19b989540f1a9f4e0f365ee792482b788`. Real usage:
+`ascendra-commons-ui/packages/audit-logging.ui/queries/audit-query-defs.ts` (`occurredAt`'s
+`searchValue`, both `packages/` and `testbed/` copies).
+
+---
+
+### AUI-036 — Plain (non-fuzzy) `DataTable` search now matches multi-word queries word-by-word, not as one literal phrase
+
+**Date:** 2026-09-26
+
+**Observed gap:** Found immediately after AUI-035, real PO usage of the retrofitted `occurredAt`
+column: searching `"sep"` matched and highlighted correctly, but `"sep 2"` returned zero rows.
+Root cause, confirmed directly: plain-mode search (`use-search.hook.ts`'s non-fuzzy filter) treated
+the whole typed string — spaces included — as one literal contiguous substring to find.
+`"Sep 04, 2026, 6:05 PM"` never contains the literal 5-character sequence `"sep 2"` (`"04, "` sits
+between `"Sep"` and `"2026"`), even though both words are individually present. `DataTableHighlight`'s
+own fallback highlighter (used whenever fuzzy-computed ranges aren't available — i.e. always in
+plain mode) had the identical single-phrase-regex limitation. Confirmed fuzzy mode already tolerated
+this via Fuse's approximate matching — the gap was plain mode only. Not specific to date columns or
+to AUI-035's `searchValue` addition — any column where a user types two words that aren't contiguous
+in that exact order would misbehave the same way; a formatted date string just makes it obvious.
+
+**Correct pattern:** Both the plain filter and `DataTableHighlight`'s fallback now split the typed
+term on whitespace and treat each word independently — the filter requires every word to appear
+somewhere across the row's searchable columns (not necessarily the same column, not necessarily
+contiguous — row-wide AND, matching typical global-search-box UX), and the highlighter builds an
+alternation regex (`(word1|word2|...)`) so each matched word highlights on its own. Single-word
+queries are unaffected — confirmed equivalent to the prior behavior.
+
+**Rule:** Don't design column search-value formatting to defensively avoid multi-word display
+strings, or worry that "Month Day, Year" style formatting will break search — plain mode now handles
+it word-by-word like a normal search box. This is orthogonal to AUI-035: AUI-035 makes search match
+what a column *displays*; this entry makes multi-word phrases within that display actually findable.
+
+**Reference:** `ascendra-ui/providers/data-table/use-search.hook.ts` (the word-split filter);
+`ascendra-ui/components/data-table/data-table-highlight.tsx` (the word-alternation highlight
+fallback); commit `878af90abbd724d1811a78678d74cda4489cc794`.
+
+---
+
+### AUI-037 — `FieldInfo`'s default (no-`breakPoint`) branch didn't reserve height when empty, only its `breakPoint` branch did
+
+**Date:** 2026-09-27
+
+**Observed gap:** Found reviewing `audit-logging.ui`'s Advanced Filter: fields with an `info`
+subtitle sat visibly lower/misaligned relative to sibling fields without one in the same
+`columns`-grid row (a real problem specifically at `lg: 3` — 5 identity-style fields plus a
+date range meant not every field in a row had `info` set). Root cause, confirmed directly in
+`ascendra-ui/components/ui/field.tsx`: `FieldInfo` has two render branches. The
+`breakPoint`-set branch already had the exact fix `FieldHint` needed (see the "Default value fix"
+section in `field-hint-guide.md`) — it falls back to a literal `&nbsp;` when `children` is falsy,
+so it reliably reserves the row's height either way. The *default* branch (no `breakPoint` —
+`QueryFieldRenderer`'s own call, `<FieldInfo>{field.info}</FieldInfo>`, never passes one) had no
+such fallback: `<p>{children}</p>` with `children` `undefined` renders a genuinely empty
+paragraph, which does not reliably match the height of a sibling `<p>` that has real text —
+same underlying class of bug `FieldHint` was already fixed for, just not yet found in `FieldInfo`'s
+other branch.
+
+**Correct pattern:** `FieldInfo` now checks `!children` unconditionally (not `!children &&
+breakPoint`) — any call with no content falls back to the same `&nbsp;`-rendering placeholder,
+whether or not a `breakPoint` was given. The breakpoint-hiding classes only apply when `breakPoint`
+is actually set (`breakPoint && fieldInfoBreakpointClasses[breakPoint]`), so the two prior
+behaviors (breakpoint-based responsive hiding vs. the plain no-breakpoint case) are preserved —
+only the "reserve height when empty" behavior, previously breakpoint-only, now applies universally.
+
+**Rule:** Treat `FieldInfo` the same as `FieldHint` per field-hint-guide.md's own rule — always
+call it (bare `<FieldInfo />`/`<FieldInfo>{field.info}</FieldInfo>` is fine and expected) rather
+than conditionally omitting it, and don't assume that omitting `info`/passing `undefined` on some
+fields but not others is safe within the same grid row — it wasn't, until this fix. This applies
+anywhere `FieldInfo` is used, not just `QueryFieldRenderer`.
+
+**Status:** Applied directly to `ascendra-ui/components/ui/field.tsx`. See
+`field-hint-guide.md`'s own "FieldInfo's matching gap" section for the full before/after.
+
+**Reference:** `ascendra-ui/components/ui/field.tsx` (`FieldInfo`);
+`ascendra-ui/components/data-table/query-field-renderer.tsx` (the call site that surfaced it);
+`field-hint-guide.md`.
+
+---
+
+### AUI-038 — `QueryDef.params` (`FieldDef`) shares `field-hint-guide.md`'s `mandatory`/`optional` badge-minority rule — and a bounded range is one `daterange` field, not two independent `date` fields
+
+**Date:** 2026-09-27
+
+**Observed gap:** Found reviewing `audit-logging.ui`'s Advanced Filter against `data-table-lab`'s
+own "Advanced Invoice Filter" reference example. Two separate gaps in the same screen:
+
+1. Every one of the filter's 7 fields carried `optional: true` — every field in the form badged,
+   which is exactly the crowding `field-hint-guide.md`'s "Form-authoring guidance" section already
+   warns against for regular `Field`/`FieldHint` forms ("never badge every field in both
+   directions at once ... the badge exists to flag the *minority* case"). That guidance was written
+   against `components/forms/*.tsx` usage but applies identically to `QueryDef.params`/`FieldDef`
+   — `mandatory`/`optional` on a `FieldDef` renders through the exact same `FieldHint` component
+   (see `query-field-renderer.tsx`'s `<FieldHint mandatory={field.mandatory}
+   optional={field.optional} .../>`), so the same crowding argument holds. When *every* field in a
+   `QueryDef` is uniformly optional (or uniformly mandatory), there's no minority left to flag —
+   the badge should be dropped entirely and the uniform fact stated once instead.
+2. `occurredAfter`/`occurredBefore` were modeled as two independent `type: 'date'` `FieldDef`s, even
+   though they're really one bounded range (a user picks a start and an end for the same
+   condition) — `FieldType` already includes `'daterange'` for exactly this, demonstrated in
+   `data-table-lab`'s own reference example (`dateRange`, `issueDateRange`, `dueDateRange`).
+
+**Correct pattern:**
+1. When every field in a `QueryDef` is uniformly optional/mandatory, remove the per-field
+   `optional`/`mandatory` flags entirely and state it once via `QueryDef.info` (rendered in the
+   filter panel's `CardFooter`) — e.g. `"Every field is optional — set any combination and results
+   must match all of them (AND logic)."` — instead of an identical badge repeated on every field.
+   Reserve per-field `mandatory`/`optional` for when a form has a genuine minority to flag, exactly
+   as field-hint-guide.md already prescribes for regular forms.
+2. Model a single bounded range (a from/to pair meant as one condition, not two independently
+   optional ones) as one `type: 'daterange'` `FieldDef`, not two `type: 'date'` fields. The
+   `DateRange` value it produces (`{ from?, to? }`) is already handled end-to-end —
+   `serializeParamValues`/`deserializeParamValues` in `preferences.storage.ts` already special-case
+   `DateRange` for localStorage persistence — so nothing else needs to change to support it; the
+   query function/mock that previously read two separate `Date` params just reads
+   `params.someRangeField as DateRange` and splits `.from`/`.to` back into whatever two-param shape
+   the underlying API actually expects, entirely inside that one function.
+
+**Rule:** Before adding `optional`/`mandatory` to every field in a new `QueryDef`, count how many
+fields would actually get the badge — if that's all of them (or none), drop the badges and use
+`QueryDef.info` instead. Before modeling two `date` fields for what's really one range, check
+whether `type: 'daterange'` fits instead — it almost always does when the two dates are the same
+logical condition (a bounded window), not two unrelated ones.
+
+**Reference:** `ascendra-ui/providers/data-table-query/data-table-query.types.ts` (`FieldType`,
+`FieldDef.span`/`.mandatory`/`.optional`, `QueryDef.info`); `field-hint-guide.md`'s
+"Form-authoring guidance" section (the badge-minority rule itself, written for `Field`/`FieldHint`
+but equally applicable here); `ascendra-ui/preferences/preferences.storage.ts`
+(`serializeParamValues`/`deserializeParamValues`'s existing `DateRange` handling). Real usage:
+`ascendra-commons-ui/packages/audit-logging.ui/queries/audit-query-defs.ts` (both `packages/` and
+`testbed/` copies) and its `audit-query-functions.ts`/mock's `occurredRange` split.
