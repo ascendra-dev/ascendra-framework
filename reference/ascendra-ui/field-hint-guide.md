@@ -117,7 +117,7 @@ review and commit.
 
 ---
 
-## `FieldInfo`'s matching gap (2026-09-27): the default branch had the same bug, unfixed
+## `FieldInfo`'s matching gap (2026-09-27): the default branch has the same bug — diagnosed, fix reverted, mitigate via `description` instead
 
 **Where this was found:** `audit-logging.ui`'s Advanced Filter (`QueryFieldRenderer`, not the
 regular `Field`/`FieldHint` forms this doc otherwise focuses on) — fields with `field.info` set sat
@@ -132,19 +132,21 @@ function FieldInfo({ className, children, breakPoint, ...props }: ...) {
   if (!children && breakPoint) {
     return <p aria-hidden ...>&nbsp;</p>;   // ← already correct
   }
-  return <p ...>{children}</p>;              // ← the bug: no fallback at all
+  return <p ...>{children}</p>;              // ← the gap: no fallback at all
 }
 ```
 
-The `breakPoint`-set branch already had exactly the fix `FieldHint` needed (the literal `&nbsp;`
-fallback described above) — so calls that pass a `breakPoint` were already safe. But the *default*
+The `breakPoint`-set branch already has exactly the fix `FieldHint` needed (the literal `&nbsp;`
+fallback described above) — so calls that pass a `breakPoint` are already safe. But the *default*
 branch — no `breakPoint`, which is what `QueryFieldRenderer` always calls
-(`<FieldInfo>{field.info}</FieldInfo>`, never a `breakPoint`) — had no such fallback. `<p>{undefined}</p>`
+(`<FieldInfo>{field.info}</FieldInfo>`, never a `breakPoint`) — has no such fallback. `<p>{undefined}</p>`
 renders a genuinely empty paragraph, which does not reliably reserve the same line height as a
 sibling `<p>` with real text — the identical underlying problem `FieldHint` was fixed for, just
-never found in `FieldInfo`'s other branch.
+never found in `FieldInfo`'s other branch. **This diagnosis is still accurate** — what follows is
+what was tried, then undone.
 
-**The fix**, applied directly to `../ascendra-ui/ascendra-ui/components/ui/field.tsx`:
+**The fix that was proposed and briefly applied**, then reverted the same day (maintainer's call —
+see AUI-037 in `hard-instructions.md` for the reasoning):
 
 ```tsx
 function FieldInfo({ className, children, breakPoint, ...props }: ...) {
@@ -164,21 +166,27 @@ function FieldInfo({ className, children, breakPoint, ...props }: ...) {
 }
 ```
 
-The condition is now `!children` alone — any call with no content gets the placeholder, whether or
-not a `breakPoint` was given. The breakpoint-hiding class only applies when `breakPoint` is actually
-set, so both prior behaviors (responsive hiding vs. the plain case) are unchanged; only the "reserve
-height when empty" behavior — previously breakpoint-only — now applies universally.
+The condition would have been `!children` alone — any call with no content gets the placeholder,
+whether or not a `breakPoint` was given. Reverted rather than change shared `FieldInfo` behavior for
+a gap that has a workable mitigation at the content-authoring level instead (below).
 
-**Rule:** Treat `FieldInfo` exactly like `FieldHint` — always call it (a bare
-`<FieldInfo>{maybeUndefined}</FieldInfo>` is fine and expected) rather than reasoning "this field has
-no info, I'll just render the label alone." Before this fix that reasoning would have been correct
-defensively (omitting a hint some fields had and others didn't was never actually safe either way);
-after it, it no longer matters — every call reserves the same height regardless of content. See
-AUI-037 in `hard-instructions.md` for the full write-up.
+**The actual mitigation in place — use `description` for isolated fields, `info` only when uniform:**
+`FieldHint`'s own bare-call fallback (the "Default value fix" above) *was* kept, so `description`
+already reserves height safely even when only some fields in a row have one set. So:
+- Need a hint on just one or a few "odd" fields in a grid row? Put it in `description`
+  (`FieldHint`), not `info` (`FieldInfo`) — safe today.
+- Want to give every field in the row a subtitle? `info` is fine there — a row where `info`
+  presence is uniform across every field never hits this gap, since there's no "some empty, some
+  not" case to misalign.
 
-**Status:** Applied, verified via lint and typecheck (both the source repo's own config and
-`ascendra-commons-ui/testbed`'s stricter one), and a live render of `data-table-lab` plus the
-Advanced Filter panel that surfaced it. Committed and pushed to `ascendra-ui`.
+**Rule:** Don't reach for `info` on a subset of fields in a `columns`-grid row — check whether
+every sibling in that row will also have `info` set; if not, use `description` on the ones that
+need it instead.
+
+**Status:** Diagnosis confirmed via direct source read; fix written, verified (lint, typecheck,
+live render), committed and pushed (`ascendra-ui` commit `9402593`) — then reverted the same day
+(`91e8b3f`). The gap itself is unresolved in `FieldInfo`; the mitigation above is a content-authoring
+workaround, not a library fix.
 
 ---
 
