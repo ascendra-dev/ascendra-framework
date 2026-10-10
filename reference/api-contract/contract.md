@@ -55,9 +55,9 @@ Return the resource's natural shape directly, at the correct 2xx status. Do not 
 boolean flag adds boilerplate on every backend framework for zero benefit. Every endpoint's success
 shape is typed by its own DTO/interface — there is nothing generic to standardize here.
 
-## Rule 4 — Lists get one of two fixed shapes
+## Rule 4 — Lists get one of two fixed shapes, or a bare array when bounded
 
-**Page-based (the default).** Use this unless the exception below applies:
+**Page-based (the default).** Use this unless one of the exceptions below applies:
 
 ```json
 {
@@ -94,6 +94,20 @@ and pick cursor-based only for a documented reason (cite it in the project's `ap
 e.g. "audit log, append-only, COUNT(*) over the full table is not viable"). Query params for the
 cursor-based case: `cursor` (opaque, omit on the first request) and `limit` (same default/max as
 `perPage` — default `20`, max `100`), in place of page-based's `page`/`perPage` (Rule 6).
+
+**Bare array (bounded, unpaginated collections).** A collection whose size has a small, fixed
+upper bound by nature — enum-like lookups, dropdown options, one entity's own short history —
+may return the rows directly as the response body, with no `data`/`meta` wrapper:
+
+```json
+[ /* ... */ ]
+```
+
+Wrapping such a collection in the page-based shape would only ever report `totalPages: 1`, so the
+envelope adds nothing (same reasoning as Rule 3). This does **not** cover a collection that grows
+with usage (records, transactions, events) — "we don't need pagination yet" is not a bound, and
+retrofitting pagination later is a breaking change for every client. If in doubt, use page-based.
+No pagination query params apply; filtering params (Rule 6) still may.
 
 ## Rule 5 — Request method semantics
 
