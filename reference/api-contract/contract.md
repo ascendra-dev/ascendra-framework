@@ -55,7 +55,9 @@ Return the resource's natural shape directly, at the correct 2xx status. Do not 
 boolean flag adds boilerplate on every backend framework for zero benefit. Every endpoint's success
 shape is typed by its own DTO/interface — there is nothing generic to standardize here.
 
-## Rule 4 — Lists get one fixed shape
+## Rule 4 — Lists get one of two fixed shapes
+
+**Page-based (the default).** Use this unless the exception below applies:
 
 ```json
 {
@@ -64,8 +66,34 @@ shape is typed by its own DTO/interface — there is nothing generic to standard
 }
 ```
 
-Any endpoint returning a collection uses this shape, with these exact field names (`perPage`, not
-`limit`; `totalPages` included, not left for the client to compute).
+With these exact field names (`perPage`, not `limit`; `totalPages` included, not left for the
+client to compute — compute it server-side as `Math.ceil(total / perPage)` alongside the `total`
+count, never leave it for the client to derive).
+
+**Cursor-based (the documented exception).** A page-based list requires a `COUNT(*)` (or
+equivalent) over the full filtered set on every request. For a table where that count is
+expensive to compute (very large or high-write-volume) or where `LIMIT`/`OFFSET` drifts under
+concurrent inserts (rows shifting between pages as new ones land), an endpoint may instead use
+forward-only keyset pagination:
+
+```json
+{
+  "data": [ /* ... */ ],
+  "meta": { "nextCursor": "eyJvY2N1cnJlZEF0IjoiMjAyNi0xMC0wOVQxMjowMDowMFoiLCJpZCI6IjQyIn0=" }
+}
+```
+
+`nextCursor` is opaque to the client — pass it back verbatim as a `cursor` query param to fetch
+the next page, never decode or construct it. Omit `nextCursor` once there are no more rows. There
+is no `total`/`totalPages`/`page` in this shape: a cursor-paginated endpoint cannot answer "how
+many total" or "jump to page N" without reintroducing the `COUNT(*)` it exists to avoid — a client
+needing either of those should use the page-based shape instead.
+
+This is an explicit **opt-in exception**, not a free choice per endpoint: default to page-based,
+and pick cursor-based only for a documented reason (cite it in the project's `api-standards.md` —
+e.g. "audit log, append-only, COUNT(*) over the full table is not viable"). Query params for the
+cursor-based case: `cursor` (opaque, omit on the first request) and `limit` (same default/max as
+`perPage` — default `20`, max `100`), in place of page-based's `page`/`perPage` (Rule 6).
 
 ## Rule 5 — Request method semantics
 
@@ -81,7 +109,9 @@ Any endpoint returning a collection uses this shape, with these exact field name
 
 ## Rule 6 — Query parameter conventions (`GET`)
 
-Pagination: `page` (1-indexed, default `1`), `perPage` (default `20`, max `100`). Sorting:
+Pagination: `page` (1-indexed, default `1`), `perPage` (default `20`, max `100`) — or, for a
+cursor-based endpoint (Rule 4's documented exception), `cursor` (opaque, omit on the first
+request) and `limit` (same default/max as `perPage`) in place of `page`/`perPage`. Sorting:
 `sortBy` (column name), `sortDir` (`asc` | `desc`). Filtering: one query param per filterable
 column, exact-match only unless a route documents range/partial support.
 
