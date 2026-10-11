@@ -178,6 +178,36 @@ constraint of the response shape, not an inconsistency in the pattern. Close cou
 [RFC 7232](https://www.rfc-editor.org/rfc/rfc7232) (`If-Match`/`ETag` for conditional requests) — same
 rationale as Rule 1's RFC 7807 kinship: an established pattern, not a bespoke invention.
 
+## Rule 9 — List exports (CSV download of a full filtered list)
+
+A list that offers an export exposes it as a sibling `GET` route with a `.csv` suffix
+(`GET /audit/events` → `GET /audit/events.csv`). It accepts the list's own **filter** params
+(Rule 6) unchanged, so a client exports exactly the query it is showing — but **no** pagination
+params (`page`/`perPage`/`cursor`/`limit`): the export returns every matching row, not one page.
+It is a separate route rather than a flag on the list route so the list keeps exactly one response
+shape (Rule 4) and the export can stream.
+
+Every export has a server-side **row cap** (a per-endpoint config value). A larger result is
+truncated to the cap, not rejected — the client still receives a file, and is told it's partial.
+Exporting more than the cap is an asynchronous export job, out of scope for this route.
+
+The body is the file itself (`Content-Type: text/csv`, header row first). Everything about the
+export is carried in response headers, since the body can't hold metadata and the server streams
+it:
+
+| Header | Rule |
+|---|---|
+| `Content-Disposition` | `attachment; filename="<name>.csv"` — the server names the file (e.g. with a timestamp). |
+| `X-Export-Row-Count` | Rows in this file (≤ the cap). |
+| `X-Export-Truncated` | `true` when more rows matched than the cap allowed, `false` otherwise. |
+| `X-Export-Limit` | The cap in effect. |
+| `Access-Control-Expose-Headers` | Lists the four headers above — without it a cross-origin browser client can't read them. |
+
+Because headers go out before the body, the server determines the row count and truncation
+**before** streaming (a capped count: `COUNT(*)` over the filtered set with `LIMIT cap + 1`), and
+pins the result set at request start where it can (e.g. an append-only list fixes its upper time
+bound to "now") so rows written mid-export can't make the file disagree with the headers. Errors before streaming starts use Rule 1's shape as usual.
+
 ## Explicitly not standardized
 
 - **Auth provider / token issuance** — stays a `system-architecture.md` stack choice.
