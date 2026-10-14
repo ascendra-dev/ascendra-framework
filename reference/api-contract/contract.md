@@ -126,8 +126,11 @@ No pagination query params apply; filtering params (Rule 6) still may.
 Pagination: `page` (1-indexed, default `1`), `perPage` (default `20`, max `100`) — or, for a
 cursor-based endpoint (Rule 4's documented exception), `cursor` (opaque, omit on the first
 request) and `limit` (same default/max as `perPage`) in place of `page`/`perPage`. Sorting:
-`sortBy` (column name), `sortDir` (`asc` | `desc`). Filtering: one query param per filterable
-column, exact-match only unless a route documents range/partial support.
+`orderBy` — a comma-separated list of sort keys in priority order, each a column name, ascending by
+default, with `:desc` appended for descending (`orderBy=issuedAt:desc,amount` — newest first, then
+by amount ascending). The server accepts only its documented sortable columns, rejects an unknown
+column or a repeated one with `400`, and may cap how many keys it takes. Filtering: one query param
+per filterable column, exact-match only unless a route documents range/partial support.
 
 ## Rule 7 — Headers, both directions
 
