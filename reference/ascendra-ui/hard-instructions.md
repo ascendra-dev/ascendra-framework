@@ -956,6 +956,12 @@ the field actually is.
 `_audit-event-timeline.tsx`, `retention/page.tsx`, `actors/[actor]/page.tsx` (both `packages/` and
 `testbed/` copies).
 
+**Update 2026-10-18 — `style: 'month'` added** (`ascendra-ui` `6a72e9a`): renders a calendar month,
+"Sep 2026" — for a chart axis or any per-month figure (first use: the audit Retention screen's
+volume by month). For a `YYYY-MM` value pass a mid-month date, `formatDateTime(`${month}-15`,
+{ style: 'month' })`, so no time zone shifts it into a neighbouring month (checked UTC−11 to
+UTC+14); never hand-build month names to get around this rule.
+
 ---
 
 ### AUI-035 — A column with a custom-formatted cell needs its own `ColumnDef.searchValue`, or search/highlight silently disagree with what's shown
