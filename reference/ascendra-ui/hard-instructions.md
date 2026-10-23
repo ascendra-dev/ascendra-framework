@@ -1208,3 +1208,32 @@ correctly — well-positioned two-month view — after it). Committed and pushed
 **Reference:** `ascendra-ui/components/data-table/query-param-panel.tsx` (the section-title render
 branch); `ascendra-commons-ui/packages/audit-logging.ui/queries/audit-query-defs.ts` (the
 `occurredRange` field/`Occurred` section that surfaced it).
+
+### AUI-040 — A `Combobox` filters only the items it renders itself: use `<ComboboxCollection>`, never `.map()` the items into `ComboboxList`
+
+**What happened:** the access checker's person and action pickers passed `items` to `Combobox` but rendered the list
+with `{list.map((u) => <ComboboxItem …/>)}`. Typing changed nothing — every item stayed listed. Base UI filters the
+`items` prop, and only a `<ComboboxCollection>{(item) => …}</ComboboxCollection>` child renders that filtered list.
+
+**Rule:** inside `ComboboxList`, render `<ComboboxEmpty>` then `<ComboboxCollection>{(item) => <ComboboxItem …/>}`
+— as the showcase's combobox preview does. When the label isn't the item (ids → names), give `itemToStringLabel`,
+and a `filter={(item, query) => …}` when more than the label should match (a person by name or email).
+
+**Status:** fixed in `ascendra-commons-ui` `testbed/app/access/checker/page.tsx`; verified live ("elif" → three
+Elifs, "rossi@" → by email, "payout" → two actions).
+
+### AUI-041 — `DataTableRow` lacked `TableRow`'s row-link positioning: a `TableRowLink` in a DataTable sent every click to the last row
+
+**What happened:** `TableRowLink`'s overlay is `absolute inset-0`, placed against the row only when the row is
+`relative` — `TableRow` had that (`has-data-[slot=table-row-link]:relative`, controls lifted to `z-2`),
+`DataTableRow` didn't. Each overlay stretched over the whole table; the last row's, painted last, took every click and
+hover — clicking the first person opened the last one, and the selection checkboxes couldn't be ticked.
+
+**Rule:** a row component that can hold a `TableRowLink` carries `rowLinkRowClasses` (exported from `ui/table`).
+Never build Tailwind class names by interpolation — they're found as literal text, so an interpolated arbitrary
+selector is silently never generated. After adding a row link to a new table, check with a real click that the
+first row opens the first row's page.
+
+**Status:** fixed in `ascendra-ui` `926e452` (also: `[role=checkbox]` and the selection cell above the overlay;
+`useDataTable().selectedData` for bar actions across pages; search inputs `autoComplete="off"`), synced into
+`ascendra-commons-ui`.
