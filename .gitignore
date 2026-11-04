@@ -13,4 +13,8 @@ coverage/
 projects/*
 !projects/TEMPLATE
 !projects/TEMPLATE/**
+# Published deliberately: the registry and the simulation project
+!projects/index.md
+!projects/THORNFIELD-MAINT-001
+!projects/THORNFIELD-MAINT-001/**
 roadmap/

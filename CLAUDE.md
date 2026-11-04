@@ -188,7 +188,7 @@ Every project maintains a domain glossary in `projects/{CODE}/domain/`. Once ter
 
 ## Project Registry
 
-`projects/index.md` is the registry — one row per project (Project Code, Project Name, Client, Domain, Created, Status, and gate statuses). This is the single source of project identity — per `FW-027`, there is no separate `project.json` file. `projects/TEMPLATE/` is a committed framework dependency; all other project folders are gitignored (client work stays private). To list active projects, run `ls projects/`.
+`projects/index.md` is the registry — one row per project (Project Code, Project Name, Client, Domain, Created, Status, and gate statuses). This is the single source of project identity — per `FW-027`, there is no separate `project.json` file. `projects/TEMPLATE/` is a committed framework dependency, and `projects/index.md` and the simulation project `projects/THORNFIELD-MAINT-001/` are committed deliberately; all other project folders are gitignored (client work stays private). To list active projects, run `ls projects/`.
 
 Repository paths are an architecture decision, not an identity field: `/implement-story` resolves the target repo from the architecture document's Section 3.1 (Project Structure) and applies convention-over-configuration — each confirmed repo is a sibling directory to this framework repo (`../{repo-name}`).
 
