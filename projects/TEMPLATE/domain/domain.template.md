@@ -85,8 +85,11 @@
 > **[AI Guide]** Replace with entity name. Add one subsection per core entity, numbered in sequence (3.1, 3.2, ...). If an entity is later removed, retire its number; add new entities at the end.
 
 **What it is:** ...
+
 **Standard attributes:** ...
+
 **Relationships:** ...
+
 **Notes:** ...
 
 ---
@@ -102,11 +105,13 @@
 > **[AI Guide]** Replace with entity name. Add one subsection per entity with a lifecycle, numbered in sequence (4.1, 4.2, ...). If a lifecycle is later removed, retire its number; add new lifecycles at the end.
 
 **States:** [list all valid states]
+
 **Standard transitions:**
 - [State A] → [State B]: triggered by [what]
 - [State B] → [State C]: triggered by [what]
 
 **Terminal states:** [states from which no further transition is possible]
+
 **Rules:** [any constraints on transitions, e.g. "cannot move from X to Y if Z is true"]
 
 ---
