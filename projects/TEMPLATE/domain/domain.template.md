@@ -81,8 +81,8 @@
 >
 > This section defines the baseline. In the BRD, only capture entities that deviate from this baseline or have client-specific attributes.
 
-### [Entity Name]
-> **[AI Guide]** Replace with entity name. Add one subsection per core entity.
+### 3.1 [Entity Name]
+> **[AI Guide]** Replace with entity name. Add one subsection per core entity, numbered in sequence (3.1, 3.2, ...). If an entity is later removed, retire its number; add new entities at the end.
 
 **What it is:** ...
 **Standard attributes:** ...
@@ -97,9 +97,9 @@
 >
 > This is one of the most referenced sections during discovery — the AI uses it to confirm whether a client's workflow matches the standard or deviates from it.
 
-### [Entity Name] Lifecycle
+### 4.1 [Entity Name] Lifecycle
 
-> **[AI Guide]** Replace with entity name. Add one subsection per entity with a lifecycle.
+> **[AI Guide]** Replace with entity name. Add one subsection per entity with a lifecycle, numbered in sequence (4.1, 4.2, ...). If a lifecycle is later removed, retire its number; add new lifecycles at the end.
 
 **States:** [list all valid states]
 **Standard transitions:**
