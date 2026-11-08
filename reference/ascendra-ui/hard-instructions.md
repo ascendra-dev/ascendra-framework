@@ -288,6 +288,8 @@ another vs. prior 30 days) — don't leave the comparison basis ambiguous.
 
 **Date:** 2026-09-23
 
+**Partly superseded by AUI-043:** pattern 3's marketing example and its `height={300}` and trailing `CardFooter` are out of date, and a table section that belongs in a card now uses `CardTable`.
+
 **Observed gap:** Every panel on the Audit Log Overview dashboard used the same full `CardHeader`
 treatment regardless of content, rather than choosing per-panel the way the real dashboards do.
 
@@ -630,6 +632,8 @@ a link) still wraps its plain-text portion.
 ### AUI-027 — `CopyText` is required on any identifier a user would want to copy
 
 **Date:** 2026-09-14
+
+**Superseded by AUI-042:** the component is now `WithCopyText`. The rule below still applies under the new name.
 
 **Observed gap:** Found building `audit-logging.ui`: actor ids, entity ids, correlation ids,
 and event/record ids all rendered as plain text with no copy affordance — `CopyText` exists in
@@ -1237,3 +1241,49 @@ first row opens the first row's page.
 **Status:** fixed in `ascendra-ui` `926e452` (also: `[role=checkbox]` and the selection cell above the overlay;
 `useDataTable().selectedData` for bar actions across pages; search inputs `autoComplete="off"`), synced into
 `ascendra-commons-ui`.
+
+---
+
+### AUI-042 — `CopyText` is now `WithCopyText`; the AUI-027 rule applies under the new name
+
+**Date:** 2026-11-08
+
+**Observed gap:** AUI-027 names `CopyText` and `components/util/copy-text.tsx`. `ascendra-ui` renamed the component
+to `WithCopyText` (commit `069dfed`), and its generated docs use only the new name, so code following AUI-027 would
+import a name that no longer exists.
+
+**Correct pattern:** `WithCopyText` (`value`, `opaque`, `timeout`, `showTooltip`, `onClick`, `className`,
+`children`) wraps an identifier, shows a copy icon, and copies `value` on click.
+
+**Rule:** every identifier a person would plausibly want to copy (event id, entity id, correlation id, actor id,
+or a reference number) uses `WithCopyText`. AUI-027's guidance on separating a navigation link from the copy target
+still holds.
+
+**Reference:** `ascendra-ui/components/util/with-copy-text.tsx`.
+
+---
+
+### AUI-043 — A table section inside a card uses `CardTable`; a full-bleed table keeps AUI-015's pattern 3, with `visibleRows`
+
+**Date:** 2026-11-08
+
+**Observed gap:** AUI-015's pattern 3 cites the marketing dashboard's "Active Campaigns" table with
+`<Table scrollable horizontal vertical height={300}>` and an empty `CardFooter` inside `TableWrapper`. `ascendra-ui`
+removed that table-as-card workaround (commit `f0390a7`) and added `CardTable` (commit `be60d1d`). The marketing page
+now uses `<Table scrollable horizontal visibleRows={5}>` with no trailing `CardFooter`.
+
+**Correct pattern:**
+- **A table that belongs in a card,** with a title, collapse, maximize or a footer note: `Card` > `CardHeader` >
+  `CardTable` > `Table`, then `CardFooter`. `CardTable` takes the place of `CardPanel` and folds and maximizes with
+  the card.
+- **A one-list section,** such as "top sources": `CardList` with `CardListItem` rows inside a `CardPanel`, instead of a
+  table whose header row carries the title.
+- **A full-bleed table with no card around it:** AUI-015's pattern 3 still holds, a bare `CardHeader` above
+  `TableWrapper`, but size it with `visibleRows={N}` rather than a fixed `height`, and add no empty `CardFooter`.
+
+**Rule:** choose by whether the table is a card's content. Never put a `CardFooter` inside `TableWrapper`, and prefer
+`visibleRows` to `height` for a table that should show N whole rows.
+
+**Reference:** `ascendra-ui/components/previews/card-preview.tsx` ("Locks" uses `CardTable`, "Top sources" uses
+`CardList`); `ascendra-ui/app/showcase/dashboards/marketing/page.tsx` ("Active Campaigns");
+`ascendra-ui/components/card/card-table.tsx`.
