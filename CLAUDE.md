@@ -50,7 +50,7 @@ One skilled PO can run multiple projects in parallel using this framework.
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 33 slash commands — the framework's executable interface
+├── .claude/commands/       # 37 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
 ├── conventions/            # Framework-authoring meta-rules — command, template, artifact-naming, and cross-reference conventions
@@ -95,8 +95,10 @@ ascendra-framework/
     │   │   └── test-execution-report.template.md
     │   ├── pr/
     │   │   └── pr-description.template.md
-    │   └── releases/
-    │       └── release-notes.template.md
+    │   ├── releases/
+    │   │   └── release-notes.template.md
+    │   └── build/
+    │       └── build-plan.template.md
     └── {PROJECT_CODE}/     # ⚠ GITIGNORED — your private client project workspace
         ├── journal.md           # /anchor-project's own continuous project record
         ├── testimonial.md       # Generated at Walking Skeleton handoff / project close
@@ -115,7 +117,8 @@ ascendra-framework/
         ├── test-reports/        # Generated: story verification reports
         ├── pr/                  # Generated: PR descriptions, one per story
         ├── sprints/             # Generated: sprint plans + UAT checklists
-        └── releases/            # Generated: release notes
+        ├── releases/            # Generated: release notes
+        └── build/               # Generated: build plans, one per design group, with their checkpoints + index
 ```
 
 ---
@@ -152,6 +155,9 @@ ascendra-framework/
 | `/implement-story` | Implement a user story in code |
 | `/verify-story` | Verify a story implementation against its acceptance criteria |
 | `/gen-pr-description` | Generate a PR description from a story's verification report and real code diff |
+| `/build-story` | Build one story from a slice spec into code, test it, and write its build summary — for projects delivered slice by slice with a short architecture note instead of a Locked architecture document |
+| `/plan-build-group` | Plan the build of one unit (usually one approved design group) as chunks and commit-sized checkpoints, after reconciling existing code and documents with the approved design — writes `build/group-{GG}-{slug}.md`, no code |
+| `/build-checkpoint` | Build, verify and record exactly one checkpoint of an approved build plan (data, rules, API, screen with design parity, flow, or the unit's close) |
 | `/close-sprint` | Fill a sprint's retrospective, calculate velocity, and identify carry-forward items after UAT sign-off |
 | `/gen-release-notes` | Generate release notes |
 | `/assess-change` | Assess the impact of a requested scope or architecture change |

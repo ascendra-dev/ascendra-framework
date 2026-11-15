@@ -16,6 +16,7 @@ IDs used *inside* documents (headers, cross-references) — distinct from filena
 | Epic ID | `EPIC-{NNN}` (3-digit zero-padded) | Per project | `epic.template.md` |
 | Story ID | `US-{epic}-{seq}` (epic: 2-digit zero-padded; seq: 3-digit, resets to 001 per epic) | Per epic — **never per sprint**. Sprint membership isn't known at generation time (decided later, in `/review-stories`'s Sprint Assignment step) and can change after generation (replanning, `/assess-change`) — encoding it in the ID would force a rename every time | `story.template.md` |
 | REQ ID | `REQ-{NNN}` (3-digit, sequential across the whole BRD) | Per BRD document | `brd.template.md` |
+| Checkpoint ID | `B{GG}.{chunk}.{n}`, and `B{GG}.X` for a unit's close (`GG`: the 2-digit design group number from the screen inventory, or the unit's short name for a unit without a group, e.g. `Bspine.1.2`) | Per build unit | `build-plan.template.md` |
 | Defect ID | `DEF-{n}` (sequential within one story's `/verify-story` report only) | Per story — **not** a project-wide sequence. When aggregated across stories (e.g. in a test execution report), qualify with Story ID to disambiguate — there is no persistent, cross-story defect log | `test-execution-report.template.md` |
 
 ---
@@ -50,6 +51,8 @@ All paths are relative to `projects/{PROJECT_CODE}/`.
 | Test execution report | `sprint-{NN}-execution-report.md` | `sprints/` | Per sprint (optional; aggregates every story's `/verify-story` report for that sprint) | Step 23 (manual) | `test-execution-report.template.md` |
 | Story verification report | `US-{epic}-{seq}-verification.md` | `test-reports/` | Per story | `/verify-story` | — (derives scenarios from the story's own ACs, no separate template) |
 | PR description | `US-{epic}-{seq}-pr-description.md` | `pr/` | Per story (one story = one PR) | `/gen-pr-description` | `pr-description.template.md` |
+| Build plan | `group-{GG}-{slug}.md` (`GG` 2-digit design group number; a unit without a group uses its short name, e.g. `group-spine-money.md`). Checkpoints' Built blocks are written inside it, not as separate files | `build/` | Per build unit | `/plan-build-group` (writes), `/build-checkpoint` (adds Built blocks) | `build-plan.template.md` |
+| Build index | `index.md` (fixed name) | `build/` | Once per project — one row per build unit, in build order | `/plan-build-group` (created/updated), `/build-checkpoint` (updated) | — (structure defined inline in `/plan-build-group`) |
 | Release notes | `v{version}-release-notes.md` | `releases/` | Per version — **not per sprint**; a release doesn't always map 1:1 to a sprint (hotfix release, or one release bundling several sprints) | `/gen-release-notes` | `release-notes.template.md` |
 
 ---
