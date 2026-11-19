@@ -1,36 +1,54 @@
 # Build Plan: Group {GG}, [Group Name]
 
 > **[AI Guide — Document Level]**
-> The plan for building one build unit: usually one approved design group, sometimes a named unit with no screens of its own (such as a money spine taken from a slice spec). It splits the unit into **chunks** (one capability a named role can use) and each chunk into **checkpoints** (the smallest step that can be checked: one layer of one chunk, commit-sized). Every checkpoint is built and verified on its own by `/build-checkpoint`, and the PO commits after each.
+> The living plan for building one build unit: usually one approved design group, sometimes a unit with no screens (such as a money spine). It holds every implementation decision and the build order, written so that three readers can use the same document: the **PO** (requirements, screens, rules, the demo), the **developer** (patterns, contracts, IDs, data, order) and the **AI** that builds it. All three read the same words; nothing is written for the AI alone.
 >
-> Produced by `/plan-build-group`, after the PO has answered its reconciliation and gap questions. Approving it (Status: Approved) lets `/build-checkpoint` start. Each checkpoint's Built block is added under its chunk as it is built; the unit's close (checkpoint `B{GG}.X`) completes the document.
+> Produced by `/plan-build-group`, which reads the sources, takes every decision, and writes each one down with its reason. The PO and the developer review and approve it (Status: Approved). `/build-checkpoint` then builds it one checkpoint at a time, and adds a Built block under each checkpoint. The close (`B{GG}.X`) completes it.
+>
+> **How it is organised:**
+> - **Part A, the group:** everything decided once for the whole group. It is read before any checkpoint, and every checkpoint relies on it.
+> - **Part B, the checkpoints:** in build order, grouped into chunks. Each checkpoint is self-contained: with Part A, it is everything needed to build, test and review that step.
+> - **Part C, the close:** the group's demo, regression and deploy, and what later groups must know.
+> - **Block library:** the standard blocks Part B is built from (page, listing, form, dialog, endpoint, migration, money command…). Each block has fixed fields, so every plan specifies the same things the same way.
+>
+> **Rules for every plan:**
+> - **Complete, not by reference.** A fact the build needs is written here, copied from its source, with a source stamp: `(source: handoff decision 131)`, `(source: Staff.tsx)`, `(source: Blueprint §27)`. A link alone is never enough: "see decision 131" makes the reader go and look.
+> - **Every decision is written as question → answer → why.** Simple facts go in the tables. Any choice with a real alternative goes in Section A15, and the table cell points to it (`D4`). Nothing is left for the reader to decide: no "TBD", "to be confirmed" or "the builder decides".
+> - **The design is approved and doesn't change silently.** Where the plan needs something different from the artboards, or something they don't draw, it goes in Section A13 as a proposal, which the PO has agreed before the plan is written.
+> - **Every concern in Section A2 is answered**, either "applies, see X" or "not applicable, because…". A missing answer can't be told apart from a forgotten one.
+> - **Names and IDs follow one scheme**, so code and plan can be searched for each other (Section A3, "IDs used in this plan").
+> - **A screen reads only an error's `code` and `message`.** The error body is the API contract's flat shape (Rule 1), with nothing else in it. The screen branches on `code` to decide where a message goes, and shows the API's `message` where the text needs data the screen doesn't hold (such as another person's name). If the screen needs data to show a refusal (such as when a session opened), that data comes from a query the screen already makes (the record's row), never from the error.
+> - **Roles, never people.** Write "the PO", "the developer", "a School admin". Sample people from the design (such as "Rashid Ahmed") are seed data and may appear as such.
+> - **Artboards are named, not pictured.** The reviewer has the design canvas open.
 >
 > **What this document is not:**
-> - Not a design. Screens, text and states come from the approved artboards; this plan points to them and never restates them.
-> - Not a spec of every field or endpoint. A checkpoint names what it builds and how it is proved; the shape is the builder's choice within the architecture note.
-> - Not a place for architecture decisions. A change to what the architecture note decides goes to Section 7, for the note's owner to apply.
-> - Not a story list. There are no user stories; the chunk's demo sentence states the job.
+> - Not the design. Screen text and layout come from the artboards; the plan copies the text it needs and names the artboard. A new screen or text goes to the design first, as a Section A13 proposal.
+> - Not the architecture. It works inside the architecture note. A change to the note goes to Part C, "Proposed changes for their owners".
+> - Not a story list. Chunks and checkpoints state the job and its proof; there are no user stories.
+> - Not a code dump. Code snippets appear only where a shape must be exact (a type, a response, a migration). The diff is reviewed with each commit.
 >
-> **When used by `/plan-build-group`:** the structure to generate, section by section, with every AI Guide followed. Checkpoint tables start with Status `Planned` and no Built blocks.
+> **When used by `/plan-build-group`:** the structure to generate. Fill every section and remove every AI Guide. Copy the blocks a checkpoint needs from the Block library into the checkpoint, and delete the library from the written plan. Run the Plan checks before writing, and fix every failure. Status starts at `Draft`; every checkpoint starts at `Planned`, with no Built blocks.
 >
-> **When used by `/build-checkpoint`:** read the header, Sections 1 to 4, the chunk holding the checkpoint, the Built blocks of earlier checkpoints (their Differences lines), and Section 8. Write only the checkpoint's Built block and its Status cell, and append to Section 8 if something moves. Never rewrite other sections: a needed change is proposed to the PO.
+> **When used by `/build-checkpoint`:** read the header, Part A in full, and the one checkpoint being built (or Part C for the close), plus the Built blocks of earlier checkpoints in the same chunk. The checkpoint's blocks are binding. Write only that checkpoint's Built block and Status cell, and append to Part C's Findings. If the plan is wrong or missing a fact, stop and propose the change to the PO. Never fill it in from other sources silently, and never rewrite another section.
 >
-> **File location:** `projects/{PROJECT_CODE}/build/group-{GG}-{slug}.md`, where `{GG}` is the two-digit design group number from the screen inventory, or a short name for a unit without a group (`spine`).
+> **File location:** `projects/{PROJECT_CODE}/build/group-{GG}-{slug}.md`. `{GG}` is the two-digit design group number from the screen inventory, or a short name for a unit without a group (`spine`).
 
 **Status:** Draft
 
 | Field | Value |
 |---|---|
-| Unit | [Group {GG}, Group Name, or the unit's name] |
-| Design approval | [The decision that approved the group's design, linked; canvas version] |
-| Depends on | [Build units that must be closed first, linked to their plan files, or "none"] |
-| Repos and base | [Each code repo, its branch `group/{GG}-{slug}`, and the commit it starts from] |
-| Design parity | [How an artboard is rendered (the project's harness and command) and how the built page is rendered at the same size with the seed] |
-| Plan size | [N chunks, N checkpoints] |
+| Unit | [Group {GG}, Group Name] |
+| Design | [Screens (SCR IDs), the canvas and page holding the artboards, and the decision that approved the design, linked] |
+| Depends on | [Build units that must be closed first, linked to their plans, or "none"] |
+| Reviewers | PO: requirements, screens, rules, demo. Developer: patterns, contracts, IDs, data, order |
+| Repos and base | [Each code repo, its branch, and the commit the plan was reconciled against] |
+| Reconciled | [Date the plan was checked against the code. `/build-checkpoint` compares it with later commits] |
+| Design parity | [How an artboard is rendered, and how the built page is rendered at the same size with the seed] |
+| Size | [N chunks, N checkpoints] |
 
 ## Document Control
 
-> **[AI Guide]** Add a row each time the plan's scope, chunks or checkpoints change. Built blocks don't need a row.
+> **[AI Guide]** Add a row whenever the plan changes after its first version. A change made after approval says so, and names who approved it. Built blocks don't need a row.
 
 | Version | Date | Author | Summary of Changes |
 |---------|------|--------|--------------------|
@@ -38,122 +56,745 @@
 
 ---
 
-## 1. Scope
+# Part A — The group
 
-> **[AI Guide]** Everything the unit builds, taken from the screen inventory's rows for the group and the decisions that drew and approved it. One line per item, each linked to its source. A screen is in scope at the content the design approved, unless it is listed under "Moves later" with the unit it moves to and why. Links into screens that aren't built yet are absent, not greyed out.
->
-> **Correct:** "SCR-023 Payers: server listing, presets All payers, No students linked, Email bounced; artboards PyrList, PyrFilter."
-> **Incorrect:** "Payers screen with a table and filters." (no source, no artboards, no presets)
+---
 
-**Screens:**
+## A1. Sources read
 
-| SCR | Screen | Artboards | In this unit |
-|---|---|---|---|
-| [SCR-NNN] | [Name] | [Artboard names] | [All / Part: what] |
+> **[AI Guide]** Every source the plan was written from, and which part of it was read. This lets a reviewer see what the plan is based on, and what it ignored. Facts copied into this plan carry a source stamp that matches a row here.
 
-**Rules each screen enforces:** [UBR, VAL and design decision numbers, each with the screen or action that enforces it]
-
-**Records, by owning module:** [Module: records it gains or changes]
-
-**Roles and actions:** [Each named action, the roles that hold it, and whether it needs a second person or only a permission]
-
-**Events, documents and emails:** [What each action produces, and where its document or email is built]
-
-**Moves later:**
-
-| Item | Moves to | Why |
+| Source | Parts read | Why |
 |---|---|---|
-| [Item] | [Unit] | [Reason] |
+| [Document or code path] | [Sections, rows or files] | [What it gave the plan] |
 
 ---
 
-## 2. Reconciled
+## A2. Considered for every group
 
-> **[AI Guide]** Every place where existing code, the architecture note or the domain document disagrees with the approved design, and the fix the PO agreed. Name the file or record that disagrees. Write "None found" only after checking the code repos, not just the documents.
+> **[AI Guide]** The fixed list. Answer every row, for every group, in the same order. "Applies" points to where the plan handles it. "Not applicable" gives the reason in a few words. Never delete a row, and never leave one blank. If a row applies only to a later group's part of this work, say "Deferred" and point to Section A3's deferred list.
+>
+> **Correct:** "Approval by a second person | Not applicable: staff changes take effect directly (source: handoff decision 131)"
+> **Incorrect:** "Approval by a second person | N/A" (no reason, so the reviewer can't tell it was considered)
 
-| # | What disagrees | Where | Agreed fix | Fixed in |
-|---|---|---|---|---|
-| 1 | [Description] | [File, table or document section] | [Fix] | [Checkpoint ID] |
-
----
-
-## 3. Decisions
-
-> **[AI Guide]** What the design doesn't settle but the build needs, as the PO answered it: error codes and messages, concurrency, which commands need an idempotency key, permission names, audit entries, data shapes that are hard to change later. One row per decision; don't re-decide anything the architecture note or a design decision already settled.
-
-| # | Decision | Answer | Reason |
-|---|---|---|---|
-| 1 | [Question] | [Answer] | [Why] |
-
----
-
-## 4. Seed and test data
-
-> **[AI Guide]** The sample records the seed must produce so built screens can be compared with their artboards: the same school, people, numbers and figures the artboards show. Seeded through the modules' real contracts, never by inserting rows directly. List what this unit adds to the seed; earlier units' seed data is assumed.
-
-- [Record set: what, how many, which artboard figures it must reproduce]
-
----
-
-## 5. Chunks
-
-> **[AI Guide]** 2 to 5 chunks, each one capability a named role can use, in build order. A chunk's demo sentence names the role and the job: "The fee clerk adds a payer and finds them in the list." Chunks are cut by capability, never by layer.
-
-| Chunk | Demo | Depends on |
+| # | Concern | Answer |
 |---|---|---|
-| B{GG}.1 [Name] | [Role] [does what] | [Chunk or unit] |
+| 1 | Server listing (DataTableQuery) | [Applies, see … / Not applicable, because …] |
+| 2 | Static listing (DataTable) | |
+| 3 | Form or wizard | |
+| 4 | Row menu built from the server's allowed actions, with reasons | |
+| 5 | Status lifecycle | |
+| 6 | Approval by a second person | |
+| 7 | Money written in one transaction | |
+| 8 | Import from a file | |
+| 9 | Preview, then commit | |
+| 10 | Background or batch job | |
+| 11 | Printed document | |
+| 12 | Email or notification | |
+| 13 | Report or dashboard figures | |
+| 14 | Public link page (no staff sign-in) | |
+| 15 | Operator or cross-school access | |
+| 16 | A school setting that changes behaviour | |
+| 17 | Platform-fixed values | |
+| 18 | Outside provider (login, email, bank or rail, file storage) | |
+| 19 | Depends on work in a later group | |
+| 20 | Implied by the design but not drawn | |
+| 21 | Differs from the design | |
+| 22 | New module, or a new public contract function | |
+| 23 | A call between modules (and its direction) | |
+| 24 | Commons module copied or changed | |
+| 25 | New or changed table, and existing rows to update | |
+| 26 | Reference numbers | |
+| 27 | Retry-safe commands (idempotency) | |
+| 28 | Two people changing one record (concurrency) | |
+| 29 | Audit entries | |
+| 30 | Domain events | |
+| 31 | A pattern or part extracted for reuse | |
+| 32 | Seed additions | |
+| 33 | Phone width | |
 
 ---
 
-## 6. Checkpoints
+## A3. Scope
 
-> **[AI Guide]** One sub-section per chunk, as a bold label. Checkpoints are built from the inside out, one layer at a time:
-> - **D, Data:** tables, constraints, row security, migration. Proved by database tests on real PostgreSQL as the app role.
-> - **R, Rules:** module contract methods, business rules, audit entries. Proved by unit and database tests; a money rule also by breaking it on purpose.
-> - **A, API:** endpoints, named actions, idempotency, errors. Proved by API tests: allowed, denied, another school, a retry.
-> - **S, Screen:** one page and its states, built from its artboard source against the real API. Proved by design parity (rendered beside its artboard at the same size) and a browser test of its states.
-> - **F, Flow:** the chunk's demo end to end. Proved by a browser test and the financial checks.
->
-> Limits: one module and at most one screen; about 400 changed lines, not counting generated files and migrations; at least one test that fails before and passes after. A trivial settings screen may merge D, R and A into one checkpoint; say so in its row. IDs are `B{GG}.{chunk}.{n}`; Status is `Planned`, `Built` or `Moved`.
->
-> **Correct:** "B04.1.2 | R | The payer listing query: batches of 50, filters by name, payer number, mobile, email; presets | Database tests: each filter, a batch boundary, another school's payers never returned | Planned"
-> **Incorrect:** "B04.1.2 | Backend | Payers backend | Tests | Planned" (several layers, nothing provable)
+> **[AI Guide]** Everything the group builds, everything it defers, and everything the design implies but doesn't draw. Walk every artboard of the group: each page, listing, form, dialog, sheet, menu, card, notice, toast and state is a surface. Give each surface an ID and the checkpoint that builds it. No surface may be missing from all three tables.
 
-**B{GG}.1 [Chunk name]**
+**IDs used in this plan:**
+- Surfaces: `<kind>.<record>.<purpose>`, in kebab-case. Kinds: `page`, `table`, `query`, `form`, `dialog`, `sheet`, `drawer`, `tab`, `menu`, `card`. Example: `dialog.staff.change-roles`. In code, the surface's root element carries the ID as `data-testid`.
+- Screens, documents and emails keep their `SCR-NNN` IDs.
+- Endpoints are named by their action (`staff.change-roles`) plus the method and path.
+- Contract functions are `package.function` (`identity.getMe`).
+- A business rule's ID is its error `code` (`STAFF_ROLES_EMPTY`). A field's validation rule is named by the form and field (`form.staff.invite › email: required`).
+- Migrations follow the project's convention (`0003_identity__add_staff_roles.sql`). Events are past tense, in PascalCase (`StaffInvited`).
+- Checkpoints are `B{GG}.{chunk}.{n}`; chunks are `B{GG}.{chunk}`; the close is `B{GG}.X`. Decisions in this plan are `D1`, `D2`…; design proposals are `P1`, `P2`….
 
-| ID | Kind | Builds | Proved by | Hand check | Status |
+**Surfaces built in this group:**
+
+| Surface ID | Kind | SCR | Artboards | What it is | Built in |
 |---|---|---|---|---|---|
-| B{GG}.1.1 | [D/R/A/S/F] | [What, in one line] | [Tests and gates] | [One step and its expected result, or "—"] | Planned |
+| [page.record.purpose] | [Kind] | [SCR-NNN] | [Artboard names] | [One line] | [B{GG}.c.n] |
 
-> **[AI Guide]** `/build-checkpoint` adds a Built block under the table for each checkpoint it builds, in this form, at most 10 lines:
->
-> **Built B{GG}.1.1** ([Date], [time taken]): [Result in one sentence]
-> - Files: [by area, linked]
-> - Differences: [from this plan, each choice the plan didn't state, or "none"]
-> - Tests: [N passed, where; parity result for S; breaks caught if run]
-> - Hand check: [up to 3 steps with expected results]
-> - Commit: `[proposed message]`
+**Deferred: depends on later work.**
+
+> **[AI Guide]** Something drawn in this group that can't be finished yet, because it needs a module, provider or group not yet built. Say what shows in its place now, and which group wires it later. Each row is also a Section A13 difference, because the built screen won't match the artboard until then.
+
+| What | Why it waits | Shown meanwhile | Wired by |
+|---|---|---|---|
+| [Item] | [Needs …] | [Placeholder, hidden, or not offered] | [Group or unit] |
+
+**Implied but not drawn.**
+
+> **[AI Guide]** A surface the design clearly needs but has no artboard for, such as the dialog behind a drawn menu item. The plan proposes its content (title, text, buttons, outcome) in Section A13, and the PO agrees it before the plan is written. Then it is built like any other surface.
+
+| What | Implied by | Proposal | Built in |
+|---|---|---|---|
+| [Surface] | [The drawn item that needs it] | [P{n}] | [B{GG}.c.n] |
 
 ---
 
-## 7. Close
+## A4. Rules
 
-> **[AI Guide]** Checkpoint `B{GG}.X`, built last by `/build-checkpoint`: the unit's demo, the browser tests of every closed unit (regression), the financial checks, merge of the unit's branches, and deploy to staging. The PO runs the hand check on staging. Also lists what the build changed that the architecture note decides, and changes to commons copies, for their owners.
+> **[AI Guide]** Every business rule the group enforces, decided once here, because one rule often drives several surfaces and endpoints. Copy each rule's statement from its source, with a source stamp. "Enforced in" names every layer: the API always enforces it; the screen may only hint (hide, disable or explain); the database enforces it with a constraint where it can. Every rule has at least one test, named by its code.
+>
+> **Correct:** "`STAFF_LAST_ADMIN` | The school always keeps at least one active School admin | API: change roles, deactivate. Screen: the menu note and the Sheet notice. Database: none, because the rule spans rows | handoff decision 131 | `STAFF_LAST_ADMIN: refuses removing the last School admin`"
+> **Incorrect:** "Admin rule | Can't remove admin | Backend" (no code, no statement a test can check, no surfaces)
 
-**Demo:** [Numbered steps, each with its expected result, covering every chunk]
+**Business rules:**
 
-**Architecture note changes proposed:** [Each, or "none"]
+| Code | Rule | Enforced in | Surfaces | Source | Test |
+|---|---|---|---|---|---|
+| [CODE] | [Statement] | [API / screen hint / database] | [Surface IDs] | [Stamp] | [Test name] |
 
-**Commons copy changes:** [Each, as logged in commons-changes.md, or "none"]
+**Field validation:**
+
+> **[AI Guide]** One row per field rule. Messages come from the project's validation-message reference, required first ("Email is required", then "Email is invalid"). The same rule is checked in the form and again by the API, which returns 400.
+
+| Form › field | Rule | Message |
+|---|---|---|
+| [form.record.purpose › field] | [required / format / length / range] | [Exact message] |
+
+---
+
+## A5. Actions and roles
+
+> **[AI Guide]** Every action a person can take in this group, who may take it, and where it appears. The action name is the permission the server checks, and the endpoint's name. The screen never decides permissions by itself: it shows what the server allows (Section A6).
+
+| Action | What it does | Roles | Surfaces | Endpoint | Second person? |
+|---|---|---|---|---|---|
+| [record.verb] | [One line] | [Roles] | [Surface IDs] | [METHOD /path] | [No / Yes, see B1 approval block] |
+
+**Opening the group's pages:** [Who may open each page, and what everyone else sees: the page is missing from navigation, and a direct link shows the no-permission state]
+
+---
+
+## A6. Lifecycle and allowed actions
+
+> **[AI Guide]** For each record with a status: every status, its badge, the actions allowed in it, and where each action takes it. Then every reason an action isn't allowed, with the exact text the person sees. The server works out the allowed actions and their reasons and sends them with each record. The screen only shows them, so status and role rules live in one place.
+>
+> Write "Not applicable: no record in this group has a status" if so.
+
+**[Record] lifecycle:**
+
+| Status | Badge | Allowed actions | Each action leads to |
+|---|---|---|---|
+| [Status] | [Label, colour] | [Actions] | [Action → new status] |
+
+**When an action isn't allowed:**
+
+| Action | Not allowed when | Reason code | Text shown | Where it shows |
+|---|---|---|---|---|
+| [Action] | [Condition] | [CODE] | [Exact text] | [Menu note / Sheet notice / disabled with hint / item hidden] |
+
+**How allowed actions reach the screen:** [The response field that carries them, with its type, for example `allowedActions: { action: string; allowed: boolean; reasonCode?: string; reason?: string }[]`, sent with each row of the listing and with the single record]
+
+---
+
+## A7. Modules
+
+> **[AI Guide]** Every module the group touches. Its layer (platform, commons or business) decides which other modules it may call. Every call between modules is listed with its direction. A call that the layers don't allow needs a seam (the higher module registers a check or listener with the lower one), and the seam is named here.
+
+| Module | Layer | New or existing | What it gains in this group | Public contract functions |
+|---|---|---|---|---|
+| [module] | [Platform / commons / business] | [New / existing] | [Records, rules, endpoints] | [package.function] |
+
+**Calls between modules:**
+
+| From | To | What for | Allowed by the layers? | How |
+|---|---|---|---|---|
+| [module] | [module] | [Purpose] | [Yes / No] | [Direct contract call / seam: …] |
+
+---
+
+## A8. Data
+
+> **[AI Guide]** The tables, and where every displayed value comes from. The field-source table is filled from the artboards: every column, field and fact a person sees gets a row, because a value from a provider or another module is easy to miss until the build. Migrations are specified in full in the checkpoint that writes them (the migration block); this is the summary.
+
+**Tables:**
+
+| Table | Module | New or changed | Key columns | Row security | Migration |
+|---|---|---|---|---|---|
+| [prefix_table] | [module] | [New / adds …] | [Columns] | [School-scoped / platform] | [File name, checkpoint] |
+
+**Where each displayed value comes from:**
+
+| Surface › field | Shown as | Source | Fetched by | Available now? |
+|---|---|---|---|---|
+| [table.staff.list › Last sign-in] | [Format] | [Our table / login provider / other module / calculated] | [Query or contract function] | [Yes / no: see deferred] |
+
+---
+
+## A9. Settings and constants
+
+> **[AI Guide]** Every value that changes how the group behaves, and how it is loaded. Rules for every project, decided once: the "who am I" response carries only what the app shell needs; a page's settings come with that page's own query; school policy is owned by the configuration module; platform-fixed values are constants in the module that owns them. Write "None" only after checking the artboards' text for numbers such as days, limits and amounts.
+
+| Value | Kind | Owner | Default | Loaded with | Used by |
+|---|---|---|---|---|---|
+| [Name] | [School policy / platform-fixed / shell] | [Module] | [Value] | [Query or constant] | [Surfaces, rules] |
+
+---
+
+## A10. What each command causes
+
+> **[AI Guide]** For every command (every endpoint that changes data), everything that happens besides the change itself. A blank cell is an unanswered question; write "none" where nothing happens.
+
+| Endpoint | Audit entry | Events | Emails or notifications | Retry-safe | Concurrency |
+|---|---|---|---|---|---|
+| [action] | [What is recorded] | [EventName] | [SCR-NNN, to whom] | [Idempotency key: required / not needed, why] | [Version check / not needed, why] |
+
+---
+
+## A11. Seed
+
+> **[AI Guide]** The sample records this group adds, so every built state can be compared with its artboard using the same school, people and figures. Seeded through the modules' real contracts, never by inserting rows directly. Earlier groups' seed is assumed. Every state in the artboards needs a record that produces it.
+
+| Records | Produces which state | Artboards | Through |
+|---|---|---|---|
+| [What, how many] | [For example, "an Invited person"] | [Artboard names] | [Contract function] |
+
+---
+
+## A12. Patterns and components
+
+> **[AI Guide]** Every pattern and part the group uses, named from the project's pattern catalogue. For each, one decision: **reuse** (it exists), **extract now** (the design shows it twice or more, so it is built once here for later groups), or **one-off** (seen once; built inline). Say where an extracted part lives.
+
+| Pattern or part | Catalogue key | Decision | Lives in | Used by |
+|---|---|---|---|---|
+| [Name] | [Key] | [Reuse / extract now / one-off] | [Path] | [Surface IDs] |
+
+---
+
+## A13. Differs from the design
+
+> **[AI Guide]** Every place where the built group will differ from the approved artboards, and every proposal for something the design implies but doesn't draw. Each is a proposal the PO agreed before this plan was written, so the "Agreed" column is never empty in a written plan. Deferred items from Section A3 appear here as well, with what shows meanwhile.
+>
+> Write "None" only after comparing every surface in Section A3 with its artboard.
+
+| # | Where | Design shows | Built shows | Why | Agreed |
+|---|---|---|---|---|---|
+| P1 | [Surface ID, artboard] | [What is drawn] | [What will be built] | [Reason] | [PO, date; decision log number if recorded] |
+
+---
+
+## A14. Reconciled with existing code
+
+> **[AI Guide]** Where existing code or documents disagree with the approved design, and the fix. Name the file, table or section. Write "None found" only after looking at the code repos, not just the documents.
+
+| # | What disagrees | Where | Fix | Fixed in |
+|---|---|---|---|---|
+| 1 | [Description] | [File, table or document section] | [Fix] | [B{GG}.c.n] |
+
+---
+
+## A15. Decisions
+
+> **[AI Guide]** Every choice with a real alternative, written as question, answer and why. The "why" names the alternative that was rejected and the reason, so a reviewer can disagree with something specific. Tables elsewhere point here by number. Don't re-decide anything the architecture note or the design decision log already settled; copy it into the right table with its source stamp instead.
+>
+> **Correct:** "D3 | How does the staff list get Last sign-in? | Our identity module records it when it first sees a new sign-in session, and the list query reads it with the other columns | Asking the login provider per page would mean a network call on every list load, and would fetch every school's users from one shared project; joining the provider's tables would tie our code to the provider (architecture note §1, Portability)"
+> **Incorrect:** "D3 | Last sign-in | From Supabase | Simple" (no question, no alternative)
+
+| # | Question | Answer | Why |
+|---|---|---|---|
+| D1 | [Question] | [Answer] | [Reason, and the alternative rejected] |
+
+---
+
+# Part B — The checkpoints
+
+---
+
+## B0. Build order
+
+> **[AI Guide]** How the group is cut. **A checkpoint is one behaviour a reviewer can see work:** usually one user action, built from the surface down to the database (screen, data loading, endpoint, module, migration), with its own tests. A checkpoint with nothing to see (such as a security foundation) stands alone only when it is security- or data-critical, and is proved through the API. Order checkpoints so each one builds only on earlier ones: first the listing that shows the records, then the action that creates them, then the actions that change them.
+>
+> **Chunks:** 2 to 5 per group, each one capability a named role can use, with a one-sentence demo. A chunk is one pull request; a checkpoint is one commit. The PO accepts each chunk by its acceptance steps before its pull request merges.
+>
+> **Size:** a checkpoint is small enough for the developer to review in one sitting: about 600 changed lines, not counting tests, generated files and migrations. Split a larger one by surface or by action, never by layer.
+>
+> **Where checks sit:** automated tests at each checkpoint, written in plain language here and approved with the plan; the developer's manual check at each checkpoint; the PO's acceptance steps at each chunk; the demo, the regression of every closed group, the financial checks and the deploy at the close.
+
+| Checkpoint | Goal: what a reviewer sees work | Surfaces | Endpoints | Depends on | Status |
+|---|---|---|---|---|---|
+| **B{GG}.1 [Chunk name]** | **Demo:** [Role] [does what] | | | | |
+| B{GG}.1.1 | [One sentence] | [Surface IDs] | [Actions] | [Checkpoint or unit] | Planned |
+
+---
+
+## B{GG}.1 [Chunk name]
+
+**Demo:** [Role] [does what, end to end, in one sentence]
+
+### B{GG}.1.1 [Goal, as a short title]
+
+> **[AI Guide]** One section per checkpoint, in build order. Start with the four lines below, then copy in, from the Block library, every block this checkpoint needs, in this order: screen blocks (page, then listing, card, menu, sheet, form, dialog, in the order a person meets them), the states table, data loading, endpoints, then the module and migration. Add a non-screen block (money command, approval, import, job, document, email, report, public link, cross-school) when the checkpoint does that kind of work. Finish with Verification. A block that doesn't apply is left out, not written as empty. Each block is filled in full: the build reads only Part A and this section.
+
+**Goal:** [What a reviewer can see working when this checkpoint is done]
+**Depends on:** [Earlier checkpoints and units]
+**Builds:** [Surface IDs, endpoints, migrations]
+**Rules enforced here:** [Codes from Section A4, each with its statement]
+
+[Blocks from the Block library]
+
+**Verification**
+
+[Verification block]
+
+**Status:** Planned
+
+---
+
+**B{GG}.1 acceptance (PO)**
+
+> **[AI Guide]** At the end of each chunk: the steps the PO follows on the running app before the chunk's pull request merges. Each step has its expected result and, where there is one, the artboard to compare with. Written for the PO, in the screen's own words, with the seed's sample people and figures.
+
+| # | Step | Expected | Compare with |
+|---|---|---|---|
+| 1 | [Sign in as … and do …] | [What shows] | [Artboard] |
+
+---
+
+# Part C — The close
+
+---
+
+## C1. Close, B{GG}.X
+
+> **[AI Guide]** Built last by `/build-checkpoint`. The group's demo end to end, the browser tests of every closed group (regression), the financial checks if money moved, the merge, and the deploy to staging. The PO and the developer both sign off.
+
+**Demo:**
+
+| # | Step | Expected |
+|---|---|---|
+| 1 | [Step] | [Result] |
+
+**Regression:** [Every closed group's browser tests, by name]
+
+**Financial checks:** [Which, or "Not applicable: no money moves in this group"]
+
+**Sign-off:** PO: [date]. Developer: [date].
 
 **Built B{GG}.X:** [Added at close]
 
 ---
 
-## 8. Moves and findings
+## C2. Proposed changes for their owners
 
-> **[AI Guide]** Anything found while building that a later unit must act on, or that moved out of this unit, with its destination. `/build-checkpoint` appends here; `/plan-build-group` reads this section of every earlier plan.
+> **[AI Guide]** What this group's build showed should change in documents it doesn't own: the architecture note, the pattern catalogue, commons copies, the capability ledger. Proposed here; each owner applies them.
+
+| Document | Change | Why | Applied |
+|---|---|---|---|
+| [Document] | [Change] | [Reason] | [Date, or "Not yet"] |
+
+---
+
+## C3. Findings for later groups
+
+> **[AI Guide]** Anything found while planning or building that a later group must act on, with its destination. `/build-checkpoint` appends here; `/plan-build-group` reads this section of every earlier plan.
 
 | Found in | What | Goes to |
 |---|---|---|
-| [Checkpoint ID] | [Description] | [Unit or document] |
+| [Checkpoint ID] | [Description] | [Group or document] |
+
+---
+
+# Block library
+
+> **[AI Guide]** The standard blocks Part B's checkpoints are built from. Copy the blocks a checkpoint needs into it and fill every field; a field that doesn't apply says "Not applicable" and why. The library itself is removed from the written plan. Every block names the catalogue pattern it follows, so the developer knows which existing code it extends.
+
+---
+
+**Page block** (catalogue: page recipe and app shell)
+
+| Field | Value |
+|---|---|
+| Surface ID | [page.record.purpose] |
+| SCR and artboards | [SCR-NNN; artboard names] |
+| Route | [Path, its path parameters, and its query parameters] |
+| Opened from | [Navigation item, link or button] |
+| Who can open it | [Action, roles; everyone else sees …] |
+| Recipe | [Recipe name from the design system] |
+| Title and subtitle | [Exact text] |
+| Header actions | [Button text → action → where it goes] |
+| Notices | [Exact text, and the rule or setting that shows it] |
+| Tabs | [Tab IDs and labels, the default, and whether the tab is in the URL; or "none"] |
+
+**Static listing block** (catalogue: static listing)
+
+> **[AI Guide]** For a list loaded in full, searched and filtered in the browser. Say why that is enough and its limit (how many rows it can hold before it must become a server listing).
+
+| Field | Value |
+|---|---|
+| Table ID | [table.record.purpose] |
+| Why static | [Reason, and the limit: "a school has at most a few dozen staff"] |
+| Loaded by | [Query key, from the data loading block] |
+| Search | [Fields searched] |
+| Filters | [Field, options, default] |
+| Sort | [Default, and which columns sort] |
+| Selection and bar actions | [None / checkboxes, select all, bar actions] |
+| Row click | [Opens which sheet or page] |
+| Row actions | [Menu ID, see the menu block] |
+| Empty | [Text with no rows; text when a search or filter finds nothing] |
+
+| # | Column | Header | Cell | Format | Frozen | Shown by default | Source |
+|---|---|---|---|---|---|---|---|
+| 1 | [key] | [Header text] | [Part, catalogue key] | [How it's formatted, e.g. "first two roles, then +N"] | [Yes / no] | [Yes / no] | [Row in A8's field sources] |
+
+**Server listing block** (catalogue: server listing, screen half and server half)
+
+> **[AI Guide]** For a list loaded page by page from the server, with queries, filters and sort done there. Every query is its own row, and each has its own server-side line. Follow the API contract's list rules (shape, query parameters, export).
+
+| Field | Value |
+|---|---|
+| Table ID | [table.record.purpose, also the `tableId` that remembers each person's settings] |
+| Why server | [Reason: row count, or filters across data the browser can't hold] |
+| Page size | [Default and options] |
+| Selection and bar actions | [None / checkboxes, select all across pages or not, bar actions] |
+| Row click | [Opens which sheet or page] |
+| Row actions | [Menu ID, see the menu block] |
+| Export | [Formats, columns, row limit; or "none"] |
+| Empty | [Text with no rows; text when a query or filter finds nothing] |
+
+Columns:
+
+| # | Column | Header | Cell | Format | Frozen | Shown by default | Sortable | Source |
+|---|---|---|---|---|---|---|---|---|
+| 1 | [key] | [Header] | [Part] | [Format] | [Yes / no] | [Yes / no] | [Yes / no] | [A8 row] |
+
+Queries:
+
+| Query ID | Label | Shows | Fixed parameters | Default sort | Default query? |
+|---|---|---|---|---|---|
+| [query.record.purpose] | [Label on screen] | [Which records] | [Parameters it always sends] | [Column, direction] | [Yes / no] |
+
+Advanced filter fields:
+
+| Field | Type | Operators | Options from |
+|---|---|---|---|
+| [Field] | [Text / number / date / choice] | [Operators] | [Fixed list / lookup endpoint] |
+
+Server side:
+
+| Query ID | Endpoint | Parameters | How filters map to the data | Index needed |
+|---|---|---|---|---|
+| [query.record.purpose] | [METHOD /path] | [Parameters] | [Filter → column or join] | [Index, or "none, because …"] |
+
+**Card block**
+
+| Field | Value |
+|---|---|
+| Surface ID | [card.record.purpose] |
+| What it shows | [Contents, copied from the artboard] |
+| Loaded by | [Query key; every list on a page has its own query, even one that returns fixed values today] |
+| States | [In the states table] |
+
+**Menu block** (catalogue: row menu by status and role; allowed actions from the server)
+
+| Field | Value |
+|---|---|
+| Menu ID | [menu.record.purpose] |
+| Opens from | [Row's ⋯ button / Sheet header] |
+
+| Item | Action | Shown when | Not allowed when | Reason shown | Opens |
+|---|---|---|---|---|---|
+| [Item text] | [Action] | [Status and role] | [Reason code from A6, or "—"] | [Exact text] | [Dialog, page or sheet ID] |
+
+**Sheet block** (catalogue: read-only Sheet)
+
+| Field | Value |
+|---|---|
+| Sheet ID | [sheet.record.purpose] |
+| Opens from | [Row click / menu item / a cell] |
+| Title | [Exact text, with the record's fields it uses] |
+| Loaded by | [The list row's data, or its own query, and why] |
+| Changes | [Read-only: changes are made from the row menu] |
+
+| Section | Contents | Source |
+|---|---|---|
+| [Navigator label] | [Fields and facts, exact labels] | [A8 rows] |
+
+Notices: [Exact text, and the rule that shows each one]
+
+**Form block** (catalogue: the form rule; form, end to end)
+
+> **[AI Guide]** In "After submitting", every 422 row says which text shows: the screen's own (fixed text) or the API's `message` (text with data). Nothing is read from an error besides its `code` and `message`.
+
+| Field | Value |
+|---|---|
+| Form ID | [form.record.purpose] |
+| Kind | [Page / dialog / sheet / wizard, and why, by the form rule] |
+| Submit | [Button text → action → endpoint] |
+| Retry-safe | [Idempotency key sent / not needed, why; the button is disabled while sending] |
+| Leaving with changes | [What happens] |
+
+| Field | Label | Control | Required | Rules | Hint | Default |
+|---|---|---|---|---|---|---|
+| [field] | [Label] | [Input / choice cards / select…] | [Yes / no] | [Rules from A4's field validation] | [Exact hint text] | [Value] |
+
+Form-level rules: [Rules across fields, with their messages; or "none"]
+
+After submitting:
+
+| Response | What the person sees | Where | Goes to | Refreshes |
+|---|---|---|---|---|
+| Success | [Toast text, exact] | [Toast / inline] | [Page] | [Query keys] |
+| 400 validation | [Field messages] | [Under each field] | [Stays] | [—] |
+| 422 [CODE] | [Exact text] | [Field or form alert] | [Stays] | [—] |
+| 403 | [Text] | [Form alert] | [Stays] | [—] |
+| 409 version | [Text] | [Form alert, with reload] | [Stays] | [The record] |
+| Network or server error | [Text and request ID] | [Form alert] | [Stays] | [—] |
+
+**Dialog block** (catalogue: consequence confirmation)
+
+| Field | Value |
+|---|---|
+| Dialog ID | [dialog.record.purpose] |
+| Opens from | [Menu item or button] |
+| Title | [Exact text, with record fields] |
+| Description | [Exact text] |
+| Inputs | [None / see the form block] |
+| Buttons | [Cancel; confirm button text and style] |
+| Calls | [Endpoint] |
+
+After confirming: [The same response table as the form block]
+
+**States table** (catalogue: four states)
+
+> **[AI Guide]** Every surface that loads data gets its own row. With parallel queries each surface fails on its own; with one combined query the page has one row.
+
+| Surface | Loading | Empty | Error | No permission |
+|---|---|---|---|---|
+| [Surface ID] | [Skeleton shape] | [Exact text] | [Exact text, Retry] | [Exact text] |
+
+**Data loading block**
+
+| Field | Value |
+|---|---|
+| One query or several | [One combined query / parallel queries per surface; decision D{n}] |
+
+| Query key | Service function | Endpoint | Response type | File | Used by | Refetched when |
+|---|---|---|---|---|---|---|
+| [['record', 'list', params]] | [function name] | [METHOD /path] | [Type name] | [Path] | [Surface IDs] | [After which actions] |
+
+**Endpoint block** (catalogue: error contract, named actions, idempotency, optimistic locking, tenancy)
+
+| Field | Value |
+|---|---|
+| Action | [record.verb] |
+| Method and path | [METHOD /api/v1/path] |
+| Who | [Action; roles] |
+| Tenancy | [School-scoped through row security / platform / cross-school, see that block] |
+| Request | [Type name, fields, and their 400 validation] |
+| Response | [Type name and shape; lists follow the contract's list shape] |
+| Rules | [422 codes from A4, each with when it is returned] |
+| Other errors | [403, 404, 409: when each happens] |
+| Retry-safe | [Idempotency key required, and what a repeat returns / not needed, why] |
+| Concurrency | [Version field checked / not needed, why] |
+| Audit | [What is recorded] |
+| Events | [EventName, and its payload] |
+| Emails | [SCR-NNN, to whom, when] |
+| Settings read | [From A9] |
+| Performance | [Expected rows, and the index used] |
+
+```ts
+// Only where the shape must be exact: request and response types
+```
+
+**Module block** (catalogue: module package)
+
+| Field | Value |
+|---|---|
+| Module | [Name, layer] |
+| Contract functions | [package.function: what each does] |
+| Service methods | [What each does, and the rules it checks] |
+| Data access | [Queries and writes, and the table each touches] |
+| Calls to other modules | [From A7, with the seam if one is used] |
+
+**Migration block**
+
+| Field | Value |
+|---|---|
+| File | [Name, by the project's convention] |
+| Creates or changes | [Table] |
+| Row security | [Policy] |
+| Grants | [To the app role] |
+| Existing rows | [How they are updated, or "none exist yet"] |
+| Reversible | [How, or why not] |
+
+| Column | Type | Null | Default | Constraint |
+|---|---|---|---|---|
+| [name] | [type] | [Yes / no] | [Value] | [Check, unique, foreign key] |
+
+Indexes: [Each, and the query it serves]
+
+**Money command block** (catalogue: unit of work and the money pattern)
+
+| Field | Value |
+|---|---|
+| Command | [Action] |
+| Written in one transaction | [Every record written, in order] |
+| Counted once | [How a payment or charge can't be counted twice] |
+| Retry-safe | [Idempotency key, with the unit of work] |
+| Audit | [Recorded inside the transaction] |
+| Events | [Published after the commit] |
+| Financial checks | [Outstanding recomputable from records; allocations never exceed payments; others] |
+| Breaks to prove the tests | [Each money rule broken on purpose, and the test that must fail] |
+
+**Approval block** (catalogue: approval by a second person)
+
+| Field | Value |
+|---|---|
+| Request type | [Name] |
+| Raised by | [Roles] |
+| Approved by | [Roles; never the person who raised it] |
+| On approve | [What happens] |
+| On reject | [What happens, and the reason asked for] |
+| Expires | [When, or "never"] |
+| Shown in | [Surfaces] |
+| Handler | [Module that applies it] |
+
+**Import block** (catalogue: import; preview, then commit)
+
+| Field | Value |
+|---|---|
+| File | [Type, columns, the template offered for download] |
+| Row checks | [Each check and its message] |
+| Preview | [What shows before committing] |
+| Commit | [All rows or none / valid rows only; and why] |
+| Result | [What is reported after, and where] |
+| Runs as | [In the request / background job] |
+
+**Background job block** (catalogue: background jobs with progress and retry)
+
+| Field | Value |
+|---|---|
+| Job | [Name] |
+| Started by | [Action or schedule] |
+| Unit of work | [What one step does] |
+| Progress shown | [Where and how] |
+| Retry | [What is retried, how often] |
+| Partial failure | [What happens to the steps that succeeded] |
+| Retry-safe | [How a repeated step is ignored] |
+
+**Document block** (catalogue: documents; reference numbers)
+
+| Field | Value |
+|---|---|
+| Document | [SCR-NNN, name] |
+| Made when | [Trigger] |
+| Number | [Reference number scheme, or "none"] |
+| Fields | [Each field and its source] |
+| Kept | [Stored, and for how long; reprint rules] |
+
+**Email block** (catalogue: emails)
+
+| Field | Value |
+|---|---|
+| Email | [SCR-NNN, name] |
+| Sent when | [Trigger, event] |
+| To | [Who] |
+| Subject | [Exact text] |
+| Body fields | [Each field and its source] |
+| Link | [What it opens, and how long it works] |
+| If it fails | [Bounce or failure handling, and where it shows] |
+
+**Report block** (catalogue: report frame)
+
+| Field | Value |
+|---|---|
+| Report | [SCR-NNN, name] |
+| Measures | [Each figure, and exactly how it is calculated] |
+| As at | [The moment the figures are taken] |
+| Filters | [Each filter and its default] |
+| Export | [Formats] |
+| Performance | [Rows read, and how it stays fast] |
+
+**Public link block**
+
+| Field | Value |
+|---|---|
+| Page | [SCR-NNN] |
+| Link | [How the link identifies the record, and how long it works] |
+| Shows | [What, and what it never shows] |
+| Abuse limits | [Rate limits, guessing protection] |
+| Phone width | [Layout at phone width] |
+
+**Cross-school block** (catalogue: support access mode)
+
+| Field | Value |
+|---|---|
+| Who | [Operator roles] |
+| Scope | [Which schools, and how a school is chosen] |
+| Recorded | [Audit of every access] |
+| Never allowed | [What an operator can't do] |
+
+**Verification block**
+
+> **[AI Guide]** Written in plain language and approved with the plan. Every rule enforced in this checkpoint has a test named by its code. At least one test fails without this checkpoint's change.
+
+Automated tests:
+
+| Test | Level | Proves |
+|---|---|---|
+| [CODE: behaviour, or "surface: behaviour"] | [Unit / database / API / browser] | [One line] |
+
+Developer's check:
+
+| # | Step | Expected |
+|---|---|---|
+| 1 | [Step] | [Result] |
+
+Design parity: [Each artboard compared, the state it shows, and the seed that produces it]
+
+**Built block** (added by `/build-checkpoint`, at most 10 lines)
+
+**Built B{GG}.c.n** ([Date], [time taken]): [Result in one sentence]
+- Files: [By area, linked]
+- Differences from the plan: [Each, or "none"]
+- Tests: [N passed, where; parity result; breaks caught if run]
+- Commit: `[proposed message]`
+
+---
+
+## Plan checks
+
+> **[AI Guide — Verification]** `/plan-build-group` runs these twice: on its decisions before it asks the PO anything (its Step 5), so everything needing the PO is asked at once, and again on the written plan. It fixes every failure. The written plan keeps this section, ticked, so the reviewers see the checks were made.
+
+- [ ] A2: every row answered, none blank, none deleted
+- [ ] A3: every surface on the group's artboards is built, deferred or implied, each with an ID and a checkpoint
+- [ ] A3: IDs follow the scheme and are unique in the project
+- [ ] A4: every rule has a code, a statement, where it is enforced, a source stamp and a test
+- [ ] A4: every form field rule has its exact message
+- [ ] A5: every action has its roles, its surfaces and its endpoint
+- [ ] A6: every status has its allowed actions; every refusal has its exact text and where it shows
+- [ ] A7: every call between modules is allowed by the layers, or has a named seam
+- [ ] A8: every displayed value has a source; every value not available yet is deferred
+- [ ] A9: every number in the artboards' text (days, limits, amounts) has an owner
+- [ ] A10: every command has all five columns answered
+- [ ] A11: every artboard state has a seed record
+- [ ] A13: every difference and proposal has the PO's agreement
+- [ ] A15: every decision has a question, an answer, and a why naming the rejected alternative
+- [ ] Part B: every checkpoint is one visible behaviour, self-contained, within the size limit, with every block it needs filled in full
+- [ ] Part B: every list on a page has its own query; every page states one query or parallel; every surface that loads has its states
+- [ ] Part B: every server listing has every query, filter field and server-side line
+- [ ] Part B: every chunk has acceptance steps
+- [ ] Every response table reads only an error's `code` and `message`; data a refusal needs comes from a query, not the error
+- [ ] No "TBD", no "to be decided", no fact given only as a link; no person named except as seed data

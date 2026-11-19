@@ -1,8 +1,8 @@
 # Build Checkpoint
 
-Builds exactly one checkpoint of an approved build plan, verifies it, and records it. A checkpoint is the smallest step that can be checked: one layer of one chunk (data, rules, API, screen or flow), or the unit's close. Building one at a time, with the PO committing after each, keeps every change small enough to review and easy to revert.
+Builds exactly one checkpoint of an approved build plan, verifies it, and records it. A checkpoint is one behaviour a reviewer can see work, usually one user action, built from the surface down to the database with its own tests. Building one at a time keeps every change small enough for the developer to review as one commit, and a chunk of checkpoints small enough to review as one pull request.
 
-It runs once per checkpoint, in the plan's order, after `/plan-build-group` has written the plan and the PO has approved it. It produces code on the unit's branch in each code repo it touches, a Built block of at most 10 lines under the checkpoint in the plan, and the checkpoint's Status set to `Built`. It never commits, pushes or merges, except that the close checkpoint merges and deploys only when the PO says so.
+It runs once per checkpoint, in the plan's order, after `/plan-build-group` has written the plan and the PO and the developer have approved it. It reads the plan, not the wider sources: the plan already carries every fact and decision, copied with its source. If the plan is wrong or missing something, it stops and proposes the change, and never fills the gap from elsewhere. It produces code on the chunk's branch, a Built block under the checkpoint, and the checkpoint's Status set to `Built`. It never commits, pushes or merges, except that the close merges and deploys only when the PO says so.
 
 ---
 
@@ -17,14 +17,14 @@ It runs once per checkpoint, in the plan's order, after `/plan-build-group` has 
 Required: a project code and a checkpoint ID. Optional: `--check-tests`.
 
 - **Project code:** e.g. `ASCENDRA-PAY-004`
-- **Checkpoint ID:** e.g. `B04.1.2`, or `B04.X` for the unit's close
-- **`--check-tests`:** after the tests pass, break the code on purpose to prove they can fail (Step 6). Always done for an R checkpoint that enforces a money rule, given or not.
+- **Checkpoint ID:** e.g. `B03.1.2`, or `B03.X` for the unit's close
+- **`--check-tests`:** after the tests pass, break the code on purpose to prove they can fail (Step 6). Always done for a checkpoint with a money command block, given or not.
 
 If both required fields are missing:
 
 > "To build a checkpoint I need:
 > 1. **Project code:** the project folder under `projects/` (e.g. `ASCENDRA-PAY-004`)
-> 2. **Checkpoint ID:** from the unit's build plan (e.g. `B04.1.2`)"
+> 2. **Checkpoint ID:** from the unit's build plan (e.g. `B03.1.2`)"
 
 Wait for PO response.
 
@@ -36,7 +36,7 @@ Wait for PO response.
 
 If only the checkpoint ID is missing:
 
-> "Which checkpoint should I build? Give its ID from the build plan (e.g. `B04.1.2`). `projects/{CODE}/build/index.md` lists the plans."
+> "Which checkpoint should I build? Give its ID from the build plan (e.g. `B03.1.2`). `projects/{CODE}/build/index.md` lists the plans."
 
 Wait for PO response.
 
@@ -47,12 +47,14 @@ Wait for PO response.
 | Check | How to verify | Failure message |
 |-------|--------------|----------------|
 | Plan exists | `projects/{CODE}/build/group-{GG}-*.md` exists, where `{GG}` is the ID's unit | > "There's no build plan for unit {GG} under `projects/{CODE}/build/`. Run `/plan-build-group {CODE} {GG}` first." |
-| Plan approved | The plan's Status is `Approved` or `In progress` | > "The plan for unit {GG} is still {STATUS}. Approve it first: review it, then set its Status to Approved." |
-| Checkpoint exists | The ID is a row in the plan's Section 6, or `B{GG}.X` | > "{ID} isn't in the plan for unit {GG}. Check the ID." |
+| Plan approved | The plan's Status is `Approved` or `In progress` | > "The plan for unit {GG} is still {STATUS}. The PO and the developer approve it first, by setting its Status to Approved." |
+| Checkpoint exists | The ID is a row in the plan's Section B0, or `B{GG}.X` | > "{ID} isn't in the plan for unit {GG}. Check the ID." |
 | Not already built | Its Status is `Planned` | > "{ID} is already {STATUS}. Rebuilding it would replace its Built block. Do you want to rebuild it?" |
-| Earlier checkpoints built | Every checkpoint above it in the plan is `Built` or `Moved`; for `B{GG}.X`, all of them | > "{ID} comes after {EARLIER_IDS}, which aren't built. Build them first, or tell me to continue anyway." |
+| Earlier checkpoints built | Every checkpoint above it in Section B0 is `Built` or `Moved`; for `B{GG}.X`, all of them | > "{ID} comes after {EARLIER_IDS}, which aren't built. Build them first, or tell me to continue anyway." |
+| Earlier chunks merged | For a chunk's first checkpoint: the previous chunk's pull request is merged | > "Chunk {PREVIOUS} isn't merged yet. Its checkpoints should be accepted and merged first, so this chunk starts from them. Continue anyway?" |
 | Units it depends on closed | Every unit in the plan's "Depends on" is `Closed` in `build/index.md` | > "Unit {GG} depends on {UNITS}, which aren't closed. Continue anyway?" |
-| Clean start | In each code repo the checkpoint touches: on the branch `group/{GG}-{slug}` (or on the base commit, for the unit's first checkpoint) with no uncommitted changes | > "{REPO} has uncommitted changes on {BRANCH}. Commit the previous checkpoint first, so this one's changes stand on their own." |
+| Clean start | In each code repo the checkpoint touches: on the chunk's branch (or the main branch, for the chunk's first checkpoint) with no uncommitted changes | > "{REPO} has uncommitted changes on {BRANCH}. Commit the previous checkpoint first, so this one's changes stand on their own." |
+| Plan still matches the code | Commits in each repo since the plan's Reconciled commit, other than this unit's own, don't change a module, table, endpoint or shared part that Part A names | > "Since this plan was reconciled, {COMMITS} changed {WHAT}, which the plan relies on in {SECTIONS}. My recommendation: [update the plan as follows / no change needed, because …]. Shall I go on?" |
 
 On any failure, show the message and wait for PO response.
 
@@ -64,16 +66,15 @@ Record the start time now. It goes in the Built block.
 
 Read, in this order:
 
-1. `projects/{CODE}/CLAUDE.md`: the project's rules, and its row for `/build-checkpoint` if it has one.
-2. The plan: its header, Sections 1 to 4, the chunk holding this checkpoint, the Differences line of every earlier Built block, and Section 8. **The checkpoint's row is binding: what it builds and how it is proved.** Sections 2 and 3 are binding. The chunk's demo is context.
-3. `projects/{CODE}/architecture/architecture-note.md`, in full: the decisions every checkpoint stays within.
-4. `projects/{CODE}/architecture/commons-changes.md`: so no changed commons copy is re-copied.
-5. The sources the checkpoint's scope items link to in the plan's Section 1, and only those: the inventory row, the design decision, the domain section.
-6. **For an S checkpoint:** the artboard source of the screen and every state the row names, in full, and the design system README's sections for the parts it uses. Then, in `reference/ascendra-ui/`: `hard-instructions.md`, `ui-reference.md`, `code-style.md` and `field-hint-guide.md`; `showcase-reference.md` only to find a specific pattern.
-7. **For the close, `B{GG}.X`:** the plan in full, and `build/index.md`.
-8. The code the checkpoint builds on: the files earlier Built blocks list for this chunk, and the module's published contract.
+1. `projects/{CODE}/CLAUDE.md`: the project's rules, and its row for `/build-checkpoint`, which names the artboard sources and the design-parity harness.
+2. **The plan, in parts:** the header, Part A in full, the checkpoint's own section (or Part C for the close), Section B0, the Built blocks of earlier checkpoints in the same chunk, and Section C3. **The checkpoint's blocks are binding**, and so is Part A.
+3. `projects/{CODE}/architecture/commons-changes.md`: so no changed commons copy is re-copied.
+4. The project's pattern catalogue, in parts: only the entries the checkpoint's blocks name.
+5. **For a checkpoint with screens:** the artboard sources of its surfaces, in full; the design system README's sections for the parts they use; and, in `reference/ascendra-ui/`, `hard-instructions.md`, `ui-reference.md` and `code-style.md`, with `showcase-reference.md` only to find a specific pattern.
+6. **For the close, `B{GG}.X`:** the plan in full, and `build/index.md`.
+7. **The code it builds on:** the files earlier Built blocks list, the modules and screens the checkpoint changes, and nearby code that shows the repo's conventions.
 
-Don't read the brief, BRD documents or source material. The plan and the design already carry what they decided.
+Don't read the brief, BRD documents, source material, domain document, screen inventory or design decision log. The plan already carries what they decided. If something the build needs isn't in the plan, that is a plan gap: Step 3.
 
 ---
 
@@ -83,13 +84,13 @@ Work out three things, then show them in one message:
 
 1. **Needs first:** what the checkpoint relies on (earlier checkpoints' code, a running database, the seed, a provider account), and whether each is met. Check it yourself where you can. Mark it "PO to confirm" where you can't.
 2. **Needed from the PO:** secrets, accounts, or a choice. For each, say exactly where it goes and what it looks like.
-3. **Not stated by the plan:** anything that would cross the checkpoint's limits (a second module, a second screen, more than about 400 changed lines), change the plan's scope, add a commons module or an outside service, or differ from the architecture note. For each, give your recommendation, including splitting the checkpoint.
+3. **Plan gaps:** anything the checkpoint needs that its blocks and Part A don't state, anything in them that is wrong against the code, and anything that would take it past its size or change its scope. For each, give the change to the plan you recommend. An approved plan changes only with the PO's agreement, recorded in its Document Control.
 
-> "Before building {ID} ({KIND}: {what it builds}):
+> "Before building {ID} ({goal}):
 >
 > **Needs first:** [each item: met / not met / PO to confirm]
 > **Needed from you:** [each item and where it goes, or 'nothing']
-> **Not stated by the plan:** [each item with my recommendation, or 'nothing']
+> **Plan gaps:** [each item with the plan change I recommend, or 'nothing']
 >
 > Shall I start?"
 
@@ -105,19 +106,21 @@ If all three are empty, say so in one line and still wait.
 
 ## Step 4 — Build
 
-**Branch:** at the unit's first checkpoint, create `group/{GG}-{slug}` in each code repo from the plan's base commit. Afterwards, stay on it. Make no commits.
+**Branch:** one branch per chunk, `b{GG}.{chunk}-{slug}` (e.g. `b03.1-staff-list`), in each code repo the chunk touches. Create it at the chunk's first checkpoint from the main branch; afterwards, stay on it. Make no commits.
 
-Build what the checkpoint's row says, and nothing more.
+Build what the checkpoint's blocks say, and nothing more.
 
 **Rules while building:**
-- **One layer, one chunk.** Code for a later checkpoint isn't written now, even when it's obvious. If this checkpoint can't work without it, stop and ask.
-- **Stay within the architecture note.** If the checkpoint can't be built that way, stop and ask. Don't change the design silently.
+- **The plan's words are the specification.** Text, IDs, rule codes, messages, types and query keys are used exactly as written.
+- **IDs in code:** each surface's root carries its surface ID as `data-testid`. Each rule's error uses its code. Tests are named as the verification block names them.
+- **This checkpoint only.** Code for a later checkpoint isn't written now, even when it's obvious. If this checkpoint can't work without it, stop and ask.
+- **Stay within Part A.** Modules, calls between them, tables and patterns are as Part A decides. If the checkpoint can't be built that way, stop and propose the plan change.
 - **Commons:** copy a module only with the commons tool, and only the parts named. If a copy needs a change, make the smallest change and add a row to `commons-changes.md`. Never re-copy a module listed there.
-- **Screens:** start from the artboard source, keep its composition, text and states, and replace sample data with the real API. A library part used in the artboard is used here, whole. A screen that links to one not yet built leaves the link out.
-- **Seed:** records the plan's Section 4 asks for are added through the modules' real contracts, never by inserting rows directly.
-- **Small choices** the plan leaves open are yours. Record each one for the Differences line. Don't stop for them.
-- **Stop and ask** before anything Step 3 would have listed, if it only turns up now. Above all, if the change is growing past the checkpoint's limits: propose a split instead of carrying on.
-- **Use the domain's terms** in names, as the plan and the design use them.
+- **Screens:** start from the artboard source, keep its composition, text and states, and replace sample data with the real API. A library part used in the artboard is used here, whole. A part the plan says to extract is built once, where the plan says it lives. A link to a screen not yet built is left out.
+- **Seed:** the records the plan's Section A11 lists for this checkpoint are added through the modules' real contracts, never by inserting rows directly.
+- **Small choices** the plan doesn't state, and that no reviewer would question (a private helper's name, a file split), are yours. Record each one for the Built block. Anything a reviewer might question is a plan gap: stop and ask.
+- **Size:** if the change is growing past the checkpoint's limit, stop and propose a split.
+- **Use the domain's terms** in names, as the plan uses them.
 
 ---
 
@@ -126,12 +129,14 @@ Build what the checkpoint's row says, and nothing more.
 Every gate runs, in this order. A failed gate is fixed in the code, not in the test, before the next gate runs. Change a test only when the test itself is wrong, and say so in the Built block.
 
 1. **Static:** the type check, linting, and the project's boundary checks, in each repo touched.
-2. **Tests:** the checkpoint's own tests, as its row names, against the real thing (a real PostgreSQL as the app role, not a mock) unless the plan says otherwise. At least one of them must fail without this checkpoint's change: confirm it. Then every earlier test in the unit.
-3. **Financial checks:** for any checkpoint that touches money records, Outstanding is recomputable from records alone and Allocations never exceed Payments.
-4. **Design parity (S only):** render the artboard and the built page at the same size, the page with the seed, as the plan's header says. Look at both. List every difference in layout, text, parts and states. Fix what's wrong; any difference you keep goes in the Built block with its reason.
-5. **Close only (`B{GG}.X`):** the unit's demo as a browser test, the browser tests of every closed unit, the financial checks. Then stop and ask before merging:
+2. **Tests:** every test the verification block names, against the real thing (a real PostgreSQL as the app role, not a mock) unless the plan says otherwise. At least one of them must fail without this checkpoint's change: confirm it. Then every earlier test in the unit.
+3. **Financial checks:** for a checkpoint with a money command block, every check the block lists.
+4. **Design parity (screens only):** render each artboard the verification block names and the built surface at the same size, the surface with the seed, as the plan's header says. Look at both. List every difference in layout, text, parts and states. Fix what's wrong; a difference you keep goes in the Built block with its reason, and needs to be in Section A13 or proposed for it.
+5. **The developer's check:** run its steps yourself where you can, and record the result. The developer runs them again with the commit.
+6. **Chunk's last checkpoint:** run the chunk's acceptance steps on the running app, and record the result. List the commits the chunk's pull request will hold.
+7. **Close only (`B{GG}.X`):** the demo as a browser test, the browser tests of every closed unit, the financial checks. Then stop and ask before merging:
 
-   > "{UNIT} passes its demo and the regression of {N} closed units. Shall I merge `group/{GG}-{slug}` into {MAIN} in {REPOS} and deploy to staging? The merge stays uncommitted for your review until you say."
+   > "{UNIT} passes its demo and the regression of {N} closed units. Shall I deploy to staging? Every chunk's pull request is merged first, by you."
 
    Wait for PO response. Merge and deploy only as the PO says.
 
@@ -145,9 +150,9 @@ Wait for PO response.
 
 ## Step 6 — Check the tests can fail
 
-Run this step for an R checkpoint that enforces a money rule, and for any checkpoint run with `--check-tests`. Otherwise skip it, and the Built block says "Tests not checked by breaking the code."
+Run this step for a checkpoint with a money command block, and for any checkpoint run with `--check-tests`. Otherwise skip it, and the Built block says "Tests not checked by breaking the code."
 
-For each rule the checkpoint enforces (at most three):
+For each rule the block's "Breaks to prove the tests" lists, or each rule the checkpoint enforces (at most three):
 
 1. Back up the file, then break the rule in the code.
 2. Run the tests with a short timeout. Record which tests failed.
@@ -161,19 +166,18 @@ Every break must make at least one test fail. If one doesn't, a test is missing:
 
 Record the end time. In the plan:
 
-1. Under the checkpoint's chunk table, add its Built block, at most 10 lines, in the form the template gives:
+1. Under the checkpoint's section, add its Built block, at most 10 lines, in the form the template gives:
    - result in one sentence
    - files by area, as links
-   - differences from the plan: every choice the plan didn't state, every change to a commons copy, every PO decision taken during the build; write "none" only if there were none
-   - tests: how many passed and where; the parity result for S; breaks caught if Step 6 ran
-   - hand check: up to 3 steps with expected results
+   - differences from the plan: every small choice, every change to a commons copy, every PO decision taken during the build; write "none" only if there were none
+   - tests: how many passed and where; the parity result for screens; breaks caught if Step 6 ran
    - a proposed commit message per repo
-2. Set the checkpoint's Status to `Built`. Set the plan's Status to `In progress` if it was `Approved`.
-3. Append to Section 8 anything a later checkpoint or unit must act on.
+2. Set the checkpoint's Status to `Built`, in its section and in Section B0. Set the plan's Status to `In progress` if it was `Approved`.
+3. Append to Section C3 anything a later checkpoint or unit must act on, and to Section C2 anything a document's owner should change.
 4. Update the unit's row in `build/index.md`: checkpoints built.
-5. **Close only:** fill Section 7's Built block; record proposed architecture note changes there (don't edit the note); set the plan's Status and its index row to `Closed`, with the date; add a decision to the project's decision log if it records them by number.
+5. **Close only:** fill Part C's Built block; set the plan's Status and its index row to `Closed`, with the date; add a decision to the project's decision log if it records them by number.
 
-Commit nothing. List every changed file in each repo, so the PO can review and commit.
+Commit nothing. List every changed file in each repo, so the developer can review and the PO can commit.
 
 ---
 
@@ -182,15 +186,18 @@ Commit nothing. List every changed file in each repo, so the PO can review and c
 ```
 CHECKPOINT BUILT — {PROJECT_CODE} {ID}
 ─────────────────────────────────────────
-Kind:           {D / R / A / S / F / Close}: {what it builds}
-Branch:         {repo} group/{GG}-{slug} (not committed)
+Goal:           {what a reviewer can now see working}
+Branch:         {repo} b{GG}.{chunk}-{slug} (not committed)
 Tests:          {N} passed, on {where}; {N} fail without the change
-Parity:         {no differences / N kept, listed / not an S checkpoint}
+Parity:         {no differences / N kept, listed / no screens}
 Tests checked:  {yes, N breaks caught / no}
+Plan changes:   {agreed in Step 3, or none}
 Time taken:     {minutes}, of which {minutes} waiting on the PO
 Changed:        {N} files in {repos}; plan and build/index.md
 Needs the PO:   {anything left open, or none}
 ─────────────────────────────────────────
-Next: review the Built block and the diff, commit with the proposed
-message, then run /build-checkpoint {PROJECT_CODE} {NEXT_ID}
+Next: the developer reviews the diff and the Built block, then commit
+with the proposed message. Then /build-checkpoint {PROJECT_CODE} {NEXT_ID}
+{or, at a chunk's end: the PO runs the chunk's acceptance steps, then
+open the chunk's pull request}
 ```
