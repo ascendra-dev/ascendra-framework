@@ -70,7 +70,7 @@ Read, in this order:
 2. **The plan, in parts:** the header, Part A in full, the checkpoint's own section (or Part C for the close), Section B0, the Built blocks of earlier checkpoints in the same chunk, and Section C3. **The checkpoint's blocks are binding**, and so is Part A.
 3. `projects/{CODE}/architecture/commons-changes.md`: so no changed commons copy is re-copied.
 4. The project's pattern catalogue, in parts: only the entries the checkpoint's blocks name.
-5. **For a checkpoint with screens:** the artboard sources of its surfaces, in full; the design system README's sections for the parts they use; and, in `reference/ascendra-ui/`, `hard-instructions.md`, `ui-reference.md` and `code-style.md`, with `showcase-reference.md` only to find a specific pattern.
+5. **For a checkpoint with screens:** the artboard sources of its surfaces, in full, each found from its canvas title (as the plan names it) through the canvas index; the design system README's sections for the parts they use; and, in `reference/ascendra-ui/`, `hard-instructions.md`, `ui-reference.md` and `code-style.md`, with `showcase-reference.md` only to find a specific pattern.
 6. **For the close, `B{GG}.X`:** the plan in full, and `build/index.md`.
 7. **The code it builds on:** the files earlier Built blocks list, the modules and screens the checkpoint changes, and nearby code that shows the repo's conventions.
 
@@ -106,17 +106,19 @@ If all three are empty, say so in one line and still wait.
 
 ## Step 4 — Build
 
-**Branch:** one branch per chunk, `b{GG}.{chunk}-{slug}` (e.g. `b03.1-staff-list`), in each code repo the chunk touches. Create it at the chunk's first checkpoint from the main branch; afterwards, stay on it. Make no commits.
+**Branch:** one branch per chunk, `b{GG}.{chunk}-{slug}` (e.g. `b03.1-staff-list`), in each code repo the chunk touches. Create it at the chunk's first checkpoint from the main branch, never from an unmerged branch; afterwards, stay on it. Code from an unmerged branch is used only where the plan's A14 lists it. Make no commits.
 
 Build what the checkpoint's blocks say, and nothing more.
 
 **Rules while building:**
 - **The plan's words are the specification.** Text, IDs, rule codes, messages, types and query keys are used exactly as written.
-- **IDs in code:** each surface's root carries its surface ID as `data-testid`. Each rule's error uses its code. Tests are named as the verification block names them.
+- **IDs in code:** each surface's root carries its surface ID as `data-testid`. The web client's function for an endpoint is named after its action, and a query's key is its query ID's record and purpose, as the data loading block gives them. Each rule's error uses its code. Tests are named as the verification block names them.
+- **Folders:** every file goes in the folder of the module that owns it, by the architecture note's layout and the plan's module block. A new module is registered in the project's boundary check (e.g. `scripts/boundaries.config.ts`) with its kind, layer and table prefixes.
+- **Effects through events:** no module calls audit or notification directly. An audit entry is raised as a critical event inside the transaction (commons' `emitCritical()`, recorded by commons' audit listener). An email is sent by a reaction in the applications layer to an event emitted only after the commit (the unit of work's after-commit step, or the outbox once it exists). Money between modules stays a direct contract call inside one transaction.
 - **This checkpoint only.** Code for a later checkpoint isn't written now, even when it's obvious. If this checkpoint can't work without it, stop and ask.
 - **Stay within Part A.** Modules, calls between them, tables and patterns are as Part A decides. If the checkpoint can't be built that way, stop and propose the plan change.
 - **Commons:** copy a module only with the commons tool, and only the parts named. If a copy needs a change, make the smallest change and add a row to `commons-changes.md`. Never re-copy a module listed there.
-- **Screens:** start from the artboard source, keep its composition, text and states, and replace sample data with the real API. A library part used in the artboard is used here, whole. A part the plan says to extract is built once, where the plan says it lives. A link to a screen not yet built is left out.
+- **Screens:** start from the artboard source, keep its composition, text and states, and replace sample data with the real API. A library part used in the artboard is used here, whole. A part the plan says to extract is built once, where the plan says it lives. A link to a screen not yet built is left out. A deferred part shows exactly what the plan's A3 says: its true current state, or the action disabled with its reason; never a placeholder or sample data. A 400 shows the API's messages as a list in the form's error alert.
 - **Seed:** the records the plan's Section A11 lists for this checkpoint are added through the modules' real contracts, never by inserting rows directly.
 - **Small choices** the plan doesn't state, and that no reviewer would question (a private helper's name, a file split), are yours. Record each one for the Built block. Anything a reviewer might question is a plan gap: stop and ask.
 - **Size:** if the change is growing past the checkpoint's limit, stop and propose a split.
@@ -131,7 +133,7 @@ Every gate runs, in this order. A failed gate is fixed in the code, not in the t
 1. **Static:** the type check, linting, and the project's boundary checks, in each repo touched.
 2. **Tests:** every test the verification block names, against the real thing (a real PostgreSQL as the app role, not a mock) unless the plan says otherwise. At least one of them must fail without this checkpoint's change: confirm it. Then every earlier test in the unit.
 3. **Financial checks:** for a checkpoint with a money command block, every check the block lists.
-4. **Design parity (screens only):** render each artboard the verification block names and the built surface at the same size, the surface with the seed, as the plan's header says. Look at both. List every difference in layout, text, parts and states. Fix what's wrong; a difference you keep goes in the Built block with its reason, and needs to be in Section A13 or proposed for it.
+4. **Design parity (screens only):** render each artboard the verification block names (by canvas title, its source found through the canvas index) and the built surface at the same size, the surface with the seed, as the plan's header says. Look at both. List every difference in layout, text, parts and states. Fix what's wrong; a difference you keep goes in the Built block with its reason, and needs to be in Section A13 or proposed for it.
 5. **The developer's check:** run its steps yourself where you can, and record the result. The developer runs them again with the commit.
 6. **Chunk's last checkpoint:** run the chunk's acceptance steps on the running app, and record the result. List the commits the chunk's pull request will hold.
 7. **Close only (`B{GG}.X`):** the demo as a browser test, the browser tests of every closed unit, the financial checks. Then stop and ask before merging:

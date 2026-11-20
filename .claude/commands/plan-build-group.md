@@ -76,9 +76,9 @@ Read, in this order. Where the project's own `CLAUDE.md` names a different path 
 3. The project's pattern catalogue, if it has one (e.g. `build/pattern-catalogue.md`), in full: the patterns every plan names, and its extraction schedule.
 4. `projects/{CODE}/screens/screen-inventory.md`, in parts: the group's heading, its rows, the group table (depends on, split), the navigation section, the patterns every screen follows, and any inventory decision those rows cite.
 5. The design decision log the project names (e.g. its handoff), in parts: its foundation decisions (modules, architecture, cross-cutting concerns, documentation), and every decision that names this group, its screens or its records. Where it differs from the domain document, it wins.
-6. The group's artboard sources, in full, and the group's board list in the canvas index. They are the specification of every surface: its parts, states, text and sample figures.
+6. The group's artboard sources, in full, and the group's board list in the canvas index. They are the specification of every surface: its parts, states, text and sample figures. The canvas index gives each artboard's **canvas title** and page: the plan names artboards by that title, never by file name, because the reviewers find artboards on the canvas by their titles.
 7. The design system's README, in full: page recipes, lists and states, forms, money and status vocabulary.
-8. `projects/{CODE}/architecture/architecture-note.md`, in full, and `projects/{CODE}/architecture/commons-changes.md`.
+8. `projects/{CODE}/architecture/architecture-note.md`, in full, and `projects/{CODE}/architecture/commons-changes.md`. The note's module list, module kinds, layers and folder layout are the only source of module names, kinds and file paths.
 9. `reference/api-contract/contract.md`, in full, and the project's API standards if it has them. `reference/form-validation-messages.md`, in full.
 10. **Source material, in parts,** as the project's row maps it. Where it gives no map: the glossary; the sections for the modules this group touches; the scenarios, events and acceptance tests that name this group's records; and the security and tenancy section. Read the roadmap only when the group creates a new module, to check what later milestones will need from it.
 11. **The domain document, in parts:** the glossary in full (its terms are binding), and the entities, lifecycles and rules for this group's records. The design decision log wins where they differ.
@@ -86,7 +86,7 @@ Read, in this order. Where the project's own `CLAUDE.md` names a different path 
 13. For a unit with screens, in `reference/ascendra-ui/`: `hard-instructions.md` and `code-style.md`.
 14. For a named unit: the sources the PO gave in Step 1, in full.
 
-Then look at the code in each repo the architecture note names: the current branch and its latest commit, uncommitted changes, the modules and tables that exist, the endpoints, the screens, the shared parts already extracted, and the seed. Record what already exists for this unit's scope.
+Then look at the code in each repo the architecture note names, **on its main line**: its latest commit, the modules and tables that exist, the endpoints, the screens, the shared parts already extracted, and the seed. Record what already exists for this unit's scope. Unmerged branches are reference only: note any that hold work in this unit's scope, and lift code from one only as a decision, listed in A14.
 
 Don't read the brief or BRD documents unless a decision in item 5 links to them.
 
@@ -96,7 +96,7 @@ Don't read the brief or BRD documents unless a decision in item 5 links to them.
 
 Before deciding anything, list what the group's artboards contain. Don't write any file yet.
 
-1. **Surfaces:** every page, listing, card, menu, sheet, form, dialog, notice, toast and state, across every artboard of the group. Give each an ID by the template's scheme, checking earlier plans so no ID is reused.
+1. **Surfaces:** every page, listing, card, menu, sheet, drawer, form, dialog and tab, across every artboard of the group. Give each an ID by the template's scheme, checking earlier plans for surfaces that already exist (extend them, keeping their ID). Note every notice, toast and state too, but under the surface it appears on: they get no ID of their own. A surface that fits none of the template's kinds is a decision (a new kind and its block), never a quiet invention.
 2. **Actions:** every button and menu item, and what it does.
 3. **Displayed values:** every column, field, fact and figure a person sees, for the field-source table.
 4. **Text:** every title, subtitle, message, notice, hint and toast, copied exactly. Note every number in the text (days, limits, amounts): each is a setting or a constant.
@@ -111,14 +111,14 @@ Take every decision, in this order, which is the order a reviewer meets them. Ea
 
 **Part A, once for the group:**
 
-1. **Scope:** what is built, what is deferred (only when it needs an outside setup that isn't ready, belongs to work the project has placed later, or depends on a unit not yet built), and what is implied. For each deferral, decide what shows in its place now.
+1. **Scope:** what is built, what is deferred (only when it needs an outside setup that isn't ready, belongs to work the project has placed later, or depends on a unit not yet built), and what is implied. A designed surface is built whole; only the part that later work feeds is deferred. For each deferral, decide what shows in its place now: its **true current state** (real data, even if empty), or the action **disabled with its reason**; **hidden** only for a whole page or sidebar item of an unbuilt group. Never a placeholder or sample data. Where a seam stands in for the later work, name it and its honest default.
 2. **Rules:** every business rule, its code, its statement copied from its source, and every place it is enforced. The API always enforces; the screen only hints; the database adds a constraint where the rule fits one row.
 3. **Actions and roles:** every action, its roles, its surfaces and its endpoint.
 4. **Lifecycle and allowed actions:** every status, its badge, its allowed actions, and every refusal's exact text and where it shows. The server works out allowed actions and reasons and sends them with each record; the screen only shows them.
-5. **Modules:** which modules are touched, their layer, and every call between them. A call the layers don't allow gets a seam: the higher module registers a check or listener with the lower one.
+5. **Modules:** every module touched, including one that only gains configuration (role map actions, email catalogue entries), named only from the architecture note, with its two kinds (where its code comes from; what it is for), its layer and its folder. The top layer is "Applications", never a module name. A module the note lacks is a decision, carried to the note in C2. Every call between modules is a direct contract call (downward only), a critical event (inside the transaction), an after-commit event, or a registration (the higher module registers a check or listener with the lower one, for an upward need).
 6. **Data:** the tables and their changes, and the source of every displayed value. A value held by a provider or another module is fetched once per request at most, never once per row; prefer recording it in our own table when we see it change.
 7. **Settings and constants:** by the template's rule for loading them.
-8. **What each command causes:** audit, events, emails, retry safety and concurrency, for every endpoint that changes data.
+8. **What each command causes:** audit, events, emails, retry safety and concurrency, for every endpoint that changes data. No module calls audit or notification directly: an audit entry is a critical event, raised inside the transaction; an email is sent by a reaction in the applications layer to an after-commit event. Money between modules stays a direct contract call inside one transaction.
 9. **Seed:** a record for every state the artboards show.
 10. **Patterns and components:** reuse, extract now (the design shows it twice or more) or one-off, by the catalogue.
 11. **Differs from the design:** every difference and every proposal, each to be agreed in Step 6.
@@ -127,10 +127,10 @@ Take every decision, in this order, which is the order a reviewer meets them. Ea
 
 **Part B, per surface, from the surface down:**
 
-14. **Page:** route and parameters, who can open it, recipe, title, subtitle, header actions, notices, tabs.
+14. **Page:** route and parameters, who can open it, recipe, title, subtitle, header actions, notices, tabs (each tab's contents in the blocks that follow). Each surface kind takes its block by the template's mapping.
 15. **Each listing:** static or server. Static when the whole set fits in the browser (state its limit) and searching and filtering there is enough. Server when the set is large, or when it has preset queries or filters over data the browser can't hold. Then its full block: columns (order, frozen, shown by default, cell, format, reuse), and for a server listing every query, every filter field, sort, export and each query's server side.
-16. **Each menu, sheet, form, dialog and card:** its full block, with exact text, and every response handled (success, validation, each rule's code, no permission, version conflict, network error), with what shows, where it goes, and what refreshes.
-17. **Data loading:** every list a page shows gets its own query and endpoint, even one that returns fixed values today, so its source can change later without touching the screen. Per page, decide one combined query or parallel queries: parallel when the surfaces make sense apart, so each has its own loading, empty, error and no-permission state.
+16. **Each menu, sheet, drawer, form, dialog and card:** its full block, with exact text, and every response handled (success, validation, each rule's code, no permission, version conflict, network error), with what shows, where it goes, and what refreshes. A 400 shows the API's messages as a bulleted list in the form's error alert, never under fields.
+17. **Data loading:** every list a page shows gets its own query and endpoint, even one that returns fixed values today, so its source can change later without touching the screen. Per page, decide one combined query or parallel queries: parallel when the surfaces make sense apart, so each has its own loading, empty, error and no-permission state. Each query has a query ID; its key is the ID's record and purpose, and the client function for each endpoint is named after its action. Files sit in the owning module's folder.
 18. **Endpoints, modules and migrations:** their full blocks.
 
 **Then the cut:**
@@ -163,7 +163,7 @@ Then the plan at a glance, for information: the chunks and their checkpoints in 
 > "Before I write the plan for Group {GG}, these need your decision:
 >
 > **Design changes:**
-> 1. [Where: what's drawn, what would be built, why.] My recommendation: [answer].
+> 1. [Where (artboard canvas title): what's drawn, what would be built, why.] My recommendation: [answer].
 >
 > **Implied but not drawn:**
 > 2. [Surface, implied by …: proposed title, text, buttons, outcome.] My recommendation: [answer].
@@ -216,6 +216,7 @@ One row per build unit, in build order. Each unit's plan holds its chunks, check
 Status is `Draft`, `Approved`, `In progress` or `Closed`.
 
 2. **The design decision log** the project names: if it records decisions by number, add one recording that the unit's plan was written, with a link, and what the PO decided in Step 6.
+3. **Section C2's proposals** (a new module for the architecture note, a new surface kind or block for the template) are listed in the report for their owners. Change neither document here.
 
 Commit nothing.
 

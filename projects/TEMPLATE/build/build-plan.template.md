@@ -19,7 +19,10 @@
 > - **Names and IDs follow one scheme**, so code and plan can be searched for each other (Section A3, "IDs used in this plan").
 > - **A screen reads only an error's `code` and `message`.** The error body is the API contract's flat shape (Rule 1), with nothing else in it. The screen branches on `code` to decide where a message goes, and shows the API's `message` where the text needs data the screen doesn't hold (such as another person's name). If the screen needs data to show a refusal (such as when a session opened), that data comes from a query the screen already makes (the record's row), never from the error.
 > - **Roles, never people.** Write "the PO", "the developer", "a School admin". Sample people from the design (such as "Rashid Ahmed") are seed data and may appear as such.
-> - **Artboards are named, not pictured.** The reviewer has the design canvas open.
+> - **Artboards are named by their canvas title**, with the canvas page they are on, never by their source file name and never pictured. The reviewer has the design canvas open and finds an artboard by its title.
+> - **Effects go through domain events.** No module calls the audit or notification module directly. An audit entry is a critical event, raised inside the transaction so it commits or rolls back with the change. An email or notification is an after-commit event, sent by a reaction in the applications layer. Money between modules stays a direct contract call inside one transaction.
+> - **Nothing shows a placeholder.** A part that later work feeds shows its true current state (real data, even if empty), or is disabled with its reason. Only a whole page or sidebar item of an unbuilt group is hidden. Later work replaces only what sits behind a seam, whose honest default is stated here. No sample data from a real endpoint.
+> - **Modules and folders come from the project's architecture note.** A plan names no module the note doesn't list, and writes every file path inside the folder of the module that owns it.
 >
 > **What this document is not:**
 > - Not the design. Screen text and layout come from the artboards; the plan copies the text it needs and names the artboard. A new screen or text goes to the design first, as a Section A13 proposal.
@@ -41,7 +44,7 @@
 | Design | [Screens (SCR IDs), the canvas and page holding the artboards, and the decision that approved the design, linked] |
 | Depends on | [Build units that must be closed first, linked to their plans, or "none"] |
 | Reviewers | PO: requirements, screens, rules, demo. Developer: patterns, contracts, IDs, data, order |
-| Repos and base | [Each code repo, its branch, and the commit the plan was reconciled against] |
+| Repos and base | [Each code repo, the main line the plan builds on, and the commit it was reconciled against. Unmerged branches are reference only: any code lifted from one is listed in A14] |
 | Reconciled | [Date the plan was checked against the code. `/build-checkpoint` compares it with later commits] |
 | Design parity | [How an artboard is rendered, and how the built page is rendered at the same size with the seed] |
 | Size | [N chunks, N checkpoints] |
@@ -107,8 +110,8 @@
 | 26 | Reference numbers | |
 | 27 | Retry-safe commands (idempotency) | |
 | 28 | Two people changing one record (concurrency) | |
-| 29 | Audit entries | |
-| 30 | Domain events | |
+| 29 | Audit entries (critical events, inside the transaction) | |
+| 30 | Domain events (after-commit events and their reactions; "not applicable" only if the group has no audit entry, email or other effect on another concern) | |
 | 31 | A pattern or part extracted for reuse | |
 | 32 | Seed additions | |
 | 33 | Phone width | |
@@ -117,10 +120,14 @@
 
 ## A3. Scope
 
-> **[AI Guide]** Everything the group builds, everything it defers, and everything the design implies but doesn't draw. Walk every artboard of the group: each page, listing, form, dialog, sheet, menu, card, notice, toast and state is a surface. Give each surface an ID and the checkpoint that builds it. No surface may be missing from all three tables.
+> **[AI Guide]** Everything the group builds, everything it defers, and everything the design implies but doesn't draw. Walk every artboard of the group: each page, listing, card, menu, sheet, drawer, form, dialog and tab is a surface. Give each surface an ID and the checkpoint that builds it. No surface may be missing from all three tables.
+>
+> **Notices, toasts and states are not surfaces** and get no ID. Each is described inside the surface it appears on: a notice in its block's Notices field, a toast in the form or dialog's "After submitting" table, a state in the checkpoint's states table.
 
 **IDs used in this plan:**
 - Surfaces: `<kind>.<record>.<purpose>`, in kebab-case. Kinds: `page`, `table`, `query`, `form`, `dialog`, `sheet`, `drawer`, `tab`, `menu`, `card`. Example: `dialog.staff.change-roles`. In code, the surface's root element carries the ID as `data-testid`.
+- **A new kind** is never invented quietly. The plan proposes it as a decision in A15 (question, answer, why), and C2 carries it to this template. The same applies to a new block.
+- **In the web client,** the function that calls an endpoint is named after its action (`staff.change-roles` → `staffChangeRoles`), and a query's key is its query ID's record and purpose (`query.staff.list` → `['staff', 'list', …params]`). A search for an action or query ID then finds the screen, the client, the endpoint and the test.
 - Screens, documents and emails keep their `SCR-NNN` IDs.
 - Endpoints are named by their action (`staff.change-roles`) plus the method and path.
 - Contract functions are `package.function` (`identity.getMe`).
@@ -132,15 +139,15 @@
 
 | Surface ID | Kind | SCR | Artboards | What it is | Built in |
 |---|---|---|---|---|---|
-| [page.record.purpose] | [Kind] | [SCR-NNN] | [Artboard names] | [One line] | [B{GG}.c.n] |
+| [page.record.purpose] | [Kind] | [SCR-NNN] | [Artboard canvas titles] | [One line] | [B{GG}.c.n] |
 
 **Deferred: depends on later work.**
 
-> **[AI Guide]** Something drawn in this group that can't be finished yet, because it needs a module, provider or group not yet built. Say what shows in its place now, and which group wires it later. Each row is also a Section A13 difference, because the built screen won't match the artboard until then.
+> **[AI Guide]** Something drawn in this group that can't be finished yet, because it needs a module, provider or group not yet built. Say what shows in its place now, and which group wires it later. What shows is never a placeholder or sample data: it is the part's **true current state** (real data, even if empty, such as "Not set up"), or the action **disabled with its reason** (exact text). Only a whole page or sidebar item of an unbuilt group is **hidden**. Where a seam stands in for the later work, name it and its honest default. Each row is also a Section A13 difference, because the built screen won't match the artboard until then.
 
 | What | Why it waits | Shown meanwhile | Wired by |
 |---|---|---|---|
-| [Item] | [Needs …] | [Placeholder, hidden, or not offered] | [Group or unit] |
+| [Item] | [Needs …] | [True current state: … / disabled, with "exact reason" / hidden (whole page or sidebar item only)] | [Group or unit, and the seam it replaces] |
 
 **Implied but not drawn.**
 
@@ -211,17 +218,19 @@
 
 ## A7. Modules
 
-> **[AI Guide]** Every module the group touches. Its layer (platform, commons or business) decides which other modules it may call. Every call between modules is listed with its direction. A call that the layers don't allow needs a seam (the higher module registers a check or listener with the lower one), and the seam is named here.
+> **[AI Guide]** Every module the group touches, including one that only gains configuration (actions added to the role map, an email added to the catalogue). Names come only from the project's architecture note; a module the note lacks is proposed as a decision in A15, and C2 carries it to the note. Each module has two kinds, from the note: **where its code comes from** (commons, commons-to-be, product) and **what it is for** (business, platform, integration, front end). Its **layer** decides which modules it may call. The API's top layer is always called **Applications**, with its folder, never given a module name.
+>
+> Every call between modules is one of four kinds: a **direct contract call** (downward only), a **critical event** (inside the transaction: audit), an **after-commit event** (emails, notifications) or a **registration** (a higher module registers a check or listener with a lower one, for an upward need).
 
-| Module | Layer | New or existing | What it gains in this group | Public contract functions |
-|---|---|---|---|---|
-| [module] | [Platform / commons / business] | [New / existing] | [Records, rules, endpoints] | [package.function] |
+| Module | Kind | Purpose | Layer | Folder | New or existing | What it gains in this group | Contract functions and events |
+|---|---|---|---|---|---|---|---|
+| [module] | [Commons / commons-to-be / product] | [Business / platform / integration / front end] | [Applications / orchestration / business layer / platform / infrastructure] | [Path] | [New / existing] | [Records, rules, endpoints, configuration] | [package.function; events raised, critical ones marked] |
 
 **Calls between modules:**
 
 | From | To | What for | Allowed by the layers? | How |
 |---|---|---|---|---|
-| [module] | [module] | [Purpose] | [Yes / No] | [Direct contract call / seam: …] |
+| [module] | [module] | [Purpose] | [Yes / no, so a registration] | [Direct contract call / critical event / after-commit event / registration: …] |
 
 ---
 
@@ -255,11 +264,11 @@
 
 ## A10. What each command causes
 
-> **[AI Guide]** For every command (every endpoint that changes data), everything that happens besides the change itself. A blank cell is an unanswered question; write "none" where nothing happens.
+> **[AI Guide]** For every command (every endpoint that changes data), everything that happens besides the change itself. A blank cell is an unanswered question; write "none" where nothing happens. An audit entry is a critical event, raised inside the transaction. An email or notification is sent by a reaction in the applications layer to an after-commit event.
 
-| Endpoint | Audit entry | Events | Emails or notifications | Retry-safe | Concurrency |
+| Endpoint | Audit entry (critical event) | Events after the commit | Emails or notifications | Retry-safe | Concurrency |
 |---|---|---|---|---|---|
-| [action] | [What is recorded] | [EventName] | [SCR-NNN, to whom] | [Idempotency key: required / not needed, why] | [Version check / not needed, why] |
+| [action] | [What is recorded] | [EventName, payload] | [SCR-NNN, to whom; the reaction that sends it] | [Idempotency key: required / not needed, why] | [Version check / not needed, why] |
 
 ---
 
@@ -269,7 +278,7 @@
 
 | Records | Produces which state | Artboards | Through |
 |---|---|---|---|
-| [What, how many] | [For example, "an Invited person"] | [Artboard names] | [Contract function] |
+| [What, how many] | [For example, "an Invited person"] | [Artboard canvas titles] | [Contract function] |
 
 ---
 
@@ -291,13 +300,13 @@
 
 | # | Where | Design shows | Built shows | Why | Agreed |
 |---|---|---|---|---|---|
-| P1 | [Surface ID, artboard] | [What is drawn] | [What will be built] | [Reason] | [PO, date; decision log number if recorded] |
+| P1 | [Surface ID, artboard canvas title] | [What is drawn] | [What will be built] | [Reason] | [PO, date; decision log number if recorded] |
 
 ---
 
 ## A14. Reconciled with existing code
 
-> **[AI Guide]** Where existing code or documents disagree with the approved design, and the fix. Name the file, table or section. Write "None found" only after looking at the code repos, not just the documents.
+> **[AI Guide]** Where existing code or documents disagree with the approved design, and the fix. Name the file, table or section. Write "None found" only after looking at the code repos, not just the documents. Reconcile against the main line only. Code on an unmerged branch is reference: if the plan lifts any of it, list it here (what, from which branch and commit, and why), and it is reviewed with the plan like new code.
 
 | # | What disagrees | Where | Fix | Fixed in |
 |---|---|---|---|---|
@@ -345,7 +354,7 @@
 
 ### B{GG}.1.1 [Goal, as a short title]
 
-> **[AI Guide]** One section per checkpoint, in build order. Start with the four lines below, then copy in, from the Block library, every block this checkpoint needs, in this order: screen blocks (page, then listing, card, menu, sheet, form, dialog, in the order a person meets them), the states table, data loading, endpoints, then the module and migration. Add a non-screen block (money command, approval, import, job, document, email, report, public link, cross-school) when the checkpoint does that kind of work. Finish with Verification. A block that doesn't apply is left out, not written as empty. Each block is filled in full: the build reads only Part A and this section.
+> **[AI Guide]** One section per checkpoint, in build order. Start with the four lines below, then copy in, from the Block library, every block this checkpoint needs, in this order: screen blocks (page, then listing, card, menu, sheet, drawer, form, dialog, in the order a person meets them), the states table, data loading, endpoints, then the module and migration. Add a non-screen block (money command, approval, import, job, document, email, report, public link, cross-school) when the checkpoint does that kind of work. Finish with Verification. A block that doesn't apply is left out, not written as empty. Each block is filled in full: the build reads only Part A and this section.
 
 **Goal:** [What a reviewer can see working when this checkpoint is done]
 **Depends on:** [Earlier checkpoints and units]
@@ -368,7 +377,7 @@
 
 | # | Step | Expected | Compare with |
 |---|---|---|---|
-| 1 | [Sign in as … and do …] | [What shows] | [Artboard] |
+| 1 | [Sign in as … and do …] | [What shows] | [Artboard canvas title] |
 
 ---
 
@@ -398,7 +407,7 @@
 
 ## C2. Proposed changes for their owners
 
-> **[AI Guide]** What this group's build showed should change in documents it doesn't own: the architecture note, the pattern catalogue, commons copies, the capability ledger. Proposed here; each owner applies them.
+> **[AI Guide]** What this group's planning or build showed should change in documents it doesn't own: the architecture note (a new module), the pattern catalogue, commons copies, this template (a new surface kind or block). Proposed here; each owner applies them.
 
 | Document | Change | Why | Applied |
 |---|---|---|---|
@@ -419,6 +428,8 @@
 # Block library
 
 > **[AI Guide]** The standard blocks Part B's checkpoints are built from. Copy the blocks a checkpoint needs into it and fill every field; a field that doesn't apply says "Not applicable" and why. The library itself is removed from the written plan. Every block names the catalogue pattern it follows, so the developer knows which existing code it extends.
+>
+> **Each surface kind has its block:** `page` → Page block; `tab` → the Page block's Tabs field; `table` → Static listing or Server listing block; `card`, `menu`, `sheet`, `drawer`, `form`, `dialog` → their own blocks; `query` → Data loading block. A block is never invented in a plan: a new one is proposed as a decision in A15, and C2 carries it to this template.
 
 ---
 
@@ -427,7 +438,7 @@
 | Field | Value |
 |---|---|
 | Surface ID | [page.record.purpose] |
-| SCR and artboards | [SCR-NNN; artboard names] |
+| SCR and artboards | [SCR-NNN; artboard canvas titles] |
 | Route | [Path, its path parameters, and its query parameters] |
 | Opened from | [Navigation item, link or button] |
 | Who can open it | [Action, roles; everyone else sees …] |
@@ -435,7 +446,7 @@
 | Title and subtitle | [Exact text] |
 | Header actions | [Button text → action → where it goes] |
 | Notices | [Exact text, and the rule or setting that shows it] |
-| Tabs | [Tab IDs and labels, the default, and whether the tab is in the URL; or "none"] |
+| Tabs | [Tab IDs (`tab.record.purpose`) and labels, the default, and whether the tab is in the URL; or "none". Each tab's contents are the blocks that follow, in tab order] |
 
 **Static listing block** (catalogue: static listing)
 
@@ -533,9 +544,23 @@ Server side:
 
 Notices: [Exact text, and the rule that shows each one]
 
+**Drawer block** (catalogue: drawer)
+
+| Field | Value |
+|---|---|
+| Drawer ID | [drawer.record.purpose] |
+| Opens from | [Button, row or menu item] |
+| Side and width | [Side, width, and its phone layout] |
+| Title | [Exact text, with record fields] |
+| Loaded by | [Query key, or the opener's data, and why] |
+| Contents | [Sections and fields, exact labels; or the form block it holds] |
+| Closes | [How it closes, and what happens to unsaved input] |
+
+Notices: [Exact text, and the rule that shows each one]
+
 **Form block** (catalogue: the form rule; form, end to end)
 
-> **[AI Guide]** In "After submitting", every 422 row says which text shows: the screen's own (fixed text) or the API's `message` (text with data). Nothing is read from an error besides its `code` and `message`.
+> **[AI Guide]** In "After submitting", every 422 row says which text shows: the screen's own (fixed text) or the API's `message` (text with data). Nothing is read from an error besides its `code` and `message`. A 400 shows the API's messages as a bulleted list in the form's error alert: the contract's 400 carries no field names, and the form checks the same rules before sending, so a 400 is rare.
 
 | Field | Value |
 |---|---|
@@ -556,7 +581,7 @@ After submitting:
 | Response | What the person sees | Where | Goes to | Refreshes |
 |---|---|---|---|---|
 | Success | [Toast text, exact] | [Toast / inline] | [Page] | [Query keys] |
-| 400 validation | [Field messages] | [Under each field] | [Stays] | [—] |
+| 400 validation | [The API's messages, as a bulleted list] | [Form alert] | [Stays] | [—] |
 | 422 [CODE] | [Exact text] | [Field or form alert] | [Stays] | [—] |
 | 403 | [Text] | [Form alert] | [Stays] | [—] |
 | 409 version | [Text] | [Form alert, with reload] | [Stays] | [The record] |
@@ -590,9 +615,9 @@ After confirming: [The same response table as the form block]
 |---|---|
 | One query or several | [One combined query / parallel queries per surface; decision D{n}] |
 
-| Query key | Service function | Endpoint | Response type | File | Used by | Refetched when |
-|---|---|---|---|---|---|---|
-| [['record', 'list', params]] | [function name] | [METHOD /path] | [Type name] | [Path] | [Surface IDs] | [After which actions] |
+| Query ID | Query key | Service function | Endpoint | Response type | File | Used by | Refetched when |
+|---|---|---|---|---|---|---|---|
+| [query.record.purpose] | [['record', 'purpose', …params]] | [Named after the action, e.g. `staffList`] | [METHOD /path] | [Type name] | [Path in the module's folder, e.g. `platform/identity/api.ts`] | [Surface IDs] | [After which actions] |
 
 **Endpoint block** (catalogue: error contract, named actions, idempotency, optimistic locking, tenancy)
 
@@ -600,6 +625,7 @@ After confirming: [The same response table as the form block]
 |---|---|
 | Action | [record.verb] |
 | Method and path | [METHOD /api/v1/path] |
+| Lives in | [The controller's folder: the module's `.api` package for a commons-to-be module; the applications layer for a business module] |
 | Who | [Action; roles] |
 | Tenancy | [School-scoped through row security / platform / cross-school, see that block] |
 | Request | [Type name, fields, and their 400 validation] |
@@ -608,9 +634,9 @@ After confirming: [The same response table as the form block]
 | Other errors | [403, 404, 409: when each happens] |
 | Retry-safe | [Idempotency key required, and what a repeat returns / not needed, why] |
 | Concurrency | [Version field checked / not needed, why] |
-| Audit | [What is recorded] |
-| Events | [EventName, and its payload] |
-| Emails | [SCR-NNN, to whom, when] |
+| Audit | [What is recorded, as a critical event inside the transaction] |
+| Events | [After the commit: EventName, and its payload] |
+| Emails | [SCR-NNN, to whom; the reaction that sends it, on which event] |
 | Settings read | [From A9] |
 | Performance | [Expected rows, and the index used] |
 
@@ -622,11 +648,13 @@ After confirming: [The same response table as the form block]
 
 | Field | Value |
 |---|---|
-| Module | [Name, layer] |
+| Module | [Name; kind, purpose and layer from A7] |
+| Folder | [Path, by the architecture note's layout] |
 | Contract functions | [package.function: what each does] |
+| Events raised | [EventName: critical or after the commit, and its payload] |
 | Service methods | [What each does, and the rules it checks] |
 | Data access | [Queries and writes, and the table each touches] |
-| Calls to other modules | [From A7, with the seam if one is used] |
+| Calls to other modules | [From A7: direct contract call, critical event, after-commit event or registration] |
 
 **Migration block**
 
@@ -653,8 +681,8 @@ Indexes: [Each, and the query it serves]
 | Written in one transaction | [Every record written, in order] |
 | Counted once | [How a payment or charge can't be counted twice] |
 | Retry-safe | [Idempotency key, with the unit of work] |
-| Audit | [Recorded inside the transaction] |
-| Events | [Published after the commit] |
+| Audit | [A critical event, recorded inside the transaction] |
+| Events | [Published after the commit, through the unit of work's after-commit step or the outbox] |
 | Financial checks | [Outstanding recomputable from records; allocations never exceed payments; others] |
 | Breaks to prove the tests | [Each money rule broken on purpose, and the test that must fail] |
 
@@ -709,7 +737,7 @@ Indexes: [Each, and the query it serves]
 | Field | Value |
 |---|---|
 | Email | [SCR-NNN, name] |
-| Sent when | [Trigger, event] |
+| Sent when | [The after-commit event, and the reaction in the applications layer that sends it] |
 | To | [Who] |
 | Subject | [Exact text] |
 | Body fields | [Each field and its source] |
@@ -762,7 +790,7 @@ Developer's check:
 |---|---|---|
 | 1 | [Step] | [Result] |
 
-Design parity: [Each artboard compared, the state it shows, and the seed that produces it]
+Design parity: [Each artboard compared, by canvas title, the state it shows, and the seed that produces it]
 
 **Built block** (added by `/build-checkpoint`, at most 10 lines)
 
@@ -780,15 +808,18 @@ Design parity: [Each artboard compared, the state it shows, and the seed that pr
 
 - [ ] A2: every row answered, none blank, none deleted
 - [ ] A3: every surface on the group's artboards is built, deferred or implied, each with an ID and a checkpoint
-- [ ] A3: IDs follow the scheme and are unique in the project
+- [ ] A3: IDs follow the scheme; no new surface kind or block without a decision in A15
+- [ ] A3: no notice, toast or state has its own ID
+- [ ] A3: nothing deferred shows a placeholder or sample data; each shows its true current state, or is disabled with its reason, or (a whole page or sidebar item only) is hidden
 - [ ] A4: every rule has a code, a statement, where it is enforced, a source stamp and a test
 - [ ] A4: every form field rule has its exact message
 - [ ] A5: every action has its roles, its surfaces and its endpoint
 - [ ] A6: every status has its allowed actions; every refusal has its exact text and where it shows
-- [ ] A7: every call between modules is allowed by the layers, or has a named seam
+- [ ] A7: every module touched is listed, by its name in the architecture note, with its kinds, layer and folder; the top layer is called Applications
+- [ ] A7: every call between modules is a direct contract call allowed by the layers, a critical event, an after-commit event or a named registration
 - [ ] A8: every displayed value has a source; every value not available yet is deferred
 - [ ] A9: every number in the artboards' text (days, limits, amounts) has an owner
-- [ ] A10: every command has all five columns answered
+- [ ] A10: every command has all five columns answered; every audit entry is a critical event and every email has its after-commit event and reaction; no module calls audit or notification directly
 - [ ] A11: every artboard state has a seed record
 - [ ] A13: every difference and proposal has the PO's agreement
 - [ ] A15: every decision has a question, an answer, and a why naming the rejected alternative
@@ -796,5 +827,6 @@ Design parity: [Each artboard compared, the state it shows, and the seed that pr
 - [ ] Part B: every list on a page has its own query; every page states one query or parallel; every surface that loads has its states
 - [ ] Part B: every server listing has every query, filter field and server-side line
 - [ ] Part B: every chunk has acceptance steps
-- [ ] Every response table reads only an error's `code` and `message`; data a refusal needs comes from a query, not the error
+- [ ] Every response table reads only an error's `code` and `message`; data a refusal needs comes from a query, not the error; a 400 shows as a list in the form alert
+- [ ] Every artboard is named by its canvas title; every client function and query key carries its action or query ID; every file path is in its module's folder
 - [ ] No "TBD", no "to be decided", no fact given only as a link; no person named except as seed data
