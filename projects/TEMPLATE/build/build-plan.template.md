@@ -19,7 +19,8 @@
 > - **Names and IDs follow one scheme**, so code and plan can be searched for each other (Section A3, "IDs used in this plan").
 > - **A screen reads only an error's `code` and `message`.** The error body is the API contract's flat shape (Rule 1), with nothing else in it. The screen branches on `code` to decide where a message goes, and shows the API's `message` where the text needs data the screen doesn't hold (such as another person's name). If the screen needs data to show a refusal (such as when a session opened), that data comes from a query the screen already makes (the record's row), never from the error.
 > - **Roles, never people.** Write "the PO", "the developer", "a School admin". Sample people from the design (such as "Rashid Ahmed") are seed data and may appear as such.
-> - **Artboards are named by their canvas title**, with the canvas page they are on, never by their source file name and never pictured. The reviewer has the design canvas open and finds an artboard by its title.
+> - **Artboards are named by their canvas title**, quoted exactly, never by their source file name and never pictured. A design artboard's title is `SCR-NNN Screen name · state`, the ID and name as in the screen inventory (for example `SCR-001 Login · Locked`), so the reviewer, with the design canvas open, finds it by searching for the title or its SCR ID.
+> - **Retry-safe means what a repeat does.** Every retry-safe answer says what happens when the same command arrives twice, then "no key" or "key: …". An idempotency key is one way to make a repeat safe, named only where it is used.
 > - **Effects go through domain events.** No module calls the audit or notification module directly. An audit entry is a critical event, raised inside the transaction so it commits or rolls back with the change. An email or notification is an after-commit event, sent by a reaction in the applications layer. Money between modules stays a direct contract call inside one transaction.
 > - **Nothing shows a placeholder.** A part that later work feeds shows its true current state (real data, even if empty), or is disabled with its reason. Only a whole page or sidebar item of an unbuilt group is hidden. Later work replaces only what sits behind a seam, whose honest default is stated here. No sample data from a real endpoint.
 > - **Modules and folders come from the project's architecture note.** A plan names no module the note doesn't list, and writes every file path inside the folder of the module that owns it.
@@ -108,7 +109,7 @@
 | 24 | Commons module copied or changed | |
 | 25 | New or changed table, and existing rows to update | |
 | 26 | Reference numbers | |
-| 27 | Retry-safe commands (idempotency) | |
+| 27 | Repeating a command (retry-safe) | |
 | 28 | Two people changing one record (concurrency) | |
 | 29 | Audit entries (critical events, inside the transaction) | |
 | 30 | Domain events (after-commit events and their reactions; "not applicable" only if the group has no audit entry, email or other effect on another concern) | |
@@ -268,7 +269,7 @@
 
 | Endpoint | Audit entry (critical event) | Events after the commit | Emails or notifications | Retry-safe | Concurrency |
 |---|---|---|---|---|---|
-| [action] | [What is recorded] | [EventName, payload] | [SCR-NNN, to whom; the reaction that sends it] | [Idempotency key: required / not needed, why] | [Version check / not needed, why] |
+| [action] | [What is recorded] | [EventName, payload] | [SCR-NNN, to whom; the reaction that sends it] | [What a repeat does; no key / key: …] | [Version check / not needed, why] |
 
 ---
 
@@ -567,7 +568,7 @@ Notices: [Exact text, and the rule that shows each one]
 | Form ID | [form.record.purpose] |
 | Kind | [Page / dialog / sheet / wizard, and why, by the form rule] |
 | Submit | [Button text → action → endpoint] |
-| Retry-safe | [Idempotency key sent / not needed, why; the button is disabled while sending] |
+| Retry-safe | [What a repeat does; no key / key sent: …; the button is disabled while sending] |
 | Leaving with changes | [What happens] |
 
 | Field | Label | Control | Required | Rules | Hint | Default |
@@ -632,7 +633,7 @@ After confirming: [The same response table as the form block]
 | Response | [Type name and shape; lists follow the contract's list shape] |
 | Rules | [422 codes from A4, each with when it is returned] |
 | Other errors | [403, 404, 409: when each happens] |
-| Retry-safe | [Idempotency key required, and what a repeat returns / not needed, why] |
+| Retry-safe | [What a repeat does or returns; no key / key: required, …] |
 | Concurrency | [Version field checked / not needed, why] |
 | Audit | [What is recorded, as a critical event inside the transaction] |
 | Events | [After the commit: EventName, and its payload] |
@@ -680,7 +681,7 @@ Indexes: [Each, and the query it serves]
 | Command | [Action] |
 | Written in one transaction | [Every record written, in order] |
 | Counted once | [How a payment or charge can't be counted twice] |
-| Retry-safe | [Idempotency key, with the unit of work] |
+| Retry-safe | [What a repeat does; key: …, with the unit of work] |
 | Audit | [A critical event, recorded inside the transaction] |
 | Events | [Published after the commit, through the unit of work's after-commit step or the outbox] |
 | Financial checks | [Outstanding recomputable from records; allocations never exceed payments; others] |
@@ -720,7 +721,7 @@ Indexes: [Each, and the query it serves]
 | Progress shown | [Where and how] |
 | Retry | [What is retried, how often] |
 | Partial failure | [What happens to the steps that succeeded] |
-| Retry-safe | [How a repeated step is ignored] |
+| Retry-safe | [What a repeated step does, and how it is ignored] |
 
 **Document block** (catalogue: documents; reference numbers)
 
@@ -828,5 +829,5 @@ Design parity: [Each artboard compared, by canvas title, the state it shows, and
 - [ ] Part B: every server listing has every query, filter field and server-side line
 - [ ] Part B: every chunk has acceptance steps
 - [ ] Every response table reads only an error's `code` and `message`; data a refusal needs comes from a query, not the error; a 400 shows as a list in the form alert
-- [ ] Every artboard is named by its canvas title; every client function and query key carries its action or query ID; every file path is in its module's folder
+- [ ] Every artboard is named by its exact canvas title (`SCR-NNN Screen name · state`); every retry-safe answer says what a repeat does, then "no key" or "key: …"; every client function and query key carries its action or query ID; every file path is in its module's folder
 - [ ] No "TBD", no "to be decided", no fact given only as a link; no person named except as seed data
