@@ -4,6 +4,8 @@ Builds exactly one checkpoint of an approved build plan, verifies it, and record
 
 It runs once per checkpoint, in the plan's order, after `/plan-build-group` has written the plan and the PO and the developer have approved it. It reads the plan, not the wider sources: the plan already carries every fact and decision, copied with its source. If the plan is wrong or missing something, it stops and proposes the change, and never fills the gap from elsewhere. It produces code on the chunk's branch, a Built block under the checkpoint, and the checkpoint's Status set to `Built`. It never commits, pushes or merges, except that the close merges and deploys only when the PO says so.
 
+In a project in worklog mode (`FW-053`), the Built block, status changes and findings go into the builder's own worklog as entries, unless the builder holds the hold; `/sync-worklogs` later applies them to the plan. The code is built the same either way.
+
 ---
 
 ## Arguments received
@@ -46,11 +48,12 @@ Wait for PO response.
 
 | Check | How to verify | Failure message |
 |-------|--------------|----------------|
+| Writing mode | The project's `CLAUDE.md` has a `## Worklog mode` section or not. If it has: `git config user.name` is one of its people, and `worklogs/hold.md` says who holds the hold. **Direct:** no worklog mode, or the hold is yours. **Worklog:** worklog mode, and the hold isn't yours | > "Your git user, {NAME}, isn't one of the people in `{CODE}`'s worklog mode, so I don't know whose worklog to write. Add yourself to the section, or set `git config user.name`." |
 | Plan exists | `projects/{CODE}/build/group-{GG}-*.md` exists, where `{GG}` is the ID's unit | > "There's no build plan for unit {GG} under `projects/{CODE}/build/`. Run `/plan-build-group {CODE} {GG}` first." |
-| Plan approved | The plan's Status is `Approved` or `In progress` | > "The plan for unit {GG} is still {STATUS}. The PO and the developer approve it first, by setting its Status to Approved." |
+| Plan approved | The plan's Status is `Approved` or `In progress`, counting, in worklog mode, any unapplied Status entry on it in any worklog | > "The plan for unit {GG} is still {STATUS}. The PO and the developer approve it first, by setting its Status to Approved." |
 | Checkpoint exists | The ID is a row in the plan's Section B0, or `B{GG}.X` | > "{ID} isn't in the plan for unit {GG}. Check the ID." |
-| Not already built | Its Status is `Planned` | > "{ID} is already {STATUS}. Rebuilding it would replace its Built block. Do you want to rebuild it?" |
-| Earlier checkpoints built | Every checkpoint above it in Section B0 is `Built` or `Moved`; for `B{GG}.X`, all of them | > "{ID} comes after {EARLIER_IDS}, which aren't built. Build them first, or tell me to continue anyway." |
+| Not already built | Its Status is `Planned`, and, in worklog mode, no worklog holds a Built entry for it | > "{ID} is already {STATUS}. Rebuilding it would replace its Built block. Do you want to rebuild it?" |
+| Earlier checkpoints built | Every checkpoint above it in Section B0 is `Built` or `Moved`, in the plan or, in worklog mode, by a Built entry in any worklog; for `B{GG}.X`, all of them | > "{ID} comes after {EARLIER_IDS}, which aren't built. Build them first, or tell me to continue anyway." |
 | Earlier chunks merged | For a chunk's first checkpoint: the previous chunk's pull request is merged | > "Chunk {PREVIOUS} isn't merged yet. Its checkpoints should be accepted and merged first, so this chunk starts from them. Continue anyway?" |
 | Units it depends on closed | Every unit in the plan's "Depends on" is `Closed` in `build/index.md` | > "Unit {GG} depends on {UNITS}, which aren't closed. Continue anyway?" |
 | Clean start | In each code repo the checkpoint touches: on the chunk's branch (or the main branch, for the chunk's first checkpoint) with no uncommitted changes | > "{REPO} has uncommitted changes on {BRANCH}. Commit the previous checkpoint first, so this one's changes stand on their own." |
@@ -72,7 +75,8 @@ Read, in this order:
 4. The project's pattern catalogue, in parts: only the entries the checkpoint's blocks name.
 5. **For a checkpoint with screens:** the artboard sources of its surfaces, in full, each found from its canvas title (as the plan names it) through the canvas index; the design system README's sections for the parts they use; and, in `reference/ascendra-ui/`, `hard-instructions.md`, `ui-reference.md` and `code-style.md`, with `showcase-reference.md` only to find a specific pattern.
 6. **For the close, `B{GG}.X`:** the plan in full, and `build/index.md`.
-7. **The code it builds on:** the files earlier Built blocks list, the modules and screens the checkpoint changes, and nearby code that shows the repo's conventions.
+7. **In worklog mode, every worklog's unapplied entries that target this plan** (Built, Status, Change, Finding): with the plan, they are its current state. An earlier checkpoint's Built block may be a Built entry still waiting for the sync; a Change entry may already correct a block this checkpoint uses. Where an entry and the plan disagree and the entry is in another person's worklog, say so in Step 3.
+8. **The code it builds on:** the files earlier Built blocks list, the modules and screens the checkpoint changes, and nearby code that shows the repo's conventions.
 
 Don't read the brief, BRD documents, source material, domain document, screen inventory or design decision log. The plan already carries what they decided. If something the build needs isn't in the plan, that is a plan gap: Step 3.
 
@@ -84,7 +88,7 @@ Work out three things, then show them in one message:
 
 1. **Needs first:** what the checkpoint relies on (earlier checkpoints' code, a running database, the seed, a provider account), and whether each is met. Check it yourself where you can. Mark it "PO to confirm" where you can't.
 2. **Needed from the PO:** secrets, accounts, or a choice. For each, say exactly where it goes and what it looks like.
-3. **Plan gaps:** anything the checkpoint needs that its blocks and Part A don't state, anything in them that is wrong against the code, and anything that would take it past its size or change its scope. For each, give the change to the plan you recommend. An approved plan changes only with the PO's agreement, recorded in its Document Control.
+3. **Plan gaps:** anything the checkpoint needs that its blocks and Part A don't state, anything in them that is wrong against the code, and anything that would take it past its size or change its scope. For each, give the change to the plan you recommend. An approved plan changes only with the PO's agreement, recorded in its Document Control. In worklog mode, an agreed change is written as a Change entry in the builder's worklog (with the PO's agreement in its body) before building starts, and the build follows it; the sync adds the Document Control row. A change that alters what another person is working on now is marked Urgent.
 
 > "Before building {ID} ({goal}):
 >
@@ -166,7 +170,16 @@ Every break must make at least one test fail. If one doesn't, a test is missing:
 
 ## Step 7 — Record
 
-Record the end time. In the plan:
+Record the end time.
+
+**Direct** (no worklog mode, or you hold the hold): in the plan, items 1 to 5 below.
+
+**Worklog:** the same content, as entries appended to your own worklog, in its entry shape (`projects/TEMPLATE/worklogs/worklog.template.md`), each with the plan's version and the project commit you read as "Based on":
+- a **Built** entry: the Built block of item 1, exactly as it would go into the plan, with "Planned → Built" and, if the plan was Approved, "plan Approved → In progress";
+- a **Finding** entry per item 3 addition (target the plan's C3), and a **Change** entry per C2 proposal;
+- for the close: a **Status** entry (Closed, with the date and the PO's sign-off) and a **Decision** entry if the project numbers decisions.
+
+Item 4 (the build index) is left to the sync. Never edit the plan, the build index or the decision log in worklog mode.
 
 1. Under the checkpoint's section, add its Built block, at most 10 lines, in the form the template gives:
    - result in one sentence
@@ -179,7 +192,7 @@ Record the end time. In the plan:
 4. Update the unit's row in `build/index.md`: checkpoints built.
 5. **Close only:** fill Part C's Built block; set the plan's Status and its index row to `Closed`, with the date; add a decision to the project's decision log if it records them by number.
 
-Commit nothing. List every changed file in each repo, so the developer can review and the PO can commit.
+Commit nothing. List every changed file in each repo, so the developer can review and the PO can commit. In worklog mode, commit and push the worklog when the checkpoint's code is committed, so the other person sees its Built entry.
 
 ---
 
@@ -196,6 +209,7 @@ Tests checked:  {yes, N breaks caught / no}
 Plan changes:   {agreed in Step 3, or none}
 Time taken:     {minutes}, of which {minutes} waiting on the PO
 Changed:        {N} files in {repos}; plan and build/index.md
+                {or, in worklog mode: worklog entries {IDs} in worklogs/{name}.md}
 Needs the PO:   {anything left open, or none}
 ─────────────────────────────────────────
 Next: the developer reviews the diff and the Built block, then commit

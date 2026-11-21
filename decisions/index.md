@@ -56,6 +56,7 @@ Framework-level architecture decision records (ADRs). Each `FW-{NNN}` file is a 
 | FW-050 | [Project Journal and Framework Learning](FW-050-project-journal-and-framework-learning.md) | Decided — implemented, pending validation, amends `FW-049` |
 | FW-051 | [Code Priming Session](FW-051-code-priming-session.md) | Decided — implemented, pending validation, depends on `FW-049` |
 | FW-052 | [BRD Quick-Reference File](FW-052-brd-quick-reference-file.md) | Decided — implemented, extends `FW-001`'s ref-file naming exception |
+| FW-053 | [Worklog Mode for People Working in Parallel](FW-053-worklog-mode.md) | Decided — implemented, pending validation on ASCENDRA-PAY-004 |
 
 ## Removed decisions
 

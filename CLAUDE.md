@@ -50,7 +50,7 @@ One skilled PO can run multiple projects in parallel using this framework.
 
 ```
 ascendra-framework/
-├── .claude/commands/       # 37 slash commands — the framework's executable interface
+├── .claude/commands/       # 38 slash commands — the framework's executable interface
 ├── SDLC.md                 # Conceptual stage map — the twelve delivery stages
 ├── PROJECT-LIFECYCLE.md    # Operational command workflow — every step, command, gate
 ├── conventions/            # Framework-authoring meta-rules — command, template, artifact-naming, and cross-reference conventions
@@ -97,8 +97,10 @@ ascendra-framework/
     │   │   └── pr-description.template.md
     │   ├── releases/
     │   │   └── release-notes.template.md
-    │   └── build/
-    │       └── build-plan.template.md
+    │   ├── build/
+    │   │   └── build-plan.template.md
+    │   └── worklogs/
+    │       └── worklog.template.md
     └── {PROJECT_CODE}/     # ⚠ GITIGNORED — your private client project workspace
         ├── journal.md           # /anchor-project's own continuous project record
         ├── testimonial.md       # Generated at Walking Skeleton handoff / project close
@@ -118,7 +120,8 @@ ascendra-framework/
         ├── pr/                  # Generated: PR descriptions, one per story
         ├── sprints/             # Generated: sprint plans + UAT checklists
         ├── releases/            # Generated: release notes
-        └── build/               # Generated: build plans, one per design group, with their checkpoints + index
+        ├── build/               # Generated: build plans, one per design group, with their checkpoints + index
+        └── worklogs/            # Worklog mode only (FW-053): one worklog per person, applied by /sync-worklogs
 ```
 
 ---
@@ -158,6 +161,7 @@ ascendra-framework/
 | `/build-story` | Build one story from a slice spec into code, test it, and write its build summary — for projects delivered slice by slice with a short architecture note instead of a Locked architecture document |
 | `/plan-build-group` | Plan the build of one unit (usually one approved design group) as one living document for the PO, the developer and the AI: every implementation decision as question, answer and why, then vertical checkpoints in chunks. Asks the PO only about design changes, implied surfaces and product questions. Writes `build/group-{GG}-{slug}.md`, no code |
 | `/build-checkpoint` | Build, verify and record exactly one checkpoint of an approved build plan (one behaviour a reviewer can see work, from the screen down to the database, or the unit's close), reading the plan and the code rather than the sources |
+| `/sync-worklogs` | For a project in worklog mode (two or more people at once): reads every person's worklog, finds textual and decision conflicts, has the PO resolve them at once, then applies every entry to the main documents, numbers the decisions and empties the worklogs. Run at each chunk's acceptance; `check` mode writes nothing. See [`decisions/FW-053-worklog-mode.md`](decisions/FW-053-worklog-mode.md) |
 | `/close-sprint` | Fill a sprint's retrospective, calculate velocity, and identify carry-forward items after UAT sign-off |
 | `/gen-release-notes` | Generate release notes |
 | `/assess-change` | Assess the impact of a requested scope or architecture change |

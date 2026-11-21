@@ -6,6 +6,8 @@ The command takes every decision itself, and writes each as question, answer and
 
 It is the only build step that reads the wider sources (design decisions, source material, domain document). Everything the build needs is copied into the plan, so `/build-checkpoint` reads the plan and the code, not the sources. Planning two or three groups in one session shares the common reads; plan them in dependency order, and have each one reviewed before the next is planned.
 
+In a project in worklog mode (`FW-053`), the new plan is written directly, since it is a new Draft file, but every other change (the build index, the decision log) goes into the planner's own worklog as entries, unless the planner holds the hold.
+
 ---
 
 ## Arguments received
@@ -58,8 +60,9 @@ Ask for every missing input in one message, all at once. Wait for PO response.
 | Check | How to verify | Failure message |
 |-------|--------------|----------------|
 | Project exists | `projects/{CODE}/` exists | > "There's no project `{CODE}` under `projects/`. Check the code." |
+| Writing mode | The project's `CLAUDE.md` has a `## Worklog mode` section or not. If it has: `git config user.name` is one of its people, and `worklogs/hold.md` says who holds the hold. **Direct:** no worklog mode, or the hold is yours. **Worklog:** worklog mode, and the hold isn't yours | > "Your git user, {NAME}, isn't one of the people in `{CODE}`'s worklog mode, so I don't know whose worklog to write. Add yourself to the section, or set `git config user.name`." |
 | Design approved | For a group: its heading in the screen inventory, or the design decision log, records it as approved | > "Group {GG}'s design isn't recorded as approved. Plan it once the design is approved, or tell me to continue anyway." |
-| Not already planned | No `projects/{CODE}/build/group-{GG}-*.md` exists | > "Group {GG} already has a build plan: `{path}` ({STATUS}). Do you want me to re-plan it from the start, or change the existing plan? A change to an Approved plan is recorded in its Document Control and needs approval again." |
+| Not already planned | No `projects/{CODE}/build/group-{GG}-*.md` exists | > "Group {GG} already has a build plan: `{path}` ({STATUS}). Do you want me to re-plan it from the start, or change the existing plan? A change to an Approved plan is recorded in its Document Control and needs approval again." In worklog mode, re-planning or changing an existing plan needs the hold, since the plan is no longer a new file: > "Re-planning `{path}` changes a shared document. Take the hold first (`worklogs/hold.md`), or I'll write the changes as entries in your worklog." |
 | Earlier units planned | Every unit the group depends on (the inventory's group table) has a plan in `build/index.md` | > "Group {GG} depends on {UNITS}, which have no plan yet. This plan would have to guess what they build. Plan them first, or tell me to continue anyway." |
 | Architecture note exists | `projects/{CODE}/architecture/architecture-note.md` exists | > "There's no architecture note at `projects/{CODE}/architecture/architecture-note.md`. A build plan needs it." |
 
@@ -82,7 +85,7 @@ Read, in this order. Where the project's own `CLAUDE.md` names a different path 
 9. `reference/api-contract/contract.md`, in full, and the project's API standards if it has them. `reference/form-validation-messages.md`, in full.
 10. **Source material, in parts,** as the project's row maps it. Where it gives no map: the glossary; the sections for the modules this group touches; the scenarios, events and acceptance tests that name this group's records; and the security and tenancy section. Read the roadmap only when the group creates a new module, to check what later milestones will need from it.
 11. **The domain document, in parts:** the glossary in full (its terms are binding), and the entities, lifecycles and rules for this group's records. The design decision log wins where they differ.
-12. **Every earlier plan** in `projects/{CODE}/build/`, in parts: the header, Section A3's surface table, and Sections A5, A7, A8, A12 and C3. They say what already exists, which names are taken, and what was moved into this unit.
+12. **Every earlier plan** in `projects/{CODE}/build/`, in parts: the header, Section A3's surface table, and Sections A5, A7, A8, A12 and C3. They say what already exists, which names are taken, and what was moved into this unit. In worklog mode, also every worklog's unapplied entries: Decisions, Changes and Findings on those plans or the decision log, and New file entries for plans not yet indexed. With the documents, they are the current state; note in A1 which entries the plan relies on.
 13. For a unit with screens, in `reference/ascendra-ui/`: `hard-instructions.md` and `code-style.md`.
 14. For a named unit: the sources the PO gave in Step 1, in full.
 
@@ -218,7 +221,9 @@ Status is `Draft`, `Approved`, `In progress` or `Closed`.
 2. **The design decision log** the project names: if it records decisions by number, add one recording that the unit's plan was written, with a link, and what the PO decided in Step 6.
 3. **Section C2's proposals** (a new module for the architecture note, a new surface kind or block for the template) are listed in the report for their owners. Change neither document here.
 
-Commit nothing.
+**In worklog mode, unless you hold the hold:** items 1 and 2 are written as entries appended to your own worklog, in its entry shape (`projects/TEMPLATE/worklogs/worklog.template.md`), not into the documents: a **New file** entry for the plan, with the build index row to add, and a **Decision** entry for the decision log, with a provisional ID. Every other decision log, index or earlier plan stays untouched. A Step 6 answer that changes an earlier plan or a design document is a **Change** entry, marked Urgent if someone is building that unit now.
+
+Commit nothing. In worklog mode, commit and push the new plan and your worklog together, so the other person sees both.
 
 ---
 
@@ -235,6 +240,7 @@ Deferred:      {items and where they go, or none}
 Reconciled:    {N} items, fixed in {checkpoint IDs}
 Sources read:  {N}, listed in A1
 Also changed:  build/index.md{, decision log}
+               {or, in worklog mode: worklog entries {IDs} in worklogs/{name}.md}
 ─────────────────────────────────────────
 Next: the PO and the developer review the plan and set its Status to
 Approved, then run /build-checkpoint {PROJECT_CODE} B{GG}.1.1
